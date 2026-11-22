@@ -65,9 +65,10 @@ export function Sidebar({ isOpen, onClose }: SidebarProps) {
           isOpen ? "translate-x-0" : "-translate-x-full"
         )}
       >
-        <div className="p-4 space-y-4 overflow-y-auto">
+        {/* Fixed Top Section: Brand & Workspace */}
+        <div className="p-4 pb-2 space-y-3 shrink-0 border-b border-[#E8DFD3]/60 bg-[#FAF7F2]">
           {/* Top Brand Logo */}
-          <div className="flex items-center space-x-2.5 px-2 pt-2">
+          <div className="flex items-center space-x-2.5 px-1 pt-1">
             <div className="w-8 h-8 rounded-xl bg-[#821A2A]/10 border border-[#821A2A]/20 flex items-center justify-center text-[#821A2A] shadow-2xs">
               <svg
                 className="w-5 h-5 text-[#821A2A]"
@@ -100,7 +101,7 @@ export function Sidebar({ isOpen, onClose }: SidebarProps) {
             <ChevronDown className="w-4 h-4 text-[#8C777A] group-hover:text-[#821A2A] transition-colors" />
           </div>
 
-          {/* Super-Admin Access Button if authorized or available */}
+          {/* Super-Admin Access Button */}
           <Link
             href="/super-admin"
             className="p-2 rounded-xl bg-[#F8F2EC] hover:bg-[#F3EAE0] border border-[#E8DFD3] text-xs text-[#24060B] flex items-center justify-between transition-colors shadow-2xs"
@@ -113,59 +114,59 @@ export function Sidebar({ isOpen, onClose }: SidebarProps) {
               Global
             </span>
           </Link>
-
-          {/* Nav List */}
-          <div className="space-y-1 pt-1">
-            <div className="px-3 pb-1.5 text-[10px] font-mono font-bold tracking-widest uppercase text-[#8C777A]">
-              Workspace Modules
-            </div>
-
-            {navItems.map((item) => {
-              const Icon = item.icon;
-              const isActive = pathname === item.href;
-
-              return (
-                <Link
-                  key={item.href}
-                  href={item.href}
-                  onClick={onClose}
-                  className={clsx(
-                    "flex items-center justify-between px-3 py-2 rounded-xl text-xs transition-all group",
-                    isActive
-                      ? "bg-[#821A2A]/10 text-[#821A2A] font-bold border border-[#821A2A]/25 shadow-2xs"
-                      : "text-[#5C4A4D] hover:text-[#821A2A] hover:bg-[#F8F2EC] font-medium"
-                  )}
-                >
-                  <div className="flex items-center space-x-3">
-                    <Icon
-                      className={clsx(
-                        "w-4 h-4 shrink-0 transition-colors",
-                        isActive ? "text-[#821A2A]" : "text-[#8C777A] group-hover:text-[#821A2A]"
-                      )}
-                    />
-                    <span>{item.label}</span>
-                  </div>
-
-                  {item.badge && (
-                    <span
-                      className={clsx(
-                        "text-[10px] font-mono font-bold px-1.5 py-0.5 rounded-full",
-                        isActive
-                          ? "bg-[#821A2A] text-white"
-                          : "bg-[#821A2A]/10 text-[#821A2A] border border-[#821A2A]/20"
-                      )}
-                    >
-                      {item.badge}
-                    </span>
-                  )}
-                </Link>
-              );
-            })}
-          </div>
         </div>
 
-        {/* Footer: User Persona Profile Card */}
-        <div className="p-3 border-t border-[#E8DFD3] bg-[#FAF7F2]">
+        {/* Scrollable Middle Section: Nav Items */}
+        <div className="flex-1 overflow-y-auto px-4 py-3 space-y-1">
+          <div className="px-3 pb-1.5 text-[10px] font-mono font-bold tracking-widest uppercase text-[#8C777A]">
+            Workspace Modules
+          </div>
+
+          {navItems.map((item) => {
+            const Icon = item.icon;
+            const isActive = pathname === item.href;
+
+            return (
+              <Link
+                key={item.href}
+                href={item.href}
+                onClick={onClose}
+                className={clsx(
+                  "flex items-center justify-between px-3 py-2 rounded-xl text-xs transition-all group",
+                  isActive
+                    ? "bg-[#821A2A]/10 text-[#821A2A] font-bold border border-[#821A2A]/25 shadow-2xs"
+                    : "text-[#5C4A4D] hover:text-[#821A2A] hover:bg-[#F8F2EC] font-medium"
+                )}
+              >
+                <div className="flex items-center space-x-3">
+                  <Icon
+                    className={clsx(
+                      "w-4 h-4 shrink-0 transition-colors",
+                      isActive ? "text-[#821A2A]" : "text-[#8C777A] group-hover:text-[#821A2A]"
+                    )}
+                  />
+                  <span>{item.label}</span>
+                </div>
+
+                {item.badge && (
+                  <span
+                    className={clsx(
+                      "text-[10px] font-mono font-bold px-1.5 py-0.5 rounded-full",
+                      isActive
+                        ? "bg-[#821A2A] text-white"
+                        : "bg-[#821A2A]/10 text-[#821A2A] border border-[#821A2A]/20"
+                    )}
+                  >
+                    {item.badge}
+                  </span>
+                )}
+              </Link>
+            );
+          })}
+        </div>
+
+        {/* Fixed Bottom Section: User Persona Profile Card */}
+        <div className="p-3 border-t border-[#E8DFD3] bg-[#FAF7F2] shrink-0">
           <div className="p-2.5 rounded-xl bg-[#FFFDFB] border border-[#DECFC0] flex items-center justify-between text-xs text-[#5C4A4D] shadow-2xs">
             <div className="flex items-center space-x-2.5">
               <div className="w-8 h-8 rounded-full bg-[#821A2A] text-white font-bold flex items-center justify-center text-xs shadow-xs">
