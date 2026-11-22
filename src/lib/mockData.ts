@@ -159,6 +159,10 @@ export const SAMPLE_BUYER: BuyerProfile = {
   phone: "+91 98450 12345",
   address: "#402, 7th Main, Indiranagar, Bengaluru, Karnataka 560038",
   entityType: "sole",
+  coBuyerName: "Sunita Sharma",
+  coBuyerPan: "FGHIJ5678K",
+  coBuyerAadhaarMasked: "XXXXXXXX5521",
+  relationship: "Spouse",
   saleDeedEnrichment: {
     e_stamp_certificate_no: "IN-KA92847192847102U",
     e_stamp_date: "2026-11-15",

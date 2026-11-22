@@ -50,6 +50,8 @@ import {
   Camera,
   Upload,
   X,
+  Receipt,
+  Landmark,
 } from "lucide-react";
 import clsx from "clsx";
 
@@ -74,9 +76,10 @@ export default function UnitDossierPage({
     fullName: initialUnit.allottee?.fullName || SAMPLE_BUYER.fullName,
     panNumber: initialUnit.allottee?.panNumber || SAMPLE_BUYER.panNumber,
     address: initialUnit.allottee?.address || SAMPLE_BUYER.address,
-    coBuyerName: "Sunita Sharma",
-    coBuyerPan: "FGHIJ5678K",
-    relationship: "Spouse",
+    coBuyerName: initialUnit.allottee?.coBuyerName || SAMPLE_BUYER.coBuyerName || "Sunita Sharma",
+    coBuyerPan: initialUnit.allottee?.coBuyerPan || SAMPLE_BUYER.coBuyerPan || "FGHIJ5678K",
+    coBuyerAadhaarMasked: initialUnit.allottee?.coBuyerAadhaarMasked || SAMPLE_BUYER.coBuyerAadhaarMasked || "XXXXXXXX5521",
+    relationship: initialUnit.allottee?.relationship || SAMPLE_BUYER.relationship || "Spouse",
   });
 
   // Multi-Parking Slot state (Single or Tandem)
@@ -133,6 +136,11 @@ export default function UnitDossierPage({
   // Calculations
   const totalConsideration = unit.basePrice + parkingFee;
   const isJoint = buyer.entityType === "joint";
+  const isTdsApplicable = totalConsideration >= 5000000;
+  const tdsAmount = isTdsApplicable ? Math.round(totalConsideration * 0.01) : 0;
+  const stampDutyAmount = Math.round(totalConsideration * 0.05); // Karnataka Kaveri 2.0 (5%)
+  const registrationFeeAmount = Math.round(totalConsideration * 0.01); // Karnataka Kaveri 2.0 (1%)
+  const totalStatutoryOutlay = totalConsideration + stampDutyAmount + registrationFeeAmount;
 
   // Build input for document generator
   const getDossierInput = (): UnitDossierInput => ({
@@ -307,7 +315,7 @@ export default function UnitDossierPage({
     };
 
     const text = encodeURIComponent(
-      `Dear ${buyer.fullName},\n\nGreetings from ${MOCK_PROJECT.name} Post-Sales Office.\n\nYour official ${docLabels[docType]} for Flat ${unit.flatNumber} (${unit.tower}) has been prepared for your review.\n\n• Unit: Flat ${unit.flatNumber} (${unit.unitType})\n• Car Parking: Bay ${selectedSlots.map(s => s.slotNumber).join(", ")}\n• Consideration: ${formatIndianCurrency(totalConsideration)}\n\nPlease verify and let us know if any corrections are needed.\n\nWarm regards,\nPost-Sales Operations Team\n${MOCK_PROJECT.name}`
+      `Dear ${buyer.fullName},\n\nGreetings from ${MOCK_PROJECT.name} Post-Sales Office.\n\nYour official ${docLabels[docType]} for Flat ${unit.flatNumber} (${unit.tower}) has been prepared for your review.\n\n• Unit: Flat ${unit.flatNumber} (${unit.unitType})\n• Car Parking: Bay ${selectedSlots.map(s => s.slotNumber).join(", ")}\n• Consideration: ${formatIndianCurrency(totalConsideration)}\n• Sec 194-IA TDS (1%): ${isTdsApplicable ? formatIndianCurrency(tdsAmount) + " (Deductible by Buyer via Form 26QB)" : "Exempt (< ₹50L)"}\n\n🏛️ RERA Designated Master Escrow Bank Account for All Payments:\n• Bank: State Bank of India\n• Branch: Sarjapur Road Branch, Bengaluru\n• A/C Name: ${MOCK_PROJECT.legalName} - Project Master Escrow Account\n• A/C No: 918020034827101\n• IFSC: SBIN0004120\n\nPlease verify and let us know if any corrections are needed.\n\nWarm regards,\nPost-Sales Operations Team\n${MOCK_PROJECT.name}`
     );
 
     const cleanPhone = buyer.phone.replace(/[^0-9]/g, "");
@@ -577,16 +585,25 @@ export default function UnitDossierPage({
             {/* Joint Co-Buyer Fields */}
             {isJoint && (
               <div className="p-3 bg-[#FFF9EE] border border-[#F2E4C4] rounded-xl space-y-2.5 animate-fade-in">
-                <span className="text-[11px] font-bold text-[#821A2A] block">Co-Allottee Information</span>
-                <div className="grid grid-cols-2 gap-2.5">
+                <div className="flex items-center justify-between">
+                  <span className="text-[11px] font-bold text-[#821A2A]">Co-Allottee Information (Joint Buyer)</span>
+                  <span className="text-[9px] font-mono px-2 py-0.5 rounded bg-emerald-100 text-emerald-800 font-semibold border border-emerald-300">
+                    UIDAI Compliant Masked
+                  </span>
+                </div>
+                <div className="grid grid-cols-1 sm:grid-cols-3 gap-2.5">
                   <div>
                     <label className="text-[10px] text-[#8C777A] block mb-0.5">Co-Buyer Name</label>
                     <input
                       type="text"
                       value={buyer.coBuyerName || ""}
+                      disabled={isBankAuditor}
                       onChange={(e) => setBuyer({ ...buyer, coBuyerName: e.target.value })}
                       placeholder="e.g. Sunita Sharma"
-                      className="w-full px-2.5 py-1.5 rounded-lg border border-[#DECFC0] bg-white text-[#24060B] text-xs focus:outline-none focus:border-[#821A2A]"
+                      className={clsx(
+                        "w-full px-2.5 py-1.5 rounded-lg border border-[#DECFC0] text-[#24060B] text-xs focus:outline-none focus:border-[#821A2A]",
+                        isBankAuditor ? "bg-[#F5EFE8] cursor-not-allowed text-[#5C4A4D]" : "bg-white"
+                      )}
                     />
                   </div>
                   <div>
@@ -594,9 +611,22 @@ export default function UnitDossierPage({
                     <input
                       type="text"
                       value={buyer.coBuyerPan || ""}
+                      disabled={isBankAuditor}
                       onChange={(e) => setBuyer({ ...buyer, coBuyerPan: e.target.value.toUpperCase() })}
                       placeholder="e.g. FGHIJ5678K"
-                      className="w-full px-2.5 py-1.5 rounded-lg border border-[#DECFC0] bg-white text-[#24060B] font-mono text-xs focus:outline-none focus:border-[#821A2A]"
+                      className={clsx(
+                        "w-full px-2.5 py-1.5 rounded-lg border border-[#DECFC0] text-[#24060B] font-mono text-xs focus:outline-none focus:border-[#821A2A]",
+                        isBankAuditor ? "bg-[#F5EFE8] cursor-not-allowed text-[#5C4A4D]" : "bg-white"
+                      )}
+                    />
+                  </div>
+                  <div>
+                    <label className="text-[10px] text-[#8C777A] block mb-0.5">Co-Buyer Aadhaar (Masked)</label>
+                    <input
+                      type="text"
+                      value={buyer.coBuyerAadhaarMasked || "XXXXXXXX5521"}
+                      disabled
+                      className="w-full px-2.5 py-1.5 rounded-lg border border-[#DECFC0] bg-[#F5EFE8] text-[#5C4A4D] font-mono text-xs cursor-not-allowed"
                     />
                   </div>
                 </div>
@@ -664,6 +694,116 @@ export default function UnitDossierPage({
             <div className="pt-2 text-[11px] text-[#5C4A4D] bg-[#FAF7F2] p-3 rounded-lg border border-[#DECFC0]/60">
               <span className="font-semibold text-[#24060B]">Supreme Court Shield:</span> Both bays are appurtenant to Unit {unit.flatNumber} with explicit non-severable covenants in accordance with RERA and the <em>Nahalchand Laloochand</em> judgment.
             </div>
+          </div>
+        </div>
+      </div>
+
+      {/* Statutory Tax & Regulatory Outlay (Section 194-IA TDS & Kaveri 2.0 Breakdown) */}
+      <div className="glossy-card bg-[#FFFDFB] border border-[#DECFC0] rounded-2xl p-5 shadow-xs space-y-4">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-[#F0E8DD] pb-3">
+          <div className="flex items-center space-x-2.5">
+            <div className="w-8 h-8 rounded-lg bg-[#FAF0F2] border border-[#E8C4C8] flex items-center justify-center text-[#821A2A]">
+              <Receipt className="w-4 h-4" />
+            </div>
+            <div>
+              <h3 className="text-sm font-bold font-serif text-[#24060B]">
+                Statutory Tax &amp; Regulatory Outlay Breakdown
+              </h3>
+              <p className="text-[11px] text-[#5C4A4D]">
+                Section 194-IA Income Tax TDS obligation &amp; Karnataka Kaveri 2.0 Sub-Registrar estimate.
+              </p>
+            </div>
+          </div>
+          <span className="self-start sm:self-auto text-[10px] font-mono font-semibold px-2.5 py-1 rounded-full bg-[#FAF0F2] text-[#821A2A] border border-[#E8C4C8]">
+            RERA &amp; IT Act Compliant
+          </span>
+        </div>
+
+        {/* 4-Metric Bento Grid */}
+        <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">
+          {/* Metric 1: Total Consideration */}
+          <div className="p-3.5 rounded-xl bg-[#FAF7F2] border border-[#DECFC0]">
+            <span className="text-[10px] font-medium text-[#8C777A] uppercase tracking-wider block">
+              1. Agreed Consideration
+            </span>
+            <div className="text-base font-bold font-serif text-[#24060B] mt-0.5">
+              {formatIndianCurrency(totalConsideration)}
+            </div>
+            <span className="text-[10px] text-[#5C4A4D] mt-0.5 block">
+              Base Flat + Dedicated Parking
+            </span>
+          </div>
+
+          {/* Metric 2: Section 194-IA TDS */}
+          <div className="p-3.5 rounded-xl bg-[#FFF9EE] border border-[#F2E4C4]">
+            <div className="flex items-center justify-between">
+              <span className="text-[10px] font-medium text-[#B88E3E] uppercase tracking-wider">
+                2. Sec 194-IA TDS (1%)
+              </span>
+              <span className={clsx(
+                "text-[9px] font-bold px-1.5 py-0.5 rounded font-mono",
+                isTdsApplicable ? "bg-amber-100 text-amber-800" : "bg-gray-100 text-gray-600"
+              )}>
+                {isTdsApplicable ? "Applicable" : "Exempt"}
+              </span>
+            </div>
+            <div className="text-base font-bold font-serif text-[#821A2A] mt-0.5">
+              {formatIndianCurrency(tdsAmount)}
+            </div>
+            <span className="text-[10px] text-[#5C4A4D] mt-0.5 block">
+              Buyer deducts &amp; remits (Form 26QB)
+            </span>
+          </div>
+
+          {/* Metric 3: Stamp Duty (5%) */}
+          <div className="p-3.5 rounded-xl bg-[#FAF7F2] border border-[#DECFC0]">
+            <span className="text-[10px] font-medium text-[#8C777A] uppercase tracking-wider block">
+              3. Stamp Duty (5%)
+            </span>
+            <div className="text-base font-bold font-serif text-[#24060B] mt-0.5">
+              {formatIndianCurrency(stampDutyAmount)}
+            </div>
+            <span className="text-[10px] text-[#5C4A4D] mt-0.5 block">
+              Karnataka Kaveri 2.0 e-Stamp
+            </span>
+          </div>
+
+          {/* Metric 4: Registration Fee (1%) */}
+          <div className="p-3.5 rounded-xl bg-[#FAF7F2] border border-[#DECFC0]">
+            <span className="text-[10px] font-medium text-[#8C777A] uppercase tracking-wider block">
+              4. Registration Fee (1%)
+            </span>
+            <div className="text-base font-bold font-serif text-[#24060B] mt-0.5">
+              {formatIndianCurrency(registrationFeeAmount)}
+            </div>
+            <span className="text-[10px] text-[#5C4A4D] mt-0.5 block">
+              Sub-Registrar Challan Fee
+            </span>
+          </div>
+        </div>
+
+        {/* Informational Guidance Footer */}
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-3 pt-1 text-[11px]">
+          <div className="p-3 rounded-xl bg-amber-50/60 border border-amber-200/80 text-amber-900 space-y-1">
+            <span className="font-bold flex items-center space-x-1.5 text-amber-950">
+              <AlertCircle className="w-3.5 h-3.5 text-amber-700 shrink-0" />
+              <span>Section 194-IA Compliance Protocol</span>
+            </span>
+            <p className="text-[10px] leading-relaxed text-amber-800">
+              For property transactions ≥ ₹50,00,000, allottees must deduct 1% TDS before releasing payment milestones, remit via Form 26QB citing Promoter PAN (<strong>AAACS1234K</strong>), and submit the <strong>Form 16B</strong> certificate to the builder office prior to execution.
+            </p>
+          </div>
+
+          <div className="p-3 rounded-xl bg-[#FAF0F2] border border-[#E8C4C8] text-[#821A2A] space-y-1">
+            <span className="font-bold flex items-center space-x-1.5 text-[#821A2A]">
+              <Landmark className="w-3.5 h-3.5 text-[#821A2A] shrink-0" />
+              <span>SBI RERA Designated Master Escrow Account</span>
+            </span>
+            <p className="text-[10px] leading-relaxed text-[#5C4A4D]">
+              All RTGS/NEFT milestone payments must strictly be remitted to the project master escrow:
+              <br />
+              <strong className="text-[#24060B]">State Bank of India</strong> • A/C: <span className="font-mono text-[#821A2A] font-bold">918020034827101</span> • IFSC: <span className="font-mono text-[#821A2A] font-bold">SBIN0004120</span>
+            </p>
           </div>
         </div>
       </div>

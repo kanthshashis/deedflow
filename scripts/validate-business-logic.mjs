@@ -167,6 +167,31 @@ assert("Bank Auditor (bank_auditor) has zero mutating actions",
   !typesContent.includes('case "manage_inventory":\n      return ["bank_auditor"') &&
   !typesContent.includes('case "allot_parking":\n      return ["bank_auditor"'));
 
+// TEST GROUP 7: Statutory Outlay, Escrow Wire & Joint Allottee PII Masking
+console.log("\n--- 7. Outlay Card, Escrow & UIDAI Masking Verification ---");
+const unitPagePath = path.join(process.cwd(), "src", "app", "dashboard", "units", "[flatNumber]", "page.tsx");
+const unitPageContent = fs.readFileSync(unitPagePath, "utf-8");
+
+assert("Unit Dossier includes Section 194-IA 1% TDS calculation & regulatory breakdown card",
+  unitPageContent.includes("isTdsApplicable") &&
+  unitPageContent.includes("Section 194-IA") &&
+  unitPageContent.includes("tdsAmount"));
+
+assert("Unit Dossier renders Kaveri 2.0 Stamp Duty (5%) & Registration Fee (1%)",
+  unitPageContent.includes("stampDutyAmount") &&
+  unitPageContent.includes("registrationFeeAmount") &&
+  unitPageContent.includes("Kaveri 2.0"));
+
+assert("WhatsApp share includes SBI RERA Master Escrow details (918020034827101 / SBIN0004120)",
+  unitPageContent.includes("918020034827101") &&
+  unitPageContent.includes("SBIN0004120") &&
+  unitPageContent.includes("RERA Designated Master Escrow Bank Account"));
+
+assert("Co-Buyer Aadhaar enforces UIDAI 8-digit masking ('XXXXXXXX5521')",
+  unitPageContent.includes("coBuyerAadhaarMasked") &&
+  unitPageContent.includes("XXXXXXXX5521") &&
+  unitPageContent.includes("UIDAI Compliant Masked"));
+
 console.log("\n=================================================");
 console.log(`  RESULTS: ${passedTests} / ${totalTests} TESTS PASSED (${((passedTests / totalTests) * 100).toFixed(0)}%)`);
 console.log("=================================================\n");
