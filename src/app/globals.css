@@ -1,0 +1,185 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root,
+.theme-ivory {
+  --background: #FAF7F2;
+  --foreground: #24060B;
+  --canvas-bg: #FAF7F2;
+  --surface-bg: #FFFDFB;
+  --surface-muted: #F8F2EC;
+  --surface-elevated: #FFFDFB;
+  --surface-hover: #F3EAE0;
+  --border-color: #E8DFD3;
+  --border-strong: #DECFC0;
+  --border-subtle: #F0E8DD;
+  --ink-primary: #24060B;
+  --ink-secondary: #5C4A4D;
+  --ink-muted: #8C777A;
+  --ink-faint: #B5A4A7;
+}
+
+.theme-dark {
+  --background: #08090A;
+  --foreground: #F7F8F8;
+  --canvas-bg: #08090A;
+  --surface-bg: #0E1012;
+  --surface-muted: #14171A;
+  --surface-elevated: #1B1F24;
+  --surface-hover: #22272E;
+  --border-color: rgba(255, 255, 255, 0.08);
+  --border-strong: rgba(255, 255, 255, 0.16);
+  --border-subtle: rgba(255, 255, 255, 0.04);
+  --ink-primary: #F7F8F8;
+  --ink-secondary: #9BA1A6;
+  --ink-muted: #636B74;
+  --ink-faint: #3F464D;
+}
+
+.theme-luxury {
+  --background: #F5F4F0;
+  --foreground: #18181B;
+  --canvas-bg: #F5F4F0;
+  --surface-bg: #FFFFFF;
+  --surface-muted: #EBEAE5;
+  --surface-elevated: #FFFFFF;
+  --surface-hover: #E3E2DD;
+  --border-color: #DDDBCF;
+  --border-strong: #C9C7B9;
+  --border-subtle: #E8E6DC;
+  --ink-primary: #18181B;
+  --ink-secondary: #52525B;
+  --ink-muted: #71717A;
+  --ink-faint: #A1A1AA;
+}
+
+body {
+  color: var(--foreground);
+  background: var(--background);
+  font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", "SF Pro Text", "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  letter-spacing: -0.015em;
+  overflow-x: hidden;
+}
+
+/* Royal Ivory Ambient Horizon Glow */
+.ambient-glow-ivory {
+  background: radial-gradient(1100px 550px at 50% -80px, rgba(125, 24, 38, 0.08), rgba(212, 185, 137, 0.20), transparent 75%);
+}
+
+/* Linear-Grade Radial Ambient Glow */
+.ambient-glow-dark {
+  background: radial-gradient(900px 450px at 50% 0px, rgba(94, 106, 210, 0.18), transparent 70%);
+}
+
+/* Stripe Light Radial Glow */
+.ambient-glow-light {
+  background: radial-gradient(900px 450px at 50% 0px, rgba(79, 70, 229, 0.08), transparent 70%);
+}
+
+/* Luxury Warm Radial Glow */
+.ambient-glow-luxury {
+  background: radial-gradient(900px 450px at 50% 0px, rgba(146, 64, 14, 0.06), transparent 70%);
+}
+
+/* Emil Kowalski Spring Motion */
+.spring-snap {
+  transition: transform 0.2s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.2s cubic-bezier(0.16, 1, 0.3, 1), background-color 0.2s cubic-bezier(0.16, 1, 0.3, 1), border-color 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.spring-snap:active {
+  transform: scale(0.98);
+}
+
+/* Ultra-Premium Glossy Glass Utilities */
+.glossy-card {
+  background: rgba(255, 255, 255, 0.85);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid rgba(255, 255, 255, 0.95);
+  box-shadow: inset 0 1px 1px 0 rgba(255, 255, 255, 0.95),
+              0 12px 35px -5px rgba(74, 14, 23, 0.05),
+              0 1px 3px 0 rgba(74, 14, 23, 0.03);
+}
+
+.glossy-pill {
+  background: rgba(255, 255, 255, 0.90);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid rgba(232, 223, 211, 0.95);
+  box-shadow: inset 0 1px 1px 0 rgba(255, 255, 255, 0.95),
+              0 2px 6px 0 rgba(74, 14, 23, 0.03);
+}
+
+.glossy-btn-burgundy {
+  background: linear-gradient(180deg, #5C121D 0%, #4A0E17 55%, #34070E 100%);
+  border-top: 1px solid rgba(255, 255, 255, 0.32);
+  border-bottom: 1px solid rgba(0, 0, 0, 0.4);
+  box-shadow: inset 0 1px 1px 0 rgba(255, 255, 255, 0.35),
+              0 8px 24px -2px rgba(74, 14, 23, 0.28),
+              0 2px 6px 0 rgba(74, 14, 23, 0.15);
+}
+
+.glossy-btn-burgundy:hover {
+  filter: brightness(1.06);
+}
+
+.glossy-btn-ivory {
+  background: linear-gradient(180deg, #FFFFFF 0%, #FAF7F2 100%);
+  border: 1px solid rgba(222, 207, 192, 0.95);
+  box-shadow: inset 0 1px 1px 0 rgba(255, 255, 255, 1),
+              0 4px 14px -2px rgba(74, 14, 23, 0.04),
+              0 1px 2px 0 rgba(74, 14, 23, 0.02);
+}
+
+.glossy-btn-ivory:hover {
+  background: linear-gradient(180deg, #FFFFFF 0%, #F5EFE6 100%);
+  border-color: rgba(184, 142, 62, 0.6);
+}
+
+/* Royal Ivory Subtle Architectural Grid */
+.bg-grid-ivory {
+  background-image: linear-gradient(to right, rgba(160, 135, 95, 0.07) 1px, transparent 1px),
+                    linear-gradient(to bottom, rgba(160, 135, 95, 0.07) 1px, transparent 1px);
+  background-size: 32px 32px;
+}
+
+/* Subtle CAD / Blueprint Grids */
+.bg-grid-dark {
+  background-image: linear-gradient(to right, rgba(255, 255, 255, 0.03) 1px, transparent 1px),
+                    linear-gradient(to bottom, rgba(255, 255, 255, 0.03) 1px, transparent 1px);
+  background-size: 32px 32px;
+}
+
+.bg-grid-light {
+  background-image: linear-gradient(to right, rgba(15, 23, 42, 0.03) 1px, transparent 1px),
+                    linear-gradient(to bottom, rgba(15, 23, 42, 0.03) 1px, transparent 1px);
+  background-size: 32px 32px;
+}
+
+.bg-grid-luxury {
+  background-image: linear-gradient(to right, rgba(24, 24, 27, 0.04) 1px, transparent 1px),
+                    linear-gradient(to bottom, rgba(24, 24, 27, 0.04) 1px, transparent 1px);
+  background-size: 28px 28px;
+}
+
+/* Minimalist Scrollbars */
+::-webkit-scrollbar {
+  width: 5px;
+  height: 5px;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  background: rgba(100, 116, 139, 0.3);
+  border-radius: 9999px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: rgba(100, 116, 139, 0.5);
+}
