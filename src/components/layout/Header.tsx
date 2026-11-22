@@ -3,7 +3,8 @@
 import React, { useEffect, useState } from "react";
 import Link from "next/link";
 import { Menu, X, Settings, ShieldCheck, Eye, ChevronDown, RotateCcw } from "lucide-react";
-import { UserRole } from "@/lib/types";
+import { UserRole, ProjectMetadata } from "@/lib/types";
+import { getActiveProject } from "@/lib/projectStore";
 
 interface HeaderProps {
   onToggleMobileMenu?: () => void;
@@ -31,6 +32,7 @@ const ROLE_LABELS: Record<UserRole, string> = {
 export function Header({ onToggleMobileMenu, isMobileMenuOpen }: HeaderProps) {
   const [role, setRole] = useState<UserRole>("project_admin");
   const [perspective, setPerspective] = useState<UserRole | "omni">("omni");
+  const [activeProject, setActiveProject] = useState<ProjectMetadata | null>(null);
 
   const syncState = () => {
     if (typeof window !== "undefined") {
@@ -44,6 +46,7 @@ export function Header({ onToggleMobileMenu, isMobileMenuOpen }: HeaderProps) {
       } else {
         setPerspective("omni");
       }
+      setActiveProject(getActiveProject());
     }
   };
 
@@ -51,9 +54,11 @@ export function Header({ onToggleMobileMenu, isMobileMenuOpen }: HeaderProps) {
     syncState();
     const handleRoleChanged = () => syncState();
     window.addEventListener("deedflow_role_changed", handleRoleChanged);
+    window.addEventListener("deedflow_project_changed", handleRoleChanged);
     window.addEventListener("storage", handleRoleChanged);
     return () => {
       window.removeEventListener("deedflow_role_changed", handleRoleChanged);
+      window.removeEventListener("deedflow_project_changed", handleRoleChanged);
       window.removeEventListener("storage", handleRoleChanged);
     };
   }, []);
@@ -87,11 +92,11 @@ export function Header({ onToggleMobileMenu, isMobileMenuOpen }: HeaderProps) {
             <span className="text-[#8C777A] hidden sm:inline">Workspace</span>
             <span className="text-[#DECFC0] hidden sm:inline">/</span>
             <span className="text-[#24060B] font-bold truncate max-w-[120px] sm:max-w-[200px] md:max-w-none">
-              Sobha Royal Pavilion
+              {activeProject?.name || "Sobha Royal Pavilion - Tower B"}
             </span>
             <span className="text-[#DECFC0]">/</span>
             <span className="text-[#5C4A4D] font-mono text-[10px] sm:text-[11px] bg-[#F8F2EC] px-1.5 sm:px-2 py-0.5 rounded border border-[#E8DFD3] shrink-0 font-semibold">
-              Tower B
+              {activeProject?.towers?.length ? `Tower ${activeProject.towers[0]}` : "Tower B"}
             </span>
           </div>
         </div>

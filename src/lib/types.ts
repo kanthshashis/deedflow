@@ -176,6 +176,27 @@ export interface ParkingSlot {
   notes?: string;
 }
 
+export interface UnitTypology {
+  id: string;
+  name: string; // "2 BHK Executive", "3 BHK Luxury", "4 BHK Penthouse"
+  type: "2BHK" | "3BHK" | "4BHK" | "Penthouse";
+  carpetSqft: number;
+  sbaSqft: number;
+  udsSqft: number;
+  basePrice: number;
+}
+
+export interface MatrixConfig {
+  towers: string[];
+  floorsPerTower: number;
+  flatsPerFloor: number;
+  numberingScheme: "tower_floor_flat" | "floor_flat" | "tower_padded_flat";
+  typologies: UnitTypology[];
+  basementLevels: string[];
+  slotsPerLevel: number;
+  evSlotFrequency: number;
+}
+
 export interface ProjectMetadata {
   id: string;
   name: string;
@@ -189,6 +210,22 @@ export interface ProjectMetadata {
   totalUnits: number;
   totalParkingSlots: number;
   status: "active" | "suspended";
+  companyCin?: string;
+  panNumber?: string;
+  gstin?: string;
+  masterNorth?: string;
+  masterSouth?: string;
+  masterEast?: string;
+  masterWest?: string;
+  escrowBankName?: string;
+  escrowBranch?: string;
+  escrowAccountNo?: string;
+  escrowIfsc?: string;
+  towers?: string[];
+  floorsCount?: number;
+  adminName?: string;
+  adminEmail?: string;
+  createdAt?: string;
 }
 
 export interface ChangeRequest {
