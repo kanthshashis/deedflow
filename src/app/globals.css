@@ -20,39 +20,7 @@
   --ink-faint: #B5A4A7;
 }
 
-.theme-dark {
-  --background: #08090A;
-  --foreground: #F7F8F8;
-  --canvas-bg: #08090A;
-  --surface-bg: #0E1012;
-  --surface-muted: #14171A;
-  --surface-elevated: #1B1F24;
-  --surface-hover: #22272E;
-  --border-color: rgba(255, 255, 255, 0.08);
-  --border-strong: rgba(255, 255, 255, 0.16);
-  --border-subtle: rgba(255, 255, 255, 0.04);
-  --ink-primary: #F7F8F8;
-  --ink-secondary: #9BA1A6;
-  --ink-muted: #636B74;
-  --ink-faint: #3F464D;
-}
 
-.theme-luxury {
-  --background: #F5F4F0;
-  --foreground: #18181B;
-  --canvas-bg: #F5F4F0;
-  --surface-bg: #FFFFFF;
-  --surface-muted: #EBEAE5;
-  --surface-elevated: #FFFFFF;
-  --surface-hover: #E3E2DD;
-  --border-color: #DDDBCF;
-  --border-strong: #C9C7B9;
-  --border-subtle: #E8E6DC;
-  --ink-primary: #18181B;
-  --ink-secondary: #52525B;
-  --ink-muted: #71717A;
-  --ink-faint: #A1A1AA;
-}
 
 body {
   color: var(--foreground);
@@ -69,20 +37,7 @@ body {
   background: radial-gradient(1100px 550px at 50% -80px, rgba(125, 24, 38, 0.08), rgba(212, 185, 137, 0.20), transparent 75%);
 }
 
-/* Linear-Grade Radial Ambient Glow */
-.ambient-glow-dark {
-  background: radial-gradient(900px 450px at 50% 0px, rgba(94, 106, 210, 0.18), transparent 70%);
-}
 
-/* Stripe Light Radial Glow */
-.ambient-glow-light {
-  background: radial-gradient(900px 450px at 50% 0px, rgba(79, 70, 229, 0.08), transparent 70%);
-}
-
-/* Luxury Warm Radial Glow */
-.ambient-glow-luxury {
-  background: radial-gradient(900px 450px at 50% 0px, rgba(146, 64, 14, 0.06), transparent 70%);
-}
 
 /* Emil Kowalski Spring Motion */
 .spring-snap {
@@ -149,24 +104,7 @@ body {
   background-size: 32px 32px;
 }
 
-/* Subtle CAD / Blueprint Grids */
-.bg-grid-dark {
-  background-image: linear-gradient(to right, rgba(255, 255, 255, 0.03) 1px, transparent 1px),
-                    linear-gradient(to bottom, rgba(255, 255, 255, 0.03) 1px, transparent 1px);
-  background-size: 32px 32px;
-}
 
-.bg-grid-light {
-  background-image: linear-gradient(to right, rgba(15, 23, 42, 0.03) 1px, transparent 1px),
-                    linear-gradient(to bottom, rgba(15, 23, 42, 0.03) 1px, transparent 1px);
-  background-size: 32px 32px;
-}
-
-.bg-grid-luxury {
-  background-image: linear-gradient(to right, rgba(24, 24, 27, 0.04) 1px, transparent 1px),
-                    linear-gradient(to bottom, rgba(24, 24, 27, 0.04) 1px, transparent 1px);
-  background-size: 28px 28px;
-}
 
 /* Minimalist Scrollbars */
 ::-webkit-scrollbar {
