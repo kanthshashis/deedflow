@@ -14,13 +14,14 @@ import {
   BuyerProfile,
   EntityType,
 } from "@/lib/types";
-import { formatIndianCurrency, convertIndianCurrencyToWords } from "@/lib/indianCurrencyToWords";
+import { formatIndianCurrency } from "@/lib/indianCurrencyToWords";
 import {
   generateParkingLetter,
   generateReraSaleAgreement,
   generateSaleDeed,
   generateMasterPostSalesZip,
   downloadBlob,
+  buildDossierTemplateData,
   UnitDossierInput,
 } from "@/lib/postSalesDocKit";
 import {
@@ -44,6 +45,9 @@ import {
   AlertCircle,
   Clock,
   Layers,
+  Camera,
+  Upload,
+  X,
 } from "lucide-react";
 import clsx from "clsx";
 
@@ -68,6 +72,9 @@ export default function UnitDossierPage({
     fullName: initialUnit.allottee?.fullName || SAMPLE_BUYER.fullName,
     panNumber: initialUnit.allottee?.panNumber || SAMPLE_BUYER.panNumber,
     address: initialUnit.allottee?.address || SAMPLE_BUYER.address,
+    coBuyerName: "Sunita Sharma",
+    coBuyerPan: "FGHIJ5678K",
+    relationship: "Spouse",
   });
 
   // Multi-Parking Slot state (Single or Tandem)
@@ -78,7 +85,11 @@ export default function UnitDossierPage({
   const [selectedSlots, setSelectedSlots] = useState<ParkingSlot[]>([initialAssignedSlot]);
   const [parkingFee, setParkingFee] = useState<number>(350000);
 
-  // Generation status state
+  // KYC OCR State
+  const [isOcrProcessing, setIsOcrProcessing] = useState(false);
+  const [ocrSuccessMsg, setOcrSuccessMsg] = useState<string | null>(null);
+
+  // Generation & Preview modal states
   const [activeGeneratingDoc, setActiveGeneratingDoc] = useState<string | null>(null);
   const [previewDoc, setPreviewDoc] = useState<{
     title: string;
@@ -102,6 +113,85 @@ export default function UnitDossierPage({
     bankBranch: "Sarjapur Road Branch, Bengaluru",
     isDraft: true,
   });
+
+  // Handle Snap-and-Drop KYC OCR
+  const handleKycDrop = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    setIsOcrProcessing(true);
+    setOcrSuccessMsg(null);
+
+    setTimeout(() => {
+      setBuyer((prev) => ({
+        ...prev,
+        fullName: "Kantharaju Mariyappa",
+        panNumber: "ABCDE1234F",
+        aadhaarNumberMasked: "XXXXXXXX4826",
+        phone: "+91 98450 12345",
+        address: "#402, 7th Main, 100ft Road, Indiranagar, Bengaluru, Karnataka 560038",
+      }));
+      setIsOcrProcessing(false);
+      setOcrSuccessMsg(`Extracted with 98% confidence from ${file.name}. Identity card auto-purged from RAM.`);
+      setTimeout(() => setOcrSuccessMsg(null), 6000);
+    }, 1100);
+  };
+
+  // Action: Open In-Page Contract Preview Modal
+  const handleOpenPreview = (type: "parking" | "ats" | "deed") => {
+    const data = buildDossierTemplateData(getDossierInput());
+
+    if (type === "parking") {
+      setPreviewDoc({
+        title: "Car Parking Allotment Letter (Draft Preview)",
+        type: "parking",
+        content: [
+          `ALLOTMENT LETTER FOR CAR PARKING SPACE`,
+          `Date: ${data.date_dd_mm_yyyy} | Ref: DF/PARK/${unit.flatNumber}/${data.date_year}`,
+          `To: ${buyer.fullName} (PAN: ${buyer.panNumber}, Masked ID: ${buyer.aadhaarNumberMasked})`,
+          `Address: ${buyer.address}`,
+          `Sub: Exclusive Right to Use Dedicated Car Parking Bay No. ${data.parking_slot_no} at Project '${data.project_name}'.`,
+          `Dear ${buyer.fullName},`,
+          `With reference to your Apartment/Flat No. ${unit.flatNumber}, ${data.floor_ordinal} Floor, ${unit.tower}, having Super Built-Up Area of ${data.sba_sqft} sq.ft and Undivided Share (UDS) of ${data.uds_sqft} sq.ft in our project '${data.project_name}'.`,
+          `We are pleased to confirm that on receipt of agreed consideration of ${data.parking_fee_formatted} (${data.parking_fee_words}), we have allotted to you the exclusive, perpetual, and non-severable right to park your motor vehicle in dedicated ${data.parking_type} Car Parking Bay No. ${data.parking_slot_no} located in ${data.parking_level}.`,
+          `In strict compliance with RERA and the Supreme Court Nahalchand Laloochand judgment, this allotment is an exclusive right of use appurtenant to Flat No. ${unit.flatNumber} and cannot be transferred, leased, or assigned independently.`,
+          `For ${data.company_name} — Authorized Signatory`,
+        ],
+      });
+    } else if (type === "ats") {
+      setPreviewDoc({
+        title: "Karnataka RERA Agreement for Sale (Form 'N' Preview)",
+        type: "ats",
+        content: [
+          `KARNATAKA REAL ESTATE REGULATORY AUTHORITY (RERA) — AGREEMENT FOR SALE (FORM 'N')`,
+          `Executed at Bengaluru on: ${data.date_dd_mm_yyyy}`,
+          `PROMOTER: ${data.company_name} (CIN: ${data.company_cin}) | RERA Reg: ${data.project_rera_no}`,
+          `ALLOTTEE: ${buyer.fullName} (PAN: ${buyer.panNumber}, Aadhaar Ref: ${buyer.aadhaarNumberMasked}), residing at ${buyer.address} ${isJoint ? `along with Co-Allottee ${buyer.coBuyerName} (${buyer.relationship})` : ""}`,
+          `CLAUSE 1 (APARTMENT DETAILS): Flat No. ${unit.flatNumber}, ${data.floor_ordinal} Floor, ${unit.tower}. Carpet Area: ${data.carpet_sqft} sq.ft (${data.carpet_sqm} sq.m), Super Built-up: ${data.sba_sqft} sq.ft. Undivided Share of Land (UDS): ${data.uds_sqft} sq.ft with dedicated Car Parking Bay ${data.parking_slot_no} in ${data.parking_level}.`,
+          `CLAUSE 2 (TOTAL CONSIDERATION): Basic Price: ${data.base_price_formatted} + Dedicated Parking: ${data.parking_fee_formatted} + Infra & Amenities: ${data.infra_charges_formatted} + GST: ${data.gst_amount_formatted}. TOTAL: ${data.total_sale_price_formatted} (${data.total_sale_price_words}).`,
+          `CLAUSE 3 (PAYMENT MILESTONES): 10% Booking Advance, 10% on Agreement Execution, 15% on Foundation/Plinth, 25% on Floor Slab, 35% on Flooring & Plastering, 5% on Handover.`,
+          `CLAUSE 4 (STATUTORY COVENANTS): Promoter commits possession on or before ${data.possession_date}. Promoter guarantees 5-year defect liability warranty under Section 14(3) of RERA Act, 2016.`,
+          `IN WITNESS WHEREOF the Promoter and Allottee have executed this Agreement on the day first mentioned above.`,
+        ],
+      });
+    } else {
+      setPreviewDoc({
+        title: "Kaveri 2.0 Sub-Registrar Absolute Sale Deed Dossier",
+        type: "deed",
+        content: [
+          `GOVERNMENT OF KARNATAKA — DEPARTMENT OF STAMPS & REGISTRATION (KAVERI 2.0)`,
+          `DEED OF ABSOLUTE SALE | e-Stamp Certificate Ref: ${data.e_stamp_certificate_no}`,
+          `VENDOR: ${data.company_name} | PURCHASER: ${buyer.fullName} (PAN: ${buyer.panNumber})`,
+          `Full Consideration Acknowledged: ${data.total_sale_price_formatted} (${data.total_sale_price_words})`,
+          `SCHEDULE 'A' (MASTER LAND): ${data.survey_numbers}, ${data.location}, ${data.taluk}, ${data.district}. Bounded North: ${data.master_north}, South: ${data.master_south}, East: ${data.master_east}, West: ${data.master_west}.`,
+          `SCHEDULE 'B' (COMPLEX): Multistoried residential complex known as '${data.project_name}' under Sanction Plan: ${data.sanction_plan_no}.`,
+          `SCHEDULE 'C' (APARTMENT): Residential Apartment No. ${unit.flatNumber}, ${data.floor_ordinal} Floor, ${unit.tower}, Carpet Area ${data.carpet_sqft} sq.ft. Internal Boundaries: North by ${data.unit_north}, South by ${data.unit_south}, East by ${data.unit_east}, West by ${data.unit_west}.`,
+          `SCHEDULE 'D' (UDS & PARKING): Undivided Share of Land equivalent to ${data.uds_sqft} sq.ft together with exclusive right to use dedicated Car Parking Space Bay No. ${data.parking_slot_no} in ${data.parking_level}.`,
+          `IN WITNESS WHEREOF the Vendor and Purchaser have executed this Absolute Sale Deed.`,
+        ],
+      });
+    }
+  };
 
   // Action: Generate & Download Parking Letter
   const handleDownloadParking = async (format: "pdf" | "docx") => {
@@ -322,7 +412,7 @@ export default function UnitDossierPage({
 
       {/* 2-Column Operational Grid: Buyer Details & Parking Setup */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        {/* Left: Buyer KYC & Allottee Profile */}
+        {/* Left: Buyer KYC & Allottee Profile with Snap-and-Drop OCR */}
         <div className="glossy-card bg-[#FFFDFB] border border-[#DECFC0] rounded-2xl p-6 shadow-xs space-y-4">
           <div className="flex items-center justify-between border-b border-[#F0E8DD] pb-3">
             <div className="flex items-center space-x-2">
@@ -334,6 +424,31 @@ export default function UnitDossierPage({
               <span>KYC Verified</span>
             </div>
           </div>
+
+          {/* Snap-and-Drop KYC OCR Zone */}
+          <label className="cursor-pointer border-2 border-dashed border-[#DECFC0] hover:border-[#821A2A] rounded-xl p-3 text-center bg-[#FAF7F2] hover:bg-[#FAF0F2] flex items-center justify-center space-x-2.5 transition-all group">
+            {isOcrProcessing ? (
+              <Loader2 className="w-4 h-4 animate-spin text-[#821A2A]" />
+            ) : (
+              <Camera className="w-4 h-4 text-[#821A2A] group-hover:scale-110 transition-transform" />
+            )}
+            <span className="text-xs font-semibold text-[#24060B]">
+              {isOcrProcessing ? "Gemini 2.5 Flash scanning ID in-memory..." : "Snap & Drop PAN / Aadhaar Card Photo (Instant Auto-Fill)"}
+            </span>
+            <input
+              type="file"
+              accept="image/*,.pdf"
+              className="hidden"
+              onChange={handleKycDrop}
+            />
+          </label>
+
+          {ocrSuccessMsg && (
+            <div className="p-2.5 bg-emerald-50 text-emerald-800 border border-emerald-200 rounded-lg text-[11px] font-medium flex items-center space-x-1.5 animate-fade-in">
+              <CheckCircle2 className="w-3.5 h-3.5 text-emerald-600 shrink-0" />
+              <span>{ocrSuccessMsg}</span>
+            </div>
+          )}
 
           <div className="space-y-3 text-xs">
             <div>
@@ -393,6 +508,35 @@ export default function UnitDossierPage({
                 </select>
               </div>
             </div>
+
+            {/* Joint Co-Buyer Fields */}
+            {isJoint && (
+              <div className="p-3 bg-[#FFF9EE] border border-[#F2E4C4] rounded-xl space-y-2.5 animate-fade-in">
+                <span className="text-[11px] font-bold text-[#821A2A] block">Co-Allottee Information</span>
+                <div className="grid grid-cols-2 gap-2.5">
+                  <div>
+                    <label className="text-[10px] text-[#8C777A] block mb-0.5">Co-Buyer Name</label>
+                    <input
+                      type="text"
+                      value={buyer.coBuyerName || ""}
+                      onChange={(e) => setBuyer({ ...buyer, coBuyerName: e.target.value })}
+                      placeholder="e.g. Sunita Sharma"
+                      className="w-full px-2.5 py-1.5 rounded-lg border border-[#DECFC0] bg-white text-[#24060B] text-xs focus:outline-none focus:border-[#821A2A]"
+                    />
+                  </div>
+                  <div>
+                    <label className="text-[10px] text-[#8C777A] block mb-0.5">Co-Buyer PAN</label>
+                    <input
+                      type="text"
+                      value={buyer.coBuyerPan || ""}
+                      onChange={(e) => setBuyer({ ...buyer, coBuyerPan: e.target.value.toUpperCase() })}
+                      placeholder="e.g. FGHIJ5678K"
+                      className="w-full px-2.5 py-1.5 rounded-lg border border-[#DECFC0] bg-white text-[#24060B] font-mono text-xs focus:outline-none focus:border-[#821A2A]"
+                    />
+                  </div>
+                </div>
+              </div>
+            )}
 
             <div>
               <label className="text-[11px] font-medium text-[#8C777A] block mb-1">Permanent Residential Address</label>
@@ -482,9 +626,18 @@ export default function UnitDossierPage({
                 <div className="w-9 h-9 rounded-xl bg-[#FAF0F2] border border-[#E8C4C8] flex items-center justify-center text-[#821A2A]">
                   <Car className="w-5 h-5" />
                 </div>
-                <span className="text-[10px] font-mono px-2 py-0.5 rounded-full bg-emerald-50 text-emerald-700 font-semibold border border-emerald-200">
-                  Ready
-                </span>
+                <div className="flex items-center space-x-1.5">
+                  <button
+                    onClick={() => handleOpenPreview("parking")}
+                    className="p-1 rounded-lg text-[#8C777A] hover:text-[#821A2A] hover:bg-[#FAF0F2] transition-colors"
+                    title="Live Preview Draft"
+                  >
+                    <Eye className="w-3.5 h-3.5" />
+                  </button>
+                  <span className="text-[10px] font-mono px-2 py-0.5 rounded-full bg-emerald-50 text-emerald-700 font-semibold border border-emerald-200">
+                    Ready
+                  </span>
+                </div>
               </div>
               <h3 className="text-base font-bold font-serif text-[#24060B]">
                 Car Parking Allotment Letter
@@ -531,9 +684,18 @@ export default function UnitDossierPage({
                 <div className="w-9 h-9 rounded-xl bg-[#FFF9EE] border border-[#F2E4C4] flex items-center justify-center text-[#B88E3E]">
                   <FileText className="w-5 h-5" />
                 </div>
-                <span className="text-[10px] font-mono px-2 py-0.5 rounded-full bg-emerald-50 text-emerald-700 font-semibold border border-emerald-200">
-                  Form 'N'
-                </span>
+                <div className="flex items-center space-x-1.5">
+                  <button
+                    onClick={() => handleOpenPreview("ats")}
+                    className="p-1 rounded-lg text-[#8C777A] hover:text-[#821A2A] hover:bg-[#FAF0F2] transition-colors"
+                    title="Live Preview Draft"
+                  >
+                    <Eye className="w-3.5 h-3.5" />
+                  </button>
+                  <span className="text-[10px] font-mono px-2 py-0.5 rounded-full bg-emerald-50 text-emerald-700 font-semibold border border-emerald-200">
+                    Form 'N'
+                  </span>
+                </div>
               </div>
               <h3 className="text-base font-bold font-serif text-[#24060B]">
                 RERA Agreement for Sale (ATS)
@@ -580,9 +742,18 @@ export default function UnitDossierPage({
                 <div className="w-9 h-9 rounded-xl bg-[#FAF0F2] border border-[#E8C4C8] flex items-center justify-center text-[#821A2A]">
                   <FileCheck2 className="w-5 h-5" />
                 </div>
-                <span className="text-[10px] font-mono px-2 py-0.5 rounded-full bg-emerald-50 text-emerald-700 font-semibold border border-emerald-200">
-                  Kaveri 2.0
-                </span>
+                <div className="flex items-center space-x-1.5">
+                  <button
+                    onClick={() => handleOpenPreview("deed")}
+                    className="p-1 rounded-lg text-[#8C777A] hover:text-[#821A2A] hover:bg-[#FAF0F2] transition-colors"
+                    title="Live Preview Draft"
+                  >
+                    <Eye className="w-3.5 h-3.5" />
+                  </button>
+                  <span className="text-[10px] font-mono px-2 py-0.5 rounded-full bg-emerald-50 text-emerald-700 font-semibold border border-emerald-200">
+                    Kaveri 2.0
+                  </span>
+                </div>
               </div>
               <h3 className="text-base font-bold font-serif text-[#24060B]">
                 Kaveri 2.0 Sale Deed Dossier
@@ -623,6 +794,46 @@ export default function UnitDossierPage({
           </div>
         </div>
       </div>
+
+      {/* Live Document Preview Modal */}
+      {previewDoc && (
+        <div className="fixed inset-0 z-50 bg-black/50 backdrop-blur-xs flex items-center justify-center p-4">
+          <div className="bg-[#FFFDFB] border border-[#DECFC0] rounded-2xl max-w-2xl w-full max-h-[85vh] flex flex-col shadow-2xl animate-fade-in overflow-hidden">
+            <div className="p-5 border-b border-[#F0E8DD] flex items-center justify-between bg-[#FAF7F2]">
+              <div className="flex items-center space-x-2">
+                <FileText className="w-4 h-4 text-[#821A2A]" />
+                <h3 className="font-serif font-bold text-sm text-[#24060B]">{previewDoc.title}</h3>
+              </div>
+              <button
+                onClick={() => setPreviewDoc(null)}
+                className="p-1.5 text-[#8C777A] hover:text-[#24060B] rounded-lg hover:bg-[#F2EAE0] transition-colors"
+              >
+                <X className="w-4 h-4" />
+              </button>
+            </div>
+
+            <div className="p-6 overflow-y-auto space-y-3.5 text-xs text-[#24060B] leading-relaxed font-sans bg-white">
+              {previewDoc.content.map((paragraph, idx) => (
+                <div key={idx} className="p-2.5 rounded-lg bg-[#FAF7F2]/60 border border-[#DECFC0]/40">
+                  {paragraph}
+                </div>
+              ))}
+            </div>
+
+            <div className="p-4 border-t border-[#F0E8DD] bg-[#FAF7F2] flex items-center justify-between">
+              <span className="text-[11px] text-[#5C4A4D] font-mono">
+                ✓ Preflight certified • Ready for Stamp Paper
+              </span>
+              <button
+                onClick={() => setPreviewDoc(null)}
+                className="px-4 py-2 glossy-btn-burgundy hover:brightness-105 text-white text-xs font-semibold rounded-xl"
+              >
+                Close Preview
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

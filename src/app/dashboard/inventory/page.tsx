@@ -16,6 +16,9 @@ import {
   FileText,
   AlertCircle,
   Filter,
+  Plus,
+  X,
+  FileSpreadsheet,
 } from "lucide-react";
 import clsx from "clsx";
 
@@ -24,6 +27,15 @@ export default function InventoryPage() {
   const [search, setSearch] = useState("");
   const [statusFilter, setStatusFilter] = useState<string>("all");
   const [importNotification, setImportNotification] = useState<string | null>(null);
+
+  // New Single Unit Modal
+  const [isAddUnitOpen, setIsAddUnitOpen] = useState(false);
+  const [newFlatNumber, setNewFlatNumber] = useState("");
+  const [newUnitType, setNewUnitType] = useState("3 BHK Luxury");
+  const [newFloor, setNewFloor] = useState(1);
+  const [newCarpet, setNewCarpet] = useState(1280);
+  const [newSba, setNewSba] = useState(1650);
+  const [newBasePrice, setNewBasePrice] = useState(8800000);
 
   const filteredUnits = units.filter((u) => {
     const matchesSearch =
@@ -56,7 +68,6 @@ export default function InventoryPage() {
         const headerLine = lines[0].toLowerCase();
         const headers = headerLine.split(",").map((h) => h.trim().replace(/^["']|["']$/g, ""));
 
-        // Match common builder column variants
         const flatIdx = headers.findIndex((h) => h.includes("flat") || h.includes("unit") || h.includes("door"));
         const towerIdx = headers.findIndex((h) => h.includes("tower") || h.includes("block") || h.includes("wing"));
         const floorIdx = headers.findIndex((h) => h.includes("floor"));
@@ -71,7 +82,6 @@ export default function InventoryPage() {
 
         for (let i = 1; i < lines.length; i++) {
           const rawRow = lines[i];
-          // Handle quoted commas
           const row = rawRow.split(/,(?=(?:(?:[^"]*"){2})*[^"]*$)/).map((v) => v.trim().replace(/^["']|["']$/g, ""));
 
           if (row.length === 0 || !row[flatIdx !== -1 ? flatIdx : 0]) continue;
@@ -137,6 +147,53 @@ export default function InventoryPage() {
     document.body.removeChild(link);
   };
 
+  const handleDownloadSampleCsv = () => {
+    const sample = `FlatNumber,Tower,Floor,Type,CarpetSqFt,SBASqFt,UDSSqFt,Price,Status
+B-101,Tower B,1,3 BHK Luxury,1280,1650,412,8800000,booked
+B-102,Tower B,1,2 BHK Comfort,920,1220,305,6500000,available
+B-103,Tower B,1,3 BHK + Study,1450,1890,472,10500000,available
+B-201,Tower B,2,3 BHK Luxury,1280,1650,412,8900000,available
+B-202,Tower B,2,2 BHK Comfort,920,1220,305,6550000,sold
+B-301,Tower B,3,4 BHK Presidential,2100,2850,712,18500000,booked`;
+
+    const blob = new Blob([sample], { type: "text/csv;charset=utf-8;" });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement("a");
+    link.href = url;
+    link.setAttribute("download", "DeedFlow_Sample_Tower_Inventory.csv");
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+  };
+
+  const handleAddSingleUnit = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!newFlatNumber.trim()) return;
+
+    const newUnit: UnitInventory = {
+      id: `unit-manual-${Date.now()}`,
+      flatNumber: newFlatNumber.trim().toUpperCase(),
+      tower: "Tower B",
+      floorNumber: Number(newFloor),
+      unitType: newUnitType,
+      carpetAreaSqFt: Number(newCarpet),
+      superBuiltUpAreaSqFt: Number(newSba),
+      undividedShareLandSqFt: Math.round(Number(newSba) * 0.25),
+      basePrice: Number(newBasePrice),
+      status: "available",
+      northBoundary: "Internal Corridor",
+      southBoundary: "Open to Sky / Landscaped Courtyard",
+      eastBoundary: "Adjacent Apartment",
+      westBoundary: "Lift Core & Fire Staircase",
+    };
+
+    setUnits([newUnit, ...units]);
+    setIsAddUnitOpen(false);
+    setNewFlatNumber("");
+    setImportNotification(`Added ${newUnit.flatNumber} to Tower B inventory!`);
+    setTimeout(() => setImportNotification(null), 4000);
+  };
+
   const totalInventoryValue = units.reduce((acc, u) => acc + u.basePrice, 0);
   const activeBookedUnits = units.filter((u) => u.status === "booked" || u.status === "sold").length;
 
@@ -157,18 +214,28 @@ export default function InventoryPage() {
           </p>
         </div>
 
-        {/* CSV Import & Export Actions */}
-        <div className="flex items-center space-x-2.5">
+        {/* Actions */}
+        <div className="flex flex-wrap items-center gap-2">
+          <button
+            onClick={handleDownloadSampleCsv}
+            className="px-3 py-2.5 rounded-xl bg-white border border-[#DECFC0] hover:border-[#821A2A]/40 text-[#24060B] text-xs font-semibold flex items-center space-x-1.5 shadow-2xs transition-colors cursor-pointer"
+            title="Download example CSV spreadsheet"
+          >
+            <FileSpreadsheet className="w-3.5 h-3.5 text-emerald-700" />
+            <span>Sample CSV</span>
+          </button>
+
           <button
             onClick={handleExportCsv}
-            className="px-3.5 py-2.5 glossy-btn-ivory text-[#24060B] border-[#DECFC0] hover:border-[#821A2A]/40 text-xs font-semibold rounded-xl flex items-center space-x-1.5 shadow-2xs cursor-pointer transition-colors"
+            className="px-3 py-2.5 glossy-btn-ivory text-[#24060B] border-[#DECFC0] hover:border-[#821A2A]/40 text-xs font-semibold rounded-xl flex items-center space-x-1.5 shadow-2xs cursor-pointer transition-colors"
           >
             <Download className="w-3.5 h-3.5 text-[#5C4A4D]" />
             <span>Export CSV</span>
           </button>
-          <label className="cursor-pointer px-4 py-2.5 glossy-btn-burgundy hover:brightness-105 text-white text-xs font-semibold rounded-xl flex items-center space-x-1.5 shadow-sm transition-all">
-            <Upload className="w-3.5 h-3.5 text-[#D4B989]" />
-            <span>Import Tower Sheet</span>
+
+          <label className="cursor-pointer px-3.5 py-2.5 glossy-btn-ivory border-[#DECFC0] hover:border-[#821A2A]/40 text-[#24060B] text-xs font-semibold rounded-xl flex items-center space-x-1.5 shadow-2xs transition-all">
+            <Upload className="w-3.5 h-3.5 text-[#821A2A]" />
+            <span>Import Sheet</span>
             <input
               type="file"
               accept=".csv,.txt"
@@ -176,6 +243,14 @@ export default function InventoryPage() {
               onChange={handleFileUpload}
             />
           </label>
+
+          <button
+            onClick={() => setIsAddUnitOpen(true)}
+            className="px-3.5 py-2.5 glossy-btn-burgundy hover:brightness-105 text-white text-xs font-semibold rounded-xl flex items-center space-x-1.5 shadow-sm transition-all cursor-pointer"
+          >
+            <Plus className="w-3.5 h-3.5 text-[#D4B989]" />
+            <span>Add Single Flat</span>
+          </button>
         </div>
       </div>
 
@@ -327,6 +402,117 @@ export default function InventoryPage() {
           </table>
         </div>
       </div>
+
+      {/* Add Single Flat Modal */}
+      {isAddUnitOpen && (
+        <div className="fixed inset-0 z-50 bg-black/50 backdrop-blur-xs flex items-center justify-center p-4">
+          <div className="bg-[#FFFDFB] border border-[#DECFC0] rounded-2xl max-w-md w-full shadow-2xl animate-fade-in overflow-hidden">
+            <div className="p-5 border-b border-[#F0E8DD] flex items-center justify-between bg-[#FAF7F2]">
+              <div className="flex items-center space-x-2">
+                <Building2 className="w-4 h-4 text-[#821A2A]" />
+                <h3 className="font-serif font-bold text-sm text-[#24060B]">Add Single Flat to Inventory</h3>
+              </div>
+              <button
+                onClick={() => setIsAddUnitOpen(false)}
+                className="p-1.5 text-[#8C777A] hover:text-[#24060B] rounded-lg hover:bg-[#F2EAE0] transition-colors"
+              >
+                <X className="w-4 h-4" />
+              </button>
+            </div>
+
+            <form onSubmit={handleAddSingleUnit} className="p-6 space-y-4 text-xs">
+              <div className="grid grid-cols-2 gap-3">
+                <div>
+                  <label className="text-[11px] font-medium text-[#8C777A] block mb-1">Flat Number *</label>
+                  <input
+                    type="text"
+                    required
+                    placeholder="e.g. B-402"
+                    value={newFlatNumber}
+                    onChange={(e) => setNewFlatNumber(e.target.value)}
+                    className="w-full px-3 py-2 rounded-lg border border-[#DECFC0] bg-[#FAF7F2] text-[#24060B] font-mono font-bold focus:outline-none focus:border-[#821A2A]"
+                  />
+                </div>
+
+                <div>
+                  <label className="text-[11px] font-medium text-[#8C777A] block mb-1">Floor Number</label>
+                  <input
+                    type="number"
+                    min="1"
+                    max="50"
+                    value={newFloor}
+                    onChange={(e) => setNewFloor(Number(e.target.value))}
+                    className="w-full px-3 py-2 rounded-lg border border-[#DECFC0] bg-[#FAF7F2] text-[#24060B] focus:outline-none focus:border-[#821A2A]"
+                  />
+                </div>
+              </div>
+
+              <div>
+                <label className="text-[11px] font-medium text-[#8C777A] block mb-1">Configuration Type</label>
+                <select
+                  value={newUnitType}
+                  onChange={(e) => setNewUnitType(e.target.value)}
+                  className="w-full px-3 py-2 rounded-lg border border-[#DECFC0] bg-[#FAF7F2] text-[#24060B] font-medium focus:outline-none focus:border-[#821A2A]"
+                >
+                  <option value="2 BHK Comfort">2 BHK Comfort</option>
+                  <option value="3 BHK Luxury">3 BHK Luxury</option>
+                  <option value="3 BHK + Study">3 BHK + Study</option>
+                  <option value="4 BHK Presidential">4 BHK Presidential</option>
+                </select>
+              </div>
+
+              <div className="grid grid-cols-2 gap-3">
+                <div>
+                  <label className="text-[11px] font-medium text-[#8C777A] block mb-1">Carpet Area (sq.ft)</label>
+                  <input
+                    type="number"
+                    value={newCarpet}
+                    onChange={(e) => setNewCarpet(Number(e.target.value))}
+                    className="w-full px-3 py-2 rounded-lg border border-[#DECFC0] bg-[#FAF7F2] text-[#24060B] font-mono focus:outline-none focus:border-[#821A2A]"
+                  />
+                </div>
+
+                <div>
+                  <label className="text-[11px] font-medium text-[#8C777A] block mb-1">Super Built-Up (sq.ft)</label>
+                  <input
+                    type="number"
+                    value={newSba}
+                    onChange={(e) => setNewSba(Number(e.target.value))}
+                    className="w-full px-3 py-2 rounded-lg border border-[#DECFC0] bg-[#FAF7F2] text-[#24060B] font-mono focus:outline-none focus:border-[#821A2A]"
+                  />
+                </div>
+              </div>
+
+              <div>
+                <label className="text-[11px] font-medium text-[#8C777A] block mb-1">Base Price (₹ INR)</label>
+                <input
+                  type="number"
+                  step="50000"
+                  value={newBasePrice}
+                  onChange={(e) => setNewBasePrice(Number(e.target.value))}
+                  className="w-full px-3 py-2 rounded-lg border border-[#DECFC0] bg-[#FAF7F2] text-[#24060B] font-mono font-bold focus:outline-none focus:border-[#821A2A]"
+                />
+              </div>
+
+              <div className="pt-2 flex items-center justify-end space-x-2">
+                <button
+                  type="button"
+                  onClick={() => setIsAddUnitOpen(false)}
+                  className="px-4 py-2 rounded-xl bg-white border border-[#DECFC0] text-[#5C4A4D] font-semibold text-xs hover:bg-[#FAF7F2]"
+                >
+                  Cancel
+                </button>
+                <button
+                  type="submit"
+                  className="px-4 py-2 rounded-xl glossy-btn-burgundy hover:brightness-105 text-white font-semibold text-xs shadow-sm"
+                >
+                  Save &amp; Open Dossier
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
