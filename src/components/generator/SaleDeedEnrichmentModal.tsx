@@ -80,7 +80,7 @@ export function SaleDeedEnrichmentModal({
         <div className="flex items-center justify-between border-b border-[#F0E8DD] pb-4">
           <div className="space-y-0.5">
             <div className="flex items-center space-x-2">
-              <span className="px-2.5 py-0.5 rounded-full text-[10px] font-mono font-bold bg-[#4A0E17] text-white">
+              <span className="px-2.5 py-0.5 rounded-full text-[10px] font-mono font-bold bg-[#821A2A] text-white">
                 Flat {unit.flatNumber} ({unit.tower})
               </span>
               <h2 className="text-lg font-bold font-serif text-[#24060B] tracking-tight">
@@ -136,7 +136,7 @@ export function SaleDeedEnrichmentModal({
                   type="text"
                   value={eStampNo}
                   onChange={(e) => setEStampNo(e.target.value.toUpperCase())}
-                  className="w-full px-3 py-2 rounded-xl border border-[#DECFC0] font-mono font-bold text-[#24060B] bg-white focus:outline-none focus:border-[#4A0E17]"
+                  className="w-full px-3 py-2 rounded-xl border border-[#DECFC0] font-mono font-bold text-[#24060B] bg-white focus:outline-none focus:border-[#821A2A]"
                   placeholder="IN-KA92847192847102U"
                 />
               </div>
@@ -146,7 +146,7 @@ export function SaleDeedEnrichmentModal({
                   type="date"
                   value={eStampDate}
                   onChange={(e) => setEStampDate(e.target.value)}
-                  className="w-full px-3 py-2 rounded-xl border border-[#DECFC0] font-mono text-[#24060B] bg-white focus:outline-none focus:border-[#4A0E17]"
+                  className="w-full px-3 py-2 rounded-xl border border-[#DECFC0] font-mono text-[#24060B] bg-white focus:outline-none focus:border-[#821A2A]"
                 />
               </div>
               <div>
@@ -155,7 +155,7 @@ export function SaleDeedEnrichmentModal({
                   type="number"
                   value={stampDutyAmount}
                   onChange={(e) => setStampDutyAmount(Number(e.target.value))}
-                  className="w-full px-3 py-2 rounded-xl border border-[#DECFC0] font-mono font-bold text-[#24060B] bg-white focus:outline-none focus:border-[#4A0E17]"
+                  className="w-full px-3 py-2 rounded-xl border border-[#DECFC0] font-mono font-bold text-[#24060B] bg-white focus:outline-none focus:border-[#821A2A]"
                 />
                 <span className="text-[10px] text-[#8C777A] mt-0.5 block">{formatIndianCurrency(stampDutyAmount)}</span>
               </div>
@@ -165,7 +165,7 @@ export function SaleDeedEnrichmentModal({
                   type="number"
                   value={regFeeAmount}
                   onChange={(e) => setRegFeeAmount(Number(e.target.value))}
-                  className="w-full px-3 py-2 rounded-xl border border-[#DECFC0] font-mono font-bold text-[#24060B] bg-white focus:outline-none focus:border-[#4A0E17]"
+                  className="w-full px-3 py-2 rounded-xl border border-[#DECFC0] font-mono font-bold text-[#24060B] bg-white focus:outline-none focus:border-[#821A2A]"
                 />
                 <span className="text-[10px] text-[#8C777A] mt-0.5 block">{formatIndianCurrency(regFeeAmount)}</span>
               </div>

@@ -109,7 +109,7 @@ export default function BatchGeneratorPage() {
                 type="checkbox"
                 checked={selectedUnitIds.length === units.length}
                 onChange={toggleSelectAll}
-                className="rounded border-[#DECFC0] text-[#4A0E17] focus:ring-0"
+                className="rounded border-[#DECFC0] text-[#821A2A] focus:ring-0"
               />
               <span>Select All Flats ({units.length})</span>
             </label>
@@ -146,7 +146,7 @@ export default function BatchGeneratorPage() {
                         type="checkbox"
                         checked={isSelected}
                         onChange={() => toggleUnit(unit.id)}
-                        className="rounded border-[#DECFC0] text-[#4A0E17] focus:ring-0"
+                        className="rounded border-[#DECFC0] text-[#821A2A] focus:ring-0"
                       />
                     </td>
                     <td className="px-4 py-4">

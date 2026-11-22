@@ -64,7 +64,7 @@ export default function ProvisionMatrixPage() {
   return (
     <div className="max-w-4xl mx-auto space-y-8 pb-12">
       <div>
-        <Link href="/super-admin" className="text-xs text-[#8C777A] hover:text-[#4A0E17] font-semibold transition-colors">
+        <Link href="/super-admin" className="text-xs text-[#8C777A] hover:text-[#821A2A] font-semibold transition-colors">
           ← Back to Project Portfolio
         </Link>
         <h1 className="text-2xl sm:text-3xl font-bold font-serif text-[#24060B] tracking-tight mt-2">
@@ -91,7 +91,7 @@ export default function ProvisionMatrixPage() {
                 required
                 value={developerName}
                 onChange={(e) => setDeveloperName(e.target.value)}
-                className="w-full px-3.5 py-2 rounded-xl border border-[#DECFC0] text-[#24060B] bg-white focus:outline-none focus:ring-1 focus:ring-[#4A0E17]"
+                className="w-full px-3.5 py-2 rounded-xl border border-[#DECFC0] text-[#24060B] bg-white focus:outline-none focus:ring-1 focus:ring-[#821A2A]"
               />
             </div>
             <div>
@@ -101,7 +101,7 @@ export default function ProvisionMatrixPage() {
                 required
                 value={projectName}
                 onChange={(e) => setProjectName(e.target.value)}
-                className="w-full px-3.5 py-2 rounded-xl border border-[#DECFC0] text-[#24060B] bg-white focus:outline-none focus:ring-1 focus:ring-[#4A0E17]"
+                className="w-full px-3.5 py-2 rounded-xl border border-[#DECFC0] text-[#24060B] bg-white focus:outline-none focus:ring-1 focus:ring-[#821A2A]"
               />
             </div>
             <div>
@@ -111,7 +111,7 @@ export default function ProvisionMatrixPage() {
                 required
                 value={reraNumber}
                 onChange={(e) => setReraNumber(e.target.value)}
-                className="w-full px-3.5 py-2 rounded-xl border border-[#DECFC0] text-[#24060B] font-mono bg-white focus:outline-none focus:ring-1 focus:ring-[#4A0E17]"
+                className="w-full px-3.5 py-2 rounded-xl border border-[#DECFC0] text-[#24060B] font-mono bg-white focus:outline-none focus:ring-1 focus:ring-[#821A2A]"
               />
             </div>
             <div>
@@ -121,7 +121,7 @@ export default function ProvisionMatrixPage() {
                 required
                 value={location}
                 onChange={(e) => setLocation(e.target.value)}
-                className="w-full px-3.5 py-2 rounded-xl border border-[#DECFC0] text-[#24060B] bg-white focus:outline-none focus:ring-1 focus:ring-[#4A0E17]"
+                className="w-full px-3.5 py-2 rounded-xl border border-[#DECFC0] text-[#24060B] bg-white focus:outline-none focus:ring-1 focus:ring-[#821A2A]"
               />
             </div>
           </div>
@@ -141,7 +141,7 @@ export default function ProvisionMatrixPage() {
                 type="text"
                 value={towers}
                 onChange={(e) => setTowers(e.target.value)}
-                className="w-full px-3.5 py-2 rounded-xl border border-[#DECFC0] text-[#24060B] font-mono bg-white focus:outline-none focus:ring-1 focus:ring-[#4A0E17]"
+                className="w-full px-3.5 py-2 rounded-xl border border-[#DECFC0] text-[#24060B] font-mono bg-white focus:outline-none focus:ring-1 focus:ring-[#821A2A]"
                 placeholder="A, B, C"
               />
             </div>
@@ -153,7 +153,7 @@ export default function ProvisionMatrixPage() {
                 max={50}
                 value={floorsPerTower}
                 onChange={(e) => setFloorsPerTower(Number(e.target.value))}
-                className="w-full px-3.5 py-2 rounded-xl border border-[#DECFC0] text-[#24060B] font-mono bg-white focus:outline-none focus:ring-1 focus:ring-[#4A0E17]"
+                className="w-full px-3.5 py-2 rounded-xl border border-[#DECFC0] text-[#24060B] font-mono bg-white focus:outline-none focus:ring-1 focus:ring-[#821A2A]"
               />
             </div>
             <div>
@@ -164,7 +164,7 @@ export default function ProvisionMatrixPage() {
                 max={12}
                 value={flatsPerFloor}
                 onChange={(e) => setFlatsPerFloor(Number(e.target.value))}
-                className="w-full px-3.5 py-2 rounded-xl border border-[#DECFC0] text-[#24060B] font-mono bg-white focus:outline-none focus:ring-1 focus:ring-[#4A0E17]"
+                className="w-full px-3.5 py-2 rounded-xl border border-[#DECFC0] text-[#24060B] font-mono bg-white focus:outline-none focus:ring-1 focus:ring-[#821A2A]"
               />
             </div>
           </div>
@@ -202,7 +202,7 @@ export default function ProvisionMatrixPage() {
               <select
                 value={basementLevels}
                 onChange={(e) => setBasementLevels(e.target.value as any)}
-                className="w-full px-3.5 py-2 rounded-xl border border-[#DECFC0] text-[#24060B] bg-white focus:outline-none focus:ring-1 focus:ring-[#4A0E17]"
+                className="w-full px-3.5 py-2 rounded-xl border border-[#DECFC0] text-[#24060B] bg-white focus:outline-none focus:ring-1 focus:ring-[#821A2A]"
               >
                 <option value="B1">Basement 1 Only (Upper)</option>
                 <option value="B1, B2">Basement 1 &amp; Basement 2 (Dual Levels)</option>
@@ -216,7 +216,7 @@ export default function ProvisionMatrixPage() {
                 max={100}
                 value={slotsPerBasement}
                 onChange={(e) => setSlotsPerBasement(Number(e.target.value))}
-                className="w-full px-3.5 py-2 rounded-xl border border-[#DECFC0] text-[#24060B] font-mono bg-white focus:outline-none focus:ring-1 focus:ring-[#4A0E17]"
+                className="w-full px-3.5 py-2 rounded-xl border border-[#DECFC0] text-[#24060B] font-mono bg-white focus:outline-none focus:ring-1 focus:ring-[#821A2A]"
               />
             </div>
           </div>
@@ -243,7 +243,7 @@ export default function ProvisionMatrixPage() {
                 required
                 value={adminName}
                 onChange={(e) => setAdminName(e.target.value)}
-                className="w-full px-3.5 py-2 rounded-xl border border-[#DECFC0] text-[#24060B] bg-white focus:outline-none focus:ring-1 focus:ring-[#4A0E17]"
+                className="w-full px-3.5 py-2 rounded-xl border border-[#DECFC0] text-[#24060B] bg-white focus:outline-none focus:ring-1 focus:ring-[#821A2A]"
               />
             </div>
             <div>
@@ -253,7 +253,7 @@ export default function ProvisionMatrixPage() {
                 required
                 value={adminEmail}
                 onChange={(e) => setAdminEmail(e.target.value)}
-                className="w-full px-3.5 py-2 rounded-xl border border-[#DECFC0] text-[#24060B] bg-white focus:outline-none focus:ring-1 focus:ring-[#4A0E17]"
+                className="w-full px-3.5 py-2 rounded-xl border border-[#DECFC0] text-[#24060B] bg-white focus:outline-none focus:ring-1 focus:ring-[#821A2A]"
               />
             </div>
             <div>
@@ -263,7 +263,7 @@ export default function ProvisionMatrixPage() {
                 required
                 value={adminPassword}
                 onChange={(e) => setAdminPassword(e.target.value)}
-                className="w-full px-3.5 py-2 rounded-xl border border-[#DECFC0] text-[#24060B] font-mono bg-white focus:outline-none focus:ring-1 focus:ring-[#4A0E17]"
+                className="w-full px-3.5 py-2 rounded-xl border border-[#DECFC0] text-[#24060B] font-mono bg-white focus:outline-none focus:ring-1 focus:ring-[#821A2A]"
               />
             </div>
           </div>
@@ -283,7 +283,7 @@ export default function ProvisionMatrixPage() {
         <div className="glossy-card bg-[#FFFDFB] border border-[#B88E3E]/60 p-6 sm:p-8 rounded-2xl shadow-xs space-y-5 animate-fade-in">
           <div className="flex items-center justify-between border-b border-[#F0E8DD] pb-4">
             <div className="flex items-center space-x-2.5">
-              <div className="w-8 h-8 rounded-full bg-[#4A0E17] text-[#D4B989] flex items-center justify-center font-bold">
+              <div className="w-8 h-8 rounded-full bg-[#821A2A] text-[#D4B989] flex items-center justify-center font-bold">
                 ✓
               </div>
               <div>

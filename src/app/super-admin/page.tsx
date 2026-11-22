@@ -107,7 +107,7 @@ export default function SuperAdminPage() {
               {projects.map((proj) => (
                 <tr key={proj.id} className="hover:bg-[#F8F2EC]/60 transition-colors">
                   <td className="px-5 py-4">
-                    <div className="font-bold text-[#24060B] text-sm group-hover:text-[#4A0E17]">{proj.name}</div>
+                    <div className="font-bold text-[#24060B] text-sm group-hover:text-[#821A2A]">{proj.name}</div>
                     <div className="text-[11px] text-[#8C777A]">{proj.legalName}</div>
                   </td>
                   <td className="px-5 py-4 font-mono text-[11px] text-[#4A3538]">

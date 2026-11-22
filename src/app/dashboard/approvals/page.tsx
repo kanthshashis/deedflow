@@ -118,7 +118,7 @@ export default function ApprovalsPage() {
           onClick={() => setActiveTab("pending")}
           className={`px-4 py-2 rounded-xl text-xs font-bold transition-all flex items-center space-x-2 cursor-pointer ${
             activeTab === "pending"
-              ? "bg-[#4A0E17] text-white shadow-xs"
+              ? "bg-[#821A2A] text-white shadow-xs"
               : "text-[#5C4A4D] hover:text-[#24060B] hover:bg-[#F8F2EC]"
           }`}
         >
@@ -134,7 +134,7 @@ export default function ApprovalsPage() {
           onClick={() => setActiveTab("audit")}
           className={`px-4 py-2 rounded-xl text-xs font-bold transition-all flex items-center space-x-2 cursor-pointer ${
             activeTab === "audit"
-              ? "bg-[#4A0E17] text-white shadow-xs"
+              ? "bg-[#821A2A] text-white shadow-xs"
               : "text-[#5C4A4D] hover:text-[#24060B] hover:bg-[#F8F2EC]"
           }`}
         >
@@ -158,7 +158,7 @@ export default function ApprovalsPage() {
                 placeholder="Search flat or proposer..."
                 value={search}
                 onChange={(e) => setSearch(e.target.value)}
-                className="w-full pl-8 pr-3 py-1.5 rounded-lg border border-[#DECFC0] bg-[#FAF7F2] text-[#24060B] focus:outline-none focus:border-[#4A0E17] text-xs"
+                className="w-full pl-8 pr-3 py-1.5 rounded-lg border border-[#DECFC0] bg-[#FAF7F2] text-[#24060B] focus:outline-none focus:border-[#821A2A] text-xs"
               />
             </div>
 
@@ -167,7 +167,7 @@ export default function ApprovalsPage() {
               <select
                 value={filterSource}
                 onChange={(e) => setFilterSource(e.target.value)}
-                className="px-2.5 py-1.5 rounded-lg border border-[#DECFC0] bg-white text-[#24060B] text-xs focus:outline-none focus:border-[#4A0E17]"
+                className="px-2.5 py-1.5 rounded-lg border border-[#DECFC0] bg-white text-[#24060B] text-xs focus:outline-none focus:border-[#821A2A]"
               >
                 <option value="all">All Sources</option>
                 <option value="parking_grid_swap">Basement Grid Swap</option>
@@ -196,7 +196,7 @@ export default function ApprovalsPage() {
                   {/* Header Bar */}
                   <div className="p-4 bg-[#F8F2EC]/60 border-b border-[#E8DFD3] flex flex-col sm:flex-row sm:items-center justify-between gap-2">
                     <div className="flex items-center space-x-3">
-                      <span className="px-2.5 py-1 rounded-lg bg-[#4A0E17] text-white font-mono font-bold text-xs shadow-xs">
+                      <span className="px-2.5 py-1 rounded-lg bg-[#821A2A] text-white font-mono font-bold text-xs shadow-xs">
                         Flat {req.flatNumber}
                       </span>
                       <span className="text-xs text-[#5C4A4D]">

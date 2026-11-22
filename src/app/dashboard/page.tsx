@@ -137,7 +137,7 @@ export default function DashboardOverview() {
       {/* Pending Diff Approvals Alert Banner */}
       <div className="p-4 glossy-card bg-[#FFFDFB] border border-[#DECFC0] rounded-2xl flex flex-col sm:flex-row sm:items-center justify-between gap-3 shadow-xs">
         <div className="flex items-center space-x-3">
-          <div className="w-8 h-8 rounded-lg bg-[#4A0E17] text-[#D4B989] border border-[#7D1826]/40 flex items-center justify-center font-bold text-xs shadow-xs">
+          <div className="w-8 h-8 rounded-lg bg-[#821A2A] text-white border border-[#821A2A]/40 flex items-center justify-center font-bold text-xs shadow-xs">
             3
           </div>
           <div>
@@ -163,7 +163,7 @@ export default function DashboardOverview() {
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
         {/* Card 1: Total Documents */}
         <div className="glossy-card bg-[#FFFDFB] rounded-2xl p-5 border border-[#E8DFD3] hover:border-[#B88E3E]/60 shadow-xs space-y-3 transition-colors">
-          <div className="w-8 h-8 rounded-lg bg-[#F8F2EC] border border-[#E8DFD3] flex items-center justify-center text-[#4A0E17]">
+          <div className="w-8 h-8 rounded-lg bg-[#F8F2EC] border border-[#E8DFD3] flex items-center justify-center text-[#821A2A]">
             <FileText className="w-4 h-4" />
           </div>
           <div className="space-y-0.5">
@@ -242,7 +242,7 @@ export default function DashboardOverview() {
 
           <Link
             href="/dashboard/generate"
-            className="text-xs font-semibold text-[#5C4A4D] hover:text-[#4A0E17] flex items-center space-x-1"
+            className="text-xs font-semibold text-[#5C4A4D] hover:text-[#821A2A] flex items-center space-x-1"
           >
             <span>View all</span>
             <ArrowUpRight className="w-3.5 h-3.5" />
@@ -257,7 +257,7 @@ export default function DashboardOverview() {
             placeholder="Search by customer, unit, or document"
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
-            className="w-full text-xs pl-10 pr-4 py-2.5 rounded-xl border border-[#DECFC0] bg-[#FAF7F2] text-[#24060B] placeholder-[#8C777A] focus:outline-none focus:border-[#4A0E17] focus:bg-white transition-colors"
+            className="w-full text-xs pl-10 pr-4 py-2.5 rounded-xl border border-[#DECFC0] bg-[#FAF7F2] text-[#24060B] placeholder-[#8C777A] focus:outline-none focus:border-[#821A2A] focus:bg-white transition-colors"
           />
         </div>
 
@@ -272,7 +272,7 @@ export default function DashboardOverview() {
                 className={clsx(
                   "px-3 py-1.5 rounded-lg font-medium transition-colors spring-snap cursor-pointer",
                   isSelected
-                    ? "bg-[#4A0E17] text-white font-bold shadow-xs"
+                    ? "bg-[#821A2A] text-white font-bold shadow-xs"
                     : "text-[#5C4A4D] hover:text-[#24060B] hover:bg-[#F8F2EC]"
                 )}
               >
@@ -360,7 +360,7 @@ export default function DashboardOverview() {
                       <a
                         href={doc.downloadUrl}
                         download
-                        className="p-1.5 text-[#8C777A] hover:text-[#4A0E17] rounded-lg hover:bg-[#FAF0F2] inline-flex transition-colors"
+                        className="p-1.5 text-[#8C777A] hover:text-[#821A2A] rounded-lg hover:bg-[#FAF0F2] inline-flex transition-colors"
                         title="Download .DOCX"
                       >
                         <ArrowUpRight className="w-4 h-4" />
@@ -368,7 +368,7 @@ export default function DashboardOverview() {
                     ) : (
                       <Link
                         href="/dashboard/generate"
-                        className="p-1.5 text-[#8C777A] hover:text-[#4A0E17] rounded-lg hover:bg-[#FAF0F2] inline-flex transition-colors"
+                        className="p-1.5 text-[#8C777A] hover:text-[#821A2A] rounded-lg hover:bg-[#FAF0F2] inline-flex transition-colors"
                       >
                         <ArrowUpRight className="w-4 h-4" />
                       </Link>

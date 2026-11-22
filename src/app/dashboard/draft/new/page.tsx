@@ -196,7 +196,7 @@ function VerificationStudioContent() {
                   type="text"
                   value={buyer.fullName}
                   onChange={(e) => setBuyer({ ...buyer, fullName: e.target.value })}
-                  className="w-full bg-white px-2 py-1 rounded border border-[#DECFC0] font-bold text-[#24060B] focus:outline-none focus:border-[#4A0E17]"
+                  className="w-full bg-white px-2 py-1 rounded border border-[#DECFC0] font-bold text-[#24060B] focus:outline-none focus:border-[#821A2A]"
                 />
               </div>
 
@@ -206,7 +206,7 @@ function VerificationStudioContent() {
                   type="text"
                   value={buyer.panNumber}
                   onChange={(e) => setBuyer({ ...buyer, panNumber: e.target.value.toUpperCase() })}
-                  className="w-full bg-white px-2 py-1 rounded border border-[#DECFC0] font-bold text-[#24060B] focus:outline-none focus:border-[#4A0E17]"
+                  className="w-full bg-white px-2 py-1 rounded border border-[#DECFC0] font-bold text-[#24060B] focus:outline-none focus:border-[#821A2A]"
                 />
               </div>
 
@@ -240,7 +240,7 @@ function VerificationStudioContent() {
                 type="button"
                 onClick={() => setBuyer({ ...buyer, entityType: "sole" })}
                 className={`py-1.5 px-2 rounded-lg font-bold transition-all cursor-pointer ${
-                  buyer.entityType === "sole" ? "bg-[#4A0E17] text-white shadow-xs font-bold" : "text-[#5C4A4D] hover:text-[#24060B]"
+                  buyer.entityType === "sole" ? "bg-[#821A2A] text-white shadow-xs font-bold" : "text-[#5C4A4D] hover:text-[#24060B]"
                 }`}
               >
                 Sole Individual
@@ -249,7 +249,7 @@ function VerificationStudioContent() {
                 type="button"
                 onClick={() => setBuyer({ ...buyer, entityType: "joint" })}
                 className={`py-1.5 px-2 rounded-lg font-bold transition-all cursor-pointer ${
-                  buyer.entityType === "joint" ? "bg-[#4A0E17] text-white shadow-xs font-bold" : "text-[#5C4A4D] hover:text-[#24060B]"
+                  buyer.entityType === "joint" ? "bg-[#821A2A] text-white shadow-xs font-bold" : "text-[#5C4A4D] hover:text-[#24060B]"
                 }`}
               >
                 Joint Co-Buyers
@@ -258,7 +258,7 @@ function VerificationStudioContent() {
                 type="button"
                 onClick={() => setBuyer({ ...buyer, entityType: "nri_gpa" })}
                 className={`py-1.5 px-2 rounded-lg font-bold transition-all cursor-pointer ${
-                  buyer.entityType === "nri_gpa" ? "bg-[#4A0E17] text-white shadow-xs font-bold" : "text-[#5C4A4D] hover:text-[#24060B]"
+                  buyer.entityType === "nri_gpa" ? "bg-[#821A2A] text-white shadow-xs font-bold" : "text-[#5C4A4D] hover:text-[#24060B]"
                 }`}
               >
                 NRI via GPA
@@ -267,7 +267,7 @@ function VerificationStudioContent() {
                 type="button"
                 onClick={() => setBuyer({ ...buyer, entityType: "company" })}
                 className={`py-1.5 px-2 rounded-lg font-bold transition-all cursor-pointer ${
-                  buyer.entityType === "company" ? "bg-[#4A0E17] text-white shadow-xs font-bold" : "text-[#5C4A4D] hover:text-[#24060B]"
+                  buyer.entityType === "company" ? "bg-[#821A2A] text-white shadow-xs font-bold" : "text-[#5C4A4D] hover:text-[#24060B]"
                 }`}
               >
                 Corporate / LLP
@@ -285,7 +285,7 @@ function VerificationStudioContent() {
                   const unit = MOCK_UNITS.find((u) => u.id === e.target.value);
                   if (unit) setSelectedUnit(unit);
                 }}
-                className="w-full px-3 py-2 rounded-xl border border-[#DECFC0] font-bold text-[#24060B] bg-white focus:outline-none focus:border-[#4A0E17]"
+                className="w-full px-3 py-2 rounded-xl border border-[#DECFC0] font-bold text-[#24060B] bg-white focus:outline-none focus:border-[#821A2A]"
               >
                 {MOCK_UNITS.map((u) => (
                   <option key={u.id} value={u.id}>
@@ -304,7 +304,7 @@ function VerificationStudioContent() {
                   const slot = MOCK_PARKING_SLOTS.find((s) => s.id === e.target.value);
                   if (slot) setSelectedSlot(slot);
                 }}
-                className="w-full px-3 py-2 rounded-xl border border-[#DECFC0] font-bold text-[#24060B] bg-white focus:outline-none focus:border-[#4A0E17]"
+                className="w-full px-3 py-2 rounded-xl border border-[#DECFC0] font-bold text-[#24060B] bg-white focus:outline-none focus:border-[#821A2A]"
               >
                 {MOCK_PARKING_SLOTS.map((s) => (
                   <option key={s.id} value={s.id}>
@@ -357,7 +357,7 @@ function VerificationStudioContent() {
             <button
               onClick={() => setActiveTab("parking")}
               className={`flex-1 py-1.5 rounded-lg text-center cursor-pointer ${
-                activeTab === "parking" ? "bg-[#4A0E17] text-white shadow-xs font-bold" : "text-[#5C4A4D] hover:text-[#24060B]"
+                activeTab === "parking" ? "bg-[#821A2A] text-white shadow-xs font-bold" : "text-[#5C4A4D] hover:text-[#24060B]"
               }`}
             >
               Parking Deed
@@ -365,7 +365,7 @@ function VerificationStudioContent() {
             <button
               onClick={() => setActiveTab("noc")}
               className={`flex-1 py-1.5 rounded-lg text-center cursor-pointer ${
-                activeTab === "noc" ? "bg-[#4A0E17] text-white shadow-xs font-bold" : "text-[#5C4A4D] hover:text-[#24060B]"
+                activeTab === "noc" ? "bg-[#821A2A] text-white shadow-xs font-bold" : "text-[#5C4A4D] hover:text-[#24060B]"
               }`}
             >
               Bank NOC
@@ -373,7 +373,7 @@ function VerificationStudioContent() {
             <button
               onClick={() => setActiveTab("cost")}
               className={`flex-1 py-1.5 rounded-lg text-center cursor-pointer ${
-                activeTab === "cost" ? "bg-[#4A0E17] text-white shadow-xs font-bold" : "text-[#5C4A4D] hover:text-[#24060B]"
+                activeTab === "cost" ? "bg-[#821A2A] text-white shadow-xs font-bold" : "text-[#5C4A4D] hover:text-[#24060B]"
               }`}
             >
               Cost Sheet

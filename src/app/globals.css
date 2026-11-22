@@ -114,16 +114,19 @@ body {
 }
 
 .glossy-btn-burgundy {
-  background: linear-gradient(180deg, #5C121D 0%, #4A0E17 55%, #34070E 100%);
-  border-top: 1px solid rgba(255, 255, 255, 0.32);
-  border-bottom: 1px solid rgba(0, 0, 0, 0.4);
-  box-shadow: inset 0 1px 1px 0 rgba(255, 255, 255, 0.35),
-              0 8px 24px -2px rgba(74, 14, 23, 0.28),
-              0 2px 6px 0 rgba(74, 14, 23, 0.15);
+  background: linear-gradient(180deg, #992437 0%, #821A2A 50%, #6E1220 100%);
+  border-top: 1px solid rgba(255, 255, 255, 0.38);
+  border-bottom: 1px solid rgba(80, 12, 22, 0.35);
+  box-shadow: inset 0 1px 1px 0 rgba(255, 255, 255, 0.4),
+              0 6px 18px -2px rgba(130, 26, 42, 0.22),
+              0 1px 3px 0 rgba(130, 26, 42, 0.10);
 }
 
 .glossy-btn-burgundy:hover {
-  filter: brightness(1.06);
+  background: linear-gradient(180deg, #A82D42 0%, #8E1F31 50%, #781525 100%);
+  box-shadow: inset 0 1px 1px 0 rgba(255, 255, 255, 0.45),
+              0 8px 22px -2px rgba(130, 26, 42, 0.28),
+              0 2px 4px 0 rgba(130, 26, 42, 0.14);
 }
 
 .glossy-btn-ivory {

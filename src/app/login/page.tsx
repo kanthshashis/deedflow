@@ -41,7 +41,7 @@ export default function LoginPage() {
   };
 
   return (
-    <div className="min-h-screen bg-[#FAF7F2] relative flex flex-col justify-center py-12 px-4 sm:px-6 lg:px-8 selection:bg-[#4A0E17] selection:text-white font-sans text-[#24060B]">
+    <div className="min-h-screen bg-[#FAF7F2] relative flex flex-col justify-center py-12 px-4 sm:px-6 lg:px-8 selection:bg-[#821A2A] selection:text-white font-sans text-[#24060B]">
       {/* Ambient Horizon Glow */}
       <div className="absolute top-0 inset-x-0 h-[500px] pointer-events-none ambient-glow-ivory opacity-90" />
 
@@ -51,7 +51,7 @@ export default function LoginPage() {
       <div className="relative z-10 sm:mx-auto sm:w-full sm:max-w-md text-center">
         {/* Brand Badge */}
         <Link href="/" className="inline-flex items-center space-x-2.5 group">
-          <div className="w-10 h-10 rounded-xl bg-[#4A0E17] border border-[#7D1826]/40 text-[#D4B989] flex items-center justify-center font-bold shadow-xs">
+          <div className="w-10 h-10 rounded-xl bg-[#821A2A] border border-[#7D1826]/40 text-[#D4B989] flex items-center justify-center font-bold shadow-xs">
             <Building2 className="w-5 h-5 text-[#D4B989]" />
           </div>
           <span className="text-2xl font-bold tracking-tight text-[#24060B] lowercase font-sans">
@@ -85,7 +85,7 @@ export default function LoginPage() {
                 onClick={() => handleRoleSelect("super_admin")}
                 className={`py-2 px-2 rounded-lg font-semibold text-center transition-all cursor-pointer ${
                   selectedRole === "super_admin"
-                    ? "bg-[#4A0E17] text-white shadow-xs font-bold"
+                    ? "bg-[#821A2A] text-white shadow-xs font-bold"
                     : "text-[#5C4A4D] hover:text-[#24060B] hover:bg-white/60"
                 }`}
               >
@@ -96,7 +96,7 @@ export default function LoginPage() {
                 onClick={() => handleRoleSelect("project_admin")}
                 className={`py-2 px-2 rounded-lg font-semibold text-center transition-all cursor-pointer ${
                   selectedRole === "project_admin"
-                    ? "bg-[#4A0E17] text-white shadow-xs font-bold"
+                    ? "bg-[#821A2A] text-white shadow-xs font-bold"
                     : "text-[#5C4A4D] hover:text-[#24060B] hover:bg-white/60"
                 }`}
               >
@@ -107,7 +107,7 @@ export default function LoginPage() {
                 onClick={() => handleRoleSelect("project_operator")}
                 className={`py-2 px-2 rounded-lg font-semibold text-center transition-all cursor-pointer ${
                   selectedRole === "project_operator"
-                    ? "bg-[#4A0E17] text-white shadow-xs font-bold"
+                    ? "bg-[#821A2A] text-white shadow-xs font-bold"
                     : "text-[#5C4A4D] hover:text-[#24060B] hover:bg-white/60"
                 }`}
               >
@@ -144,7 +144,7 @@ export default function LoginPage() {
                 required
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
-                className="w-full px-3.5 py-2.5 rounded-xl border border-[#DECFC0] text-xs text-[#24060B] focus:outline-none focus:ring-2 focus:ring-[#4A0E17]/30 focus:border-[#4A0E17] bg-white shadow-xs"
+                className="w-full px-3.5 py-2.5 rounded-xl border border-[#DECFC0] text-xs text-[#24060B] focus:outline-none focus:ring-2 focus:ring-[#821A2A]/30 focus:border-[#821A2A] bg-white shadow-xs"
               />
             </div>
 
@@ -160,7 +160,7 @@ export default function LoginPage() {
                 required
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
-                className="w-full px-3.5 py-2.5 rounded-xl border border-[#DECFC0] text-xs text-[#24060B] focus:outline-none focus:ring-2 focus:ring-[#4A0E17]/30 focus:border-[#4A0E17] bg-white shadow-xs font-mono"
+                className="w-full px-3.5 py-2.5 rounded-xl border border-[#DECFC0] text-xs text-[#24060B] focus:outline-none focus:ring-2 focus:ring-[#821A2A]/30 focus:border-[#821A2A] bg-white shadow-xs font-mono"
               />
             </div>
 
@@ -192,7 +192,7 @@ export default function LoginPage() {
               <ShieldCheck className="w-3.5 h-3.5 text-emerald-700" />
               <span>UIDAI &amp; RERA Compliant</span>
             </span>
-            <Link href="/" className="hover:text-[#4A0E17] font-semibold transition-colors">
+            <Link href="/" className="hover:text-[#821A2A] font-semibold transition-colors">
               ← Back to Overview
             </Link>
           </div>

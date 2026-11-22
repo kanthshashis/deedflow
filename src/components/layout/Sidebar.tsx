@@ -10,13 +10,10 @@ import {
   Send,
   FileCode2,
   Car,
-  ShieldCheck,
   ChevronDown,
   Layers,
-  Sparkles,
   FileArchive,
   RotateCcw,
-  PlusCircle,
   Building2,
 } from "lucide-react";
 import clsx from "clsx";
@@ -44,7 +41,7 @@ export function Sidebar({ isOpen, onClose }: SidebarProps) {
     { href: "/dashboard", label: "Overview", icon: LayoutGrid },
     { href: "/dashboard/draft/new", label: "Verification Studio", icon: FileText, isHighlighted: true },
     { href: "/dashboard/parking", label: "Basement Grid", icon: Car },
-    { href: "/dashboard/approvals", label: "Diff Approvals", icon: RotateCcw, badge: "3", badgeColor: "bg-[#7D1826]" },
+    { href: "/dashboard/approvals", label: "Diff Approvals", icon: RotateCcw, badge: "3" },
     { href: "/dashboard/governance", label: "Data Governance", icon: Layers },
     { href: "/dashboard/batch", label: "Batch & Sale Deeds", icon: FileArchive },
     { href: "/dashboard/templates", label: "Template Linter", icon: FileCode2 },
@@ -58,22 +55,22 @@ export function Sidebar({ isOpen, onClose }: SidebarProps) {
       {isOpen && (
         <div
           onClick={onClose}
-          className="fixed inset-0 z-40 bg-black/60 backdrop-blur-xs md:hidden"
+          className="fixed inset-0 z-40 bg-black/40 backdrop-blur-xs md:hidden"
         />
       )}
 
       <aside
         className={clsx(
-          "fixed top-0 bottom-0 left-0 z-40 w-64 bg-[#1A0508] text-[#C4A9AD] flex flex-col justify-between border-r border-[#34070E] spring-snap md:translate-x-0 select-none shadow-2xl",
+          "fixed top-0 bottom-0 left-0 z-40 w-64 bg-[#FAF7F2] text-[#5C4A4D] flex flex-col justify-between border-r border-[#E8DFD3] spring-snap md:translate-x-0 select-none shadow-[1px_0_12px_rgba(74,14,23,0.02)]",
           isOpen ? "translate-x-0" : "-translate-x-full"
         )}
       >
         <div className="p-4 space-y-4 overflow-y-auto">
           {/* Top Brand Logo */}
           <div className="flex items-center space-x-2.5 px-2 pt-2">
-            <div className="w-8 h-8 rounded-xl bg-[#4A0E17] border border-[#7D1826]/50 flex items-center justify-center text-[#D4B989] shadow-inner">
+            <div className="w-8 h-8 rounded-xl bg-[#821A2A]/10 border border-[#821A2A]/20 flex items-center justify-center text-[#821A2A] shadow-2xs">
               <svg
-                className="w-5 h-5 text-[#D4B989]"
+                className="w-5 h-5 text-[#821A2A]"
                 viewBox="0 0 24 24"
                 fill="none"
                 stroke="currentColor"
@@ -84,42 +81,42 @@ export function Sidebar({ isOpen, onClose }: SidebarProps) {
                 <path d="M7 17l9.2-9.2M17 17V7H7" />
               </svg>
             </div>
-            <span className="text-xl font-bold tracking-tight text-white font-sans lowercase">
-              deedflow<span className="text-[#D4B989]">.</span>
+            <span className="text-xl font-bold tracking-tight text-[#24060B] font-sans lowercase">
+              deedflow<span className="text-[#821A2A]">.</span>
             </span>
           </div>
 
           {/* Workspace Selector Card */}
-          <div className="p-2.5 rounded-xl bg-[#28070D] border border-[#3E0C14] flex items-center justify-between text-xs text-white group cursor-pointer hover:border-[#B88E3E]/50 transition-colors">
+          <div className="p-2.5 rounded-xl bg-[#FFFDFB] border border-[#DECFC0] flex items-center justify-between text-xs text-[#24060B] group cursor-pointer hover:border-[#821A2A]/40 transition-colors shadow-2xs">
             <div className="flex items-center space-x-2.5">
-              <div className="w-7 h-7 rounded-lg bg-[#4A0E17] border border-[#7D1826]/40 flex items-center justify-center font-bold text-[#D4B989] text-xs shadow-xs">
+              <div className="w-7 h-7 rounded-lg bg-[#821A2A] flex items-center justify-center font-bold text-white text-xs shadow-xs">
                 S
               </div>
               <div className="flex flex-col text-left leading-tight">
-                <span className="text-[10px] text-[#A88C90] font-medium">Workspace</span>
-                <span className="font-semibold text-white truncate max-w-[120px]">Sobha Royal Pavilion</span>
+                <span className="text-[10px] text-[#8C777A] font-medium">Workspace</span>
+                <span className="font-semibold text-[#24060B] truncate max-w-[120px]">Sobha Royal Pavilion</span>
               </div>
             </div>
-            <ChevronDown className="w-4 h-4 text-[#A88C90] group-hover:text-white transition-colors" />
+            <ChevronDown className="w-4 h-4 text-[#8C777A] group-hover:text-[#821A2A] transition-colors" />
           </div>
 
           {/* Super-Admin Access Button if authorized or available */}
           <Link
             href="/super-admin"
-            className="p-2 rounded-xl bg-[#34070E] hover:bg-[#430B14] border border-[#4E0E19] text-xs text-[#FAF7F2] flex items-center justify-between transition-colors shadow-xs"
+            className="p-2 rounded-xl bg-[#F8F2EC] hover:bg-[#F3EAE0] border border-[#E8DFD3] text-xs text-[#24060B] flex items-center justify-between transition-colors shadow-2xs"
           >
             <div className="flex items-center space-x-2">
-              <Building2 className="w-4 h-4 text-[#D4B989]" />
-              <span className="font-semibold">Super-Admin Center</span>
+              <Building2 className="w-4 h-4 text-[#821A2A]" />
+              <span className="font-semibold text-xs">Super-Admin Center</span>
             </div>
-            <span className="text-[9px] font-mono bg-[#B88E3E]/20 text-[#E5C98F] border border-[#B88E3E]/40 px-1.5 py-0.5 rounded font-bold">
+            <span className="text-[9px] font-mono bg-[#821A2A]/10 text-[#821A2A] border border-[#821A2A]/20 px-1.5 py-0.5 rounded font-bold">
               Global
             </span>
           </Link>
 
           {/* Nav List */}
           <div className="space-y-1 pt-1">
-            <div className="px-3 pb-1.5 text-[10px] font-mono font-bold tracking-widest uppercase text-[#8C6B71]">
+            <div className="px-3 pb-1.5 text-[10px] font-mono font-bold tracking-widest uppercase text-[#8C777A]">
               Workspace Modules
             </div>
 
@@ -133,17 +130,17 @@ export function Sidebar({ isOpen, onClose }: SidebarProps) {
                   href={item.href}
                   onClick={onClose}
                   className={clsx(
-                    "flex items-center justify-between px-3 py-2 rounded-xl text-xs font-medium transition-all group",
+                    "flex items-center justify-between px-3 py-2 rounded-xl text-xs transition-all group",
                     isActive
-                      ? "bg-gradient-to-r from-[#4A0E17] to-[#34070E] text-white font-bold border border-[#7D1826]/50 shadow-xs"
-                      : "text-[#C4A9AD] hover:text-white hover:bg-[#25060B]"
+                      ? "bg-[#821A2A]/10 text-[#821A2A] font-bold border border-[#821A2A]/25 shadow-2xs"
+                      : "text-[#5C4A4D] hover:text-[#821A2A] hover:bg-[#F8F2EC] font-medium"
                   )}
                 >
                   <div className="flex items-center space-x-3">
                     <Icon
                       className={clsx(
                         "w-4 h-4 shrink-0 transition-colors",
-                        isActive ? "text-[#D4B989]" : "text-[#7D5A60] group-hover:text-[#D4B989]"
+                        isActive ? "text-[#821A2A]" : "text-[#8C777A] group-hover:text-[#821A2A]"
                       )}
                     />
                     <span>{item.label}</span>
@@ -153,7 +150,9 @@ export function Sidebar({ isOpen, onClose }: SidebarProps) {
                     <span
                       className={clsx(
                         "text-[10px] font-mono font-bold px-1.5 py-0.5 rounded-full",
-                        item.badgeColor ? `${item.badgeColor} text-white` : "bg-[#34070E] text-[#D4B989] border border-[#4E0E19]"
+                        isActive
+                          ? "bg-[#821A2A] text-white"
+                          : "bg-[#821A2A]/10 text-[#821A2A] border border-[#821A2A]/20"
                       )}
                     >
                       {item.badge}
@@ -166,21 +165,21 @@ export function Sidebar({ isOpen, onClose }: SidebarProps) {
         </div>
 
         {/* Footer: User Persona Profile Card */}
-        <div className="p-3 border-t border-[#34070E] bg-[#160406]">
-          <div className="p-2.5 rounded-xl bg-[#28070D] border border-[#3E0C14] flex items-center justify-between text-xs text-slate-300">
+        <div className="p-3 border-t border-[#E8DFD3] bg-[#FAF7F2]">
+          <div className="p-2.5 rounded-xl bg-[#FFFDFB] border border-[#DECFC0] flex items-center justify-between text-xs text-[#5C4A4D] shadow-2xs">
             <div className="flex items-center space-x-2.5">
-              <div className="w-8 h-8 rounded-full bg-[#4A0E17] border border-[#7D1826]/50 text-[#D4B989] font-bold flex items-center justify-center text-xs shadow-inner">
+              <div className="w-8 h-8 rounded-full bg-[#821A2A] text-white font-bold flex items-center justify-center text-xs shadow-xs">
                 {currentRole === "super_admin" ? "SA" : currentRole === "project_admin" ? "AM" : "OP"}
               </div>
               <div className="flex flex-col text-left leading-tight">
-                <span className="font-semibold text-white truncate max-w-[110px]">
+                <span className="font-semibold text-[#24060B] truncate max-w-[110px]">
                   {currentRole === "super_admin"
                     ? "Vikramaditya Rao"
                     : currentRole === "project_admin"
                     ? "Aidan Morgan"
                     : "Ramesh Sharma"}
                 </span>
-                <span className="text-[10px] text-[#A88C90] capitalize">
+                <span className="text-[10px] text-[#8C777A] capitalize">
                   {currentRole.replace("_", " ")}
                 </span>
               </div>
@@ -188,7 +187,7 @@ export function Sidebar({ isOpen, onClose }: SidebarProps) {
 
             <Link
               href="/login"
-              className="text-[10px] text-[#D4B989] hover:underline font-mono"
+              className="text-[10px] text-[#821A2A] hover:underline font-mono font-semibold"
               title="Switch role"
             >
               Switch

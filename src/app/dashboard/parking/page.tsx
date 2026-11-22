@@ -205,7 +205,7 @@ export default function ParkingDashboardPage() {
                 }}
                 className={`px-4 py-2 rounded-lg font-bold transition-all cursor-pointer ${
                   activeLevel === lvl
-                    ? "bg-[#4A0E17] text-white shadow-xs font-bold"
+                    ? "bg-[#821A2A] text-white shadow-xs font-bold"
                     : "text-[#5C4A4D] hover:text-[#24060B] hover:bg-white/60"
                 }`}
               >
@@ -225,7 +225,7 @@ export default function ParkingDashboardPage() {
               <span className="font-semibold text-[#5C4A4D]">Reserved ({reservedCount})</span>
             </span>
             <span className="flex items-center space-x-1.5">
-              <span className="w-3 h-3 rounded bg-[#4A0E17]" />
+              <span className="w-3 h-3 rounded bg-[#821A2A]" />
               <span className="font-semibold text-[#5C4A4D]">Allotted ({allottedCount})</span>
             </span>
           </div>
@@ -250,7 +250,7 @@ export default function ParkingDashboardPage() {
                     ? "bg-[#FFF9EE] border-[#F2E4C4] hover:border-[#B88E3E]"
                     : "bg-[#FAF7F2] border-[#DECFC0] hover:border-[#8C777A]"
                 } ${
-                  isSelected ? "ring-3 ring-[#4A0E17] ring-offset-2 border-transparent shadow-md" : ""
+                  isSelected ? "ring-3 ring-[#821A2A] ring-offset-2 border-transparent shadow-md" : ""
                 }`}
               >
                 {/* Header: Slot No & Level */}
@@ -270,7 +270,7 @@ export default function ParkingDashboardPage() {
                   {isAllotted ? (
                     <div className="space-y-0.5">
                       <div className="text-xs font-bold text-[#24060B] flex items-center space-x-1">
-                        <CheckCircle2 className="w-3.5 h-3.5 text-[#4A0E17] shrink-0" />
+                        <CheckCircle2 className="w-3.5 h-3.5 text-[#821A2A] shrink-0" />
                         <span className="truncate">Flat {slot.allottedUnitFlat}</span>
                       </div>
                       <span className="text-[10px] font-mono text-[#8C777A] block">Locked</span>

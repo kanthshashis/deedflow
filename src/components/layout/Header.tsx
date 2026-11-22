@@ -57,7 +57,7 @@ export function Header({ onToggleMobileMenu, isMobileMenuOpen }: HeaderProps) {
 
           <Link
             href="/login"
-            className="w-8 h-8 rounded-full bg-[#4A0E17] text-[#FAF7F2] border border-[#7D1826]/30 flex items-center justify-center font-bold text-xs shadow-2xs hover:ring-2 hover:ring-[#B88E3E]/60 transition-all"
+            className="w-8 h-8 rounded-full bg-[#821A2A] text-white border border-[#821A2A]/30 flex items-center justify-center font-bold text-xs shadow-2xs hover:ring-2 hover:ring-[#821A2A]/40 transition-all"
             title="Switch User Role / Logout"
           >
             {role === "super_admin" ? "SA" : role === "project_admin" ? "AM" : "OP"}
