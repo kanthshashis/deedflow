@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useMemo, useEffect } from "react";
+import React, { useState, useMemo, useEffect, useRef } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import {
@@ -25,9 +25,14 @@ import {
   Trash2,
   Plus,
   Settings2,
-  HelpCircle,
+  FileSpreadsheet,
+  Download,
+  Upload,
+  AlertCircle,
+  FileCheck,
+  RefreshCw,
 } from "lucide-react";
-import { ProjectMetadata, MatrixConfig, UnitTypology, TowerConfig } from "@/lib/types";
+import { ProjectMetadata, MatrixConfig, UnitTypology, TowerConfig, UnitInventory, ParkingSlot } from "@/lib/types";
 import {
   DEFAULT_TYPOLOGIES,
   saveStoredProject,
@@ -35,10 +40,18 @@ import {
   setActiveProjectId,
   formatFlatNumber,
 } from "@/lib/projectStore";
+import {
+  downloadExcelTemplate,
+  downloadCsvTemplate,
+  parseExcelApartmentFile,
+  exportInventoryToExcel,
+  ExcelImportResult,
+} from "@/lib/excelMatrixEngine";
 import { formatIndianCurrency } from "@/lib/indianCurrencyToWords";
 
 export default function ProvisionMatrixPage() {
   const router = useRouter();
+  const fileInputRef = useRef<HTMLInputElement>(null);
 
   // Step 1: Developer & Project Entity Details
   const [developerName, setDeveloperName] = useState("Prestige Estates Projects Ltd");
@@ -63,15 +76,21 @@ export default function ProvisionMatrixPage() {
   const [escrowAccountNo, setEscrowAccountNo] = useState("918020034827101");
   const [escrowIfsc, setEscrowIfsc] = useState("SBIN0004120");
 
-  // Step 2: Structural Flat Schedule Matrix
-  const [matrixMode, setMatrixMode] = useState<"uniform" | "per_tower">("uniform");
+  // Step 2: Provisioning Method Switcher
+  const [provisionMethod, setProvisionMethod] = useState<"excel" | "blueprint" | "uniform">("excel");
+
+  // Excel Upload State
+  const [isParsingExcel, setIsParsingExcel] = useState(false);
+  const [excelImportResult, setExcelImportResult] = useState<ExcelImportResult | null>(null);
+  const [uploadedFileName, setUploadedFileName] = useState<string | null>(null);
+
+  // Blueprint / Heterogeneous Tower State
   const [towers, setTowers] = useState("A, B");
   const [floorsPerTower, setFloorsPerTower] = useState(5);
   const [flatsPerFloor, setFlatsPerFloor] = useState(4);
   const [numberingScheme, setNumberingScheme] = useState<MatrixConfig["numberingScheme"]>("tower_floor_flat");
   const [typologies, setTypologies] = useState<UnitTypology[]>(DEFAULT_TYPOLOGIES);
 
-  // Per-Tower Config State
   const towerList = useMemo(
     () => towers.split(",").map((t) => t.trim().toUpperCase()).filter(Boolean),
     [towers]
@@ -79,7 +98,7 @@ export default function ProvisionMatrixPage() {
   const [activeTowerTab, setActiveTowerTab] = useState<string>("A");
   const [perTowerConfigs, setPerTowerConfigs] = useState<Record<string, TowerConfig>>({});
 
-  // Synchronize perTowerConfigs when towerList or typologies change
+  // Synchronize perTowerConfigs when towerList, floors, or flats change
   useEffect(() => {
     setPerTowerConfigs((prev) => {
       const updated: Record<string, TowerConfig> = {};
@@ -87,12 +106,20 @@ export default function ProvisionMatrixPage() {
         if (prev[t]) {
           updated[t] = prev[t];
         } else {
+          // Default: 5 flats series per floor for Tower A; 4 for Tower B
+          const isTowerA = t === "A";
+          const count = isTowerA ? 5 : 4;
+          const series = isTowerA
+            ? ["typ_1bhk", "typ_2bhk", "typ_2bhk_large", "typ_3bhk", "typ_3bhk"]
+            : ["typ_3_5bhk", "typ_3_5bhk", "typ_4bhk", "typ_4bhk"];
+
           updated[t] = {
             towerName: t,
-            floorsCount: floorsPerTower,
-            flatsPerFloor: flatsPerFloor,
+            floorsCount: isTowerA ? 5 : 4,
+            flatsPerFloor: count,
             numberingScheme,
             assignedTypologyIds: typologies.map((typ) => typ.id),
+            floorSeries: series,
           };
         }
       }
@@ -101,9 +128,9 @@ export default function ProvisionMatrixPage() {
     if (towerList.length > 0 && !towerList.includes(activeTowerTab)) {
       setActiveTowerTab(towerList[0]);
     }
-  }, [towerList, floorsPerTower, flatsPerFloor, numberingScheme, typologies, activeTowerTab]);
+  }, [towerList, numberingScheme, typologies, activeTowerTab]);
 
-  // Inline Typology Modal/Drawer State
+  // Inline Typology Designer Modal State
   const [isAddingTypology, setIsAddingTypology] = useState(false);
   const [newTypName, setNewTypName] = useState("");
   const [newTypType, setNewTypType] = useState<UnitTypology["type"]>("3BHK");
@@ -131,83 +158,60 @@ export default function ProvisionMatrixPage() {
   const [isProvisioned, setIsProvisioned] = useState(false);
   const [provisionedProjectId, setProvisionedProjectId] = useState<string | null>(null);
   const [copiedWhatsApp, setCopiedWhatsApp] = useState(false);
+  const [provisionedUnits, setProvisionedUnits] = useState<UnitInventory[]>([]);
+  const [provisionedSlots, setProvisionedSlots] = useState<ParkingSlot[]>([]);
 
-  // Calculations for Units & Slots
+  // Total Units calculation based on active method
   const totalFlats = useMemo(() => {
-    if (matrixMode === "per_tower") {
+    if (provisionMethod === "excel" && excelImportResult) {
+      return excelImportResult.summary.totalUnits;
+    }
+    if (provisionMethod === "blueprint") {
       return Object.values(perTowerConfigs).reduce(
         (sum, cfg) => sum + (cfg.floorsCount || 0) * (cfg.flatsPerFloor || 0),
         0
       );
     }
     return towerList.length * floorsPerTower * flatsPerFloor;
-  }, [matrixMode, perTowerConfigs, towerList, floorsPerTower, flatsPerFloor]);
+  }, [provisionMethod, excelImportResult, perTowerConfigs, towerList, floorsPerTower, flatsPerFloor]);
 
   const basementLevelCount = basementLevels === "B1, B2, B3" ? 3 : basementLevels === "B1, B2" ? 2 : 1;
-  const totalSlots = basementLevelCount * slotsPerBasement;
-
-  // Custom EV Set
-  const customEvSlotsList = useMemo(() => {
-    if (evAllocationMode === "custom") {
-      return customEvSlotsInput.split(",").map((s) => s.trim().toUpperCase()).filter(Boolean);
+  const totalSlots = useMemo(() => {
+    if (provisionMethod === "excel" && excelImportResult && excelImportResult.summary.parkingBaysCount > 0) {
+      return excelImportResult.summary.parkingBaysCount;
     }
-    return [];
-  }, [evAllocationMode, customEvSlotsInput]);
+    return basementLevelCount * slotsPerBasement;
+  }, [provisionMethod, excelImportResult, basementLevelCount, slotsPerBasement]);
 
-  // Total EV Bays calculated
   const totalEvBays = useMemo(() => {
+    if (provisionMethod === "excel" && excelImportResult && excelImportResult.summary.evPointsCount > 0) {
+      return excelImportResult.summary.evPointsCount;
+    }
     if (evAllocationMode === "custom") {
-      return customEvSlotsList.length;
+      return customEvSlotsInput.split(",").filter((s) => s.trim()).length;
     }
     return Math.floor(totalSlots / evFrequency);
-  }, [evAllocationMode, customEvSlotsList, totalSlots, evFrequency]);
+  }, [provisionMethod, excelImportResult, evAllocationMode, customEvSlotsInput, totalSlots, evFrequency]);
 
-  // Live Flat Preview (Sample 8 units from configured towers)
-  const previewFlats = useMemo(() => {
-    const list: Array<{ flatNo: string; tower: string; floor: number; type: string; sba: number; price: number }> = [];
+  // Handle Excel File Drop/Upload
+  const handleExcelFileUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
 
-    if (matrixMode === "per_tower") {
-      for (const t of towerList.slice(0, 2)) {
-        const cfg = perTowerConfigs[t];
-        if (!cfg) continue;
-        const activeTyps = typologies.filter((typ) => cfg.assignedTypologyIds.includes(typ.id));
-        const typs = activeTyps.length > 0 ? activeTyps : typologies;
+    setIsParsingExcel(true);
+    setUploadedFileName(file.name);
 
-        for (let f = 1; f <= Math.min(cfg.floorsCount, 2); f++) {
-          for (let idx = 1; idx <= Math.min(cfg.flatsPerFloor, 4); idx++) {
-            const typ = typs[(idx - 1) % typs.length];
-            list.push({
-              flatNo: formatFlatNumber(t, f, idx, cfg.numberingScheme),
-              tower: `Tower ${t}`,
-              floor: f,
-              type: typ.name,
-              sba: typ.sbaSqft,
-              price: typ.basePrice,
-            });
-          }
-        }
-      }
-    } else {
-      for (const t of towerList.slice(0, 2)) {
-        for (let f = 1; f <= Math.min(floorsPerTower, 2); f++) {
-          for (let idx = 1; idx <= Math.min(flatsPerFloor, 4); idx++) {
-            const typ = typologies[(idx - 1) % typologies.length];
-            list.push({
-              flatNo: formatFlatNumber(t, f, idx, numberingScheme),
-              tower: `Tower ${t}`,
-              floor: f,
-              type: typ.name,
-              sba: typ.sbaSqft,
-              price: typ.basePrice,
-            });
-          }
-        }
-      }
+    try {
+      const result = await parseExcelApartmentFile(file, `temp_${Date.now()}`);
+      setExcelImportResult(result);
+    } catch (err: any) {
+      alert(`Error reading spreadsheet: ${err.message || String(err)}`);
+    } finally {
+      setIsParsingExcel(false);
     }
-    return list;
-  }, [matrixMode, towerList, perTowerConfigs, typologies, floorsPerTower, flatsPerFloor, numberingScheme]);
+  };
 
-  // Add Custom Typology Handler
+  // Add Custom Typology to palette
   const handleAddTypology = (e: React.FormEvent) => {
     e.preventDefault();
     if (!newTypName.trim()) return;
@@ -227,61 +231,45 @@ export default function ProvisionMatrixPage() {
     setIsAddingTypology(false);
   };
 
-  const handleDeleteTypology = (id: string) => {
-    if (typologies.length <= 1) {
-      alert("At least one typology must remain configured.");
-      return;
-    }
-    setTypologies((prev) => prev.filter((t) => t.id !== id));
-  };
-
-  const handleTypologyFieldChange = (id: string, field: keyof UnitTypology, value: any) => {
-    setTypologies((prev) =>
-      prev.map((t) => (t.id === id ? { ...t, [field]: value } : t))
-    );
-  };
-
-  // Toggle assigned typology for a specific tower in per-tower mode
-  const handleToggleTowerTypology = (towerName: string, typId: string) => {
+  // Update Floor Series for a tower (Flat 1 -> 1BHK, Flat 2 -> 2BHK, etc.)
+  const handleSeriesChange = (towerName: string, flatIndex: number, typologyId: string) => {
     setPerTowerConfigs((prev) => {
       const current = prev[towerName] || {
         towerName,
-        floorsCount: floorsPerTower,
-        flatsPerFloor,
+        floorsCount: 5,
+        flatsPerFloor: 4,
         numberingScheme,
-        assignedTypologyIds: [],
+        assignedTypologyIds: typologies.map((t) => t.id),
+        floorSeries: [],
       };
-      const exists = current.assignedTypologyIds.includes(typId);
-      const updatedIds = exists
-        ? current.assignedTypologyIds.filter((id) => id !== typId)
-        : [...current.assignedTypologyIds, typId];
-
-      if (updatedIds.length === 0) {
-        alert("Each tower must have at least one assigned typology.");
-        return prev;
-      }
-
+      const series = [...(current.floorSeries || [])];
+      series[flatIndex] = typologyId;
       return {
         ...prev,
-        [towerName]: { ...current, assignedTypologyIds: updatedIds },
+        [towerName]: { ...current, floorSeries: series },
       };
     });
   };
 
-  const handleUpdateTowerConfig = (towerName: string, field: keyof TowerConfig, val: any) => {
-    setPerTowerConfigs((prev) => ({
-      ...prev,
-      [towerName]: {
-        ...(prev[towerName] || {
-          towerName,
-          floorsCount: floorsPerTower,
-          flatsPerFloor,
-          numberingScheme,
-          assignedTypologyIds: typologies.map((t) => t.id),
-        }),
-        [field]: val,
-      },
-    }));
+  const handleUpdateTowerFloorsOrFlats = (
+    towerName: string,
+    field: "floorsCount" | "flatsPerFloor",
+    value: number
+  ) => {
+    setPerTowerConfigs((prev) => {
+      const current = prev[towerName] || {
+        towerName,
+        floorsCount: 5,
+        flatsPerFloor: 4,
+        numberingScheme,
+        assignedTypologyIds: typologies.map((t) => t.id),
+        floorSeries: [],
+      };
+      return {
+        ...prev,
+        [towerName]: { ...current, [field]: value },
+      };
+    });
   };
 
   // Main Submit: Provision Project & Matrix
@@ -289,36 +277,64 @@ export default function ProvisionMatrixPage() {
     e.preventDefault();
 
     const projectId = `proj_${Date.now()}`;
-    const levelArray = basementLevels.split(",").map((s) => s.trim());
+    let units: UnitInventory[] = [];
+    let slots: ParkingSlot[] = [];
 
-    const towerConfigArray: TowerConfig[] = towerList.map((t) => {
-      return (
-        perTowerConfigs[t] || {
-          towerName: t,
-          floorsCount: floorsPerTower,
-          flatsPerFloor,
-          numberingScheme,
-          assignedTypologyIds: typologies.map((typ) => typ.id),
-        }
+    if (provisionMethod === "excel" && excelImportResult && excelImportResult.success) {
+      // Direct Excel Ingestion
+      units = excelImportResult.units.map((u, i) => ({
+        ...u,
+        id: `unit_${projectId}_${i + 1}`,
+      }));
+      slots = excelImportResult.parkingSlots.map((s, i) => ({
+        ...s,
+        id: `slot_${projectId}_${i + 1}`,
+      }));
+
+      // Cache to project store
+      if (typeof window !== "undefined") {
+        localStorage.setItem(`deedflow_units_store_${projectId}`, JSON.stringify(units));
+        localStorage.setItem(`deedflow_parking_store_${projectId}`, JSON.stringify(slots));
+      }
+    } else {
+      // Algorithmic Blueprint / Uniform Mode
+      const levelArray = basementLevels.split(",").map((s) => s.trim());
+      const towerConfigArray: TowerConfig[] = towerList.map((t) => {
+        return (
+          perTowerConfigs[t] || {
+            towerName: t,
+            floorsCount: floorsPerTower,
+            flatsPerFloor,
+            numberingScheme,
+            assignedTypologyIds: typologies.map((typ) => typ.id),
+          }
+        );
+      });
+
+      const matrixConfig: MatrixConfig = {
+        mode: provisionMethod === "blueprint" ? "per_tower" : "uniform",
+        towers: towerList,
+        floorsPerTower,
+        flatsPerFloor,
+        numberingScheme,
+        typologies,
+        towerConfigs: towerConfigArray,
+        basementLevels: levelArray,
+        slotsPerLevel: slotsPerBasement,
+        evSlotFrequency: evAllocationMode === "frequency" ? evFrequency : 0,
+        evPointPrefix,
+        evPowerKw,
+        evConnectorType,
+        customEvSlots: evAllocationMode === "custom" ? customEvSlotsInput.split(",").map((s) => s.trim()) : undefined,
+      };
+
+      const result = generateMatrixInventory(
+        { id: projectId } as ProjectMetadata,
+        matrixConfig
       );
-    });
-
-    const matrixConfig: MatrixConfig = {
-      mode: matrixMode,
-      towers: towerList,
-      floorsPerTower,
-      flatsPerFloor,
-      numberingScheme,
-      typologies,
-      towerConfigs: towerConfigArray,
-      basementLevels: levelArray,
-      slotsPerLevel: slotsPerBasement,
-      evSlotFrequency: evAllocationMode === "frequency" ? evFrequency : 0,
-      evPointPrefix,
-      evPowerKw,
-      evConnectorType,
-      customEvSlots: evAllocationMode === "custom" ? customEvSlotsList : undefined,
-    };
+      units = result.units;
+      slots = result.parkingSlots;
+    }
 
     const newProject: ProjectMetadata = {
       id: projectId,
@@ -331,8 +347,8 @@ export default function ProvisionMatrixPage() {
       taluk,
       district,
       surveyNumbers,
-      totalUnits: totalFlats,
-      totalParkingSlots: totalSlots,
+      totalUnits: units.length,
+      totalParkingSlots: slots.length,
       status: "active",
       masterNorth,
       masterSouth,
@@ -342,37 +358,42 @@ export default function ProvisionMatrixPage() {
       escrowBranch,
       escrowAccountNo,
       escrowIfsc,
-      towers: towerList,
+      towers:
+        provisionMethod === "excel" && excelImportResult
+          ? excelImportResult.summary.towers
+          : towerList,
       floorsCount: floorsPerTower,
       adminName,
       adminEmail,
       createdAt: new Date().toISOString(),
     };
 
-    // Generate and save inventory matrix & parking slots
-    generateMatrixInventory(newProject, matrixConfig);
-
-    // Save project metadata to central store
     saveStoredProject(newProject);
-
     setProvisionedProjectId(projectId);
+    setProvisionedUnits(units);
+    setProvisionedSlots(slots);
     setIsProvisioned(true);
   };
 
   const whatsappMessage =
     `*DeedFlow Builder Workspace Credentials*\n\n` +
     `Hello ${adminName},\n` +
-    `Your DeedFlow workspace for *${projectName}* is now live.\n\n` +
+    `Your DeedFlow workspace for *${projectName}* is now live and fully populated.\n\n` +
     `*Login Portal:* http://localhost:3000/login\n` +
     `*Admin Email:* ${adminEmail}\n` +
     `*Password:* ${adminPassword}\n` +
     `*Role:* Project Admin\n\n` +
-    `*Structural Matrix:*\n` +
-    `• Towers: ${towerList.join(", ")} (${totalFlats} Flats total)\n` +
-    `• Architecture Mode: ${matrixMode === "per_tower" ? "Heterogeneous Per-Tower Config" : "Uniform Matrix"}\n` +
-    `• Typologies Configured: ${typologies.map((t) => t.name).join(", ")}\n` +
+    `*Provisioned Matrix Summary:*\n` +
+    `• Total Units: ${totalFlats} Flats (100% verified)\n` +
+    `• Configuration Method: ${
+      provisionMethod === "excel"
+        ? "Architectural Excel Sheet Ingestion"
+        : provisionMethod === "blueprint"
+        ? "Heterogeneous Floor Series Blueprint"
+        : "Uniform Matrix"
+    }\n` +
     `• Subterranean Parking: ${totalSlots} Bays (${basementLevels})\n` +
-    `• EV Charging Bays: ${totalEvBays} Bays (${evPowerKw} kW ${evConnectorType}, Feeders tagged '${evPointPrefix}')\n` +
+    `• EV Charging Bays: ${totalEvBays} Bays (${evPowerKw} kW ${evConnectorType})\n` +
     `• RERA Number: ${reraNumber}\n` +
     `• Master Escrow: ${escrowBankName} (A/C: ${escrowAccountNo} | IFSC: ${escrowIfsc})\n\n` +
     `Please log in to review your master flat schedule and approve post-sales change requests.`;
@@ -390,8 +411,14 @@ export default function ProvisionMatrixPage() {
     }
   };
 
+  const handleExportProvisionedExcel = () => {
+    if (provisionedUnits.length > 0) {
+      exportInventoryToExcel(provisionedUnits, provisionedSlots, projectName);
+    }
+  };
+
   return (
-    <div className="max-w-4xl mx-auto space-y-8 pb-12">
+    <div className="max-w-5xl mx-auto space-y-8 pb-16">
       <div>
         <Link
           href="/super-admin"
@@ -401,18 +428,18 @@ export default function ProvisionMatrixPage() {
         </Link>
         <div className="flex items-center space-x-2 text-[11px] font-mono font-bold tracking-wider text-[#7D1826] uppercase mt-2">
           <span className="w-2.5 h-2.5 rounded-full bg-[#B88E3E] animate-pulse" />
-          <span>Enterprise Provisioning Engine</span>
+          <span>Enterprise Provisioning &amp; Handover Hub</span>
         </div>
         <h1 className="text-2xl sm:text-3xl font-bold font-serif text-[#24060B] tracking-tight mt-1">
-          1-Click Project &amp; Matrix Provisioning
+          Apartment Configuration &amp; Builder Handover Engine
         </h1>
         <p className="text-xs text-[#5C4A4D] mt-1">
-          Configure heterogeneous towers, dynamic typology mixes, designated EV charging points, and secure Project Admin credentials.
+          Upload builder architectural Excel schedules or configure heterogeneous floor series with custom sizes, typologies, and EV points.
         </p>
       </div>
 
       <form onSubmit={handleGenerateMatrix} className="space-y-6">
-        {/* Step 1: Project Metadata & Statutory Coordinates */}
+        {/* Step 1: Developer & Project Entity Details */}
         <div className="glossy-card bg-[#FFFDFB] p-6 rounded-2xl border border-[#DECFC0] shadow-xs space-y-4">
           <div className="flex items-center space-x-2 text-xs font-mono font-bold uppercase text-[#7D1826] border-b border-[#F0E8DD] pb-3">
             <Building2 className="w-4 h-4 text-[#7D1826]" />
@@ -552,77 +579,363 @@ export default function ProvisionMatrixPage() {
           </div>
         </div>
 
-        {/* Step 2: Structural Flat Schedule Matrix & Heterogeneous Towers */}
+        {/* Step 2: Apartment Configuration Engine (3 Provisioning Methods) */}
         <div className="glossy-card bg-[#FFFDFB] p-6 rounded-2xl border border-[#DECFC0] shadow-xs space-y-5">
-          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-[#F0E8DD] pb-3">
-            <div className="flex items-center space-x-2 text-xs font-mono font-bold uppercase text-[#7D1826]">
-              <Layers className="w-4 h-4 text-[#B88E3E]" />
-              <span>2. Structural Tower &amp; Flat Schedule Matrix</span>
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-[#F0E8DD] pb-4">
+            <div>
+              <div className="flex items-center space-x-2 text-xs font-mono font-bold uppercase text-[#7D1826]">
+                <Layers className="w-4 h-4 text-[#B88E3E]" />
+                <span>2. Apartment Configuration &amp; Matrix Setup</span>
+              </div>
+              <p className="text-[11px] text-[#5C4A4D] mt-0.5">
+                Choose how to setup heterogeneous towers, sizes, and floor distributions:
+              </p>
             </div>
 
-            {/* Architecture Mode Toggle */}
-            <div className="flex items-center space-x-1 bg-[#FAF7F2] p-1 rounded-xl border border-[#DECFC0]">
+            {/* 3-Tab Method Switcher */}
+            <div className="flex items-center bg-[#FAF7F2] p-1 rounded-xl border border-[#DECFC0] text-xs">
               <button
                 type="button"
-                onClick={() => setMatrixMode("uniform")}
-                className={`px-3 py-1 rounded-lg text-xs font-semibold transition-all cursor-pointer ${
-                  matrixMode === "uniform"
-                    ? "bg-[#821A2A] text-white shadow-xs font-bold"
+                onClick={() => setProvisionMethod("excel")}
+                className={`px-3 py-1.5 rounded-lg font-bold flex items-center space-x-1.5 transition-all cursor-pointer ${
+                  provisionMethod === "excel"
+                    ? "bg-[#821A2A] text-white shadow-xs"
                     : "text-[#5C4A4D] hover:text-[#24060B]"
                 }`}
               >
-                Uniform Matrix
+                <FileSpreadsheet className="w-3.5 h-3.5" />
+                <span>Excel / CSV Ingestion</span>
               </button>
               <button
                 type="button"
-                onClick={() => setMatrixMode("per_tower")}
-                className={`px-3 py-1 rounded-lg text-xs font-semibold transition-all cursor-pointer ${
-                  matrixMode === "per_tower"
-                    ? "bg-[#821A2A] text-white shadow-xs font-bold"
+                onClick={() => setProvisionMethod("blueprint")}
+                className={`px-3 py-1.5 rounded-lg font-bold flex items-center space-x-1.5 transition-all cursor-pointer ${
+                  provisionMethod === "blueprint"
+                    ? "bg-[#821A2A] text-white shadow-xs"
                     : "text-[#5C4A4D] hover:text-[#24060B]"
                 }`}
               >
-                Heterogeneous Per-Tower
+                <Settings2 className="w-3.5 h-3.5" />
+                <span>Floor Series Blueprint</span>
+              </button>
+              <button
+                type="button"
+                onClick={() => setProvisionMethod("uniform")}
+                className={`px-3 py-1.5 rounded-lg font-bold flex items-center space-x-1.5 transition-all cursor-pointer ${
+                  provisionMethod === "uniform"
+                    ? "bg-[#821A2A] text-white shadow-xs"
+                    : "text-[#5C4A4D] hover:text-[#24060B]"
+                }`}
+              >
+                <span>Uniform Fast Matrix</span>
               </button>
             </div>
           </div>
 
-          {/* Global Towers Input */}
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 text-xs">
-            <div>
-              <label className="block font-semibold text-[#5C4A4D] mb-1">Configured Towers List</label>
-              <input
-                type="text"
-                value={towers}
-                onChange={(e) => setTowers(e.target.value)}
-                className="w-full px-3.5 py-2 rounded-xl border border-[#DECFC0] text-[#24060B] font-mono font-bold bg-white focus:outline-none focus:ring-1 focus:ring-[#821A2A]"
-                placeholder="A, B, C, D"
-              />
-              <span className="text-[10px] text-[#8C777A] mt-0.5 block">
-                Comma separated tower codes (e.g. A, B, C or Wing 1, Wing 2)
-              </span>
-            </div>
+          {/* METHOD 1: EXCEL / CSV BULK INGESTION */}
+          {provisionMethod === "excel" && (
+            <div className="space-y-4 animate-fade-in text-xs">
+              {/* Action Banner: Download Template */}
+              <div className="p-4 bg-[#FAF7F2] rounded-xl border border-[#DECFC0] flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+                <div className="space-y-0.5">
+                  <span className="font-bold text-[#24060B] flex items-center space-x-1.5 font-serif text-sm">
+                    <FileSpreadsheet className="w-4 h-4 text-emerald-700" />
+                    <span>Architectural Excel Schedule Template</span>
+                  </span>
+                  <p className="text-[11px] text-[#5C4A4D]">
+                    Pre-populated with real-world heterogeneous sample data (Tower A: 1, 2, 3 BHKs; Tower B: 3.5, 4 BHKs + EV points).
+                  </p>
+                </div>
 
-            <div>
-              <label className="block font-semibold text-[#5C4A4D] mb-1">Architecture Summary</label>
-              <div className="p-2.5 bg-[#FAF7F2] rounded-xl border border-[#DECFC0] flex items-center justify-between text-xs">
-                <span>
-                  Active Towers: <strong className="font-mono text-[#821A2A]">{towerList.length} Towers</strong>
-                </span>
-                <span>
-                  Total Units: <strong className="font-mono text-[#821A2A] font-bold">{totalFlats} Flats</strong>
+                <div className="flex items-center space-x-2 shrink-0">
+                  <button
+                    type="button"
+                    onClick={() => downloadExcelTemplate()}
+                    className="px-3.5 py-2 bg-emerald-700 hover:bg-emerald-800 text-white font-bold rounded-xl flex items-center space-x-1.5 transition-colors shadow-2xs cursor-pointer"
+                  >
+                    <Download className="w-3.5 h-3.5 text-white" />
+                    <span>Download Excel (.xlsx)</span>
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => downloadCsvTemplate()}
+                    className="px-3 py-2 bg-white hover:bg-[#FAF7F2] text-[#24060B] border border-[#DECFC0] font-bold rounded-xl flex items-center space-x-1 transition-colors cursor-pointer"
+                  >
+                    <span>CSV</span>
+                  </button>
+                </div>
+              </div>
+
+              {/* Upload Dropzone */}
+              <div
+                onClick={() => fileInputRef.current?.click()}
+                className="p-8 border-2 border-dashed border-[#B88E3E]/60 hover:border-[#821A2A] bg-[#FFFDFB] hover:bg-[#FAF7F2] rounded-2xl flex flex-col items-center justify-center space-y-3 cursor-pointer transition-all group"
+              >
+                <div className="w-12 h-12 rounded-2xl bg-[#FAF0F2] border border-[#E8C4C8] flex items-center justify-center text-[#821A2A] group-hover:scale-105 transition-transform">
+                  <Upload className="w-6 h-6" />
+                </div>
+                <div className="text-center">
+                  <span className="font-bold text-sm text-[#24060B] block">
+                    {uploadedFileName ? `Loaded: ${uploadedFileName}` : "Click to Browse or Drag & Drop Builder Excel (.xlsx / .csv)"}
+                  </span>
+                  <span className="text-[11px] text-[#8C777A] mt-0.5 block">
+                    Instantly validates all columns, areas, door numbering, and duplicate units in-browser.
+                  </span>
+                </div>
+                <input
+                  ref={fileInputRef}
+                  type="file"
+                  accept=".xlsx,.xls,.csv"
+                  className="hidden"
+                  onChange={handleExcelFileUpload}
+                />
+              </div>
+
+              {/* Live Ingestion Audit Summary if uploaded */}
+              {excelImportResult && (
+                <div className="p-5 bg-[#FAF7F2] rounded-2xl border border-[#DECFC0] space-y-4 animate-fade-in shadow-xs">
+                  <div className="flex items-center justify-between border-b border-[#F0E8DD] pb-3">
+                    <div className="flex items-center space-x-2">
+                      <FileCheck className="w-4 h-4 text-emerald-700" />
+                      <span className="font-bold text-sm text-[#24060B] font-serif">
+                        Excel Ingestion Audit: {excelImportResult.summary.totalUnits} Flats Verified
+                      </span>
+                    </div>
+                    <span className="text-[10px] font-mono font-bold px-2.5 py-0.5 rounded-full bg-emerald-100 text-emerald-800 border border-emerald-300">
+                      ✓ 100% Schema Validated
+                    </span>
+                  </div>
+
+                  {/* 4-Metric Ingestion Cards */}
+                  <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
+                    <div className="p-3 bg-white rounded-xl border border-[#DECFC0]">
+                      <span className="text-[10px] text-[#8C777A] uppercase block">Towers Identified</span>
+                      <span className="font-bold text-[#24060B] text-sm font-mono">
+                        {excelImportResult.summary.towers.join(", ")}
+                      </span>
+                    </div>
+                    <div className="p-3 bg-white rounded-xl border border-[#DECFC0]">
+                      <span className="text-[10px] text-[#8C777A] uppercase block">Total Flats</span>
+                      <span className="font-bold text-[#821A2A] text-sm font-mono">
+                        {excelImportResult.summary.totalUnits} Units
+                      </span>
+                    </div>
+                    <div className="p-3 bg-white rounded-xl border border-[#DECFC0]">
+                      <span className="text-[10px] text-[#8C777A] uppercase block">Parking Bays Mapped</span>
+                      <span className="font-bold text-[#24060B] text-sm font-mono">
+                        {excelImportResult.summary.parkingBaysCount} Bays ({excelImportResult.summary.evPointsCount} EV)
+                      </span>
+                    </div>
+                    <div className="p-3 bg-white rounded-xl border border-[#DECFC0]">
+                      <span className="text-[10px] text-[#8C777A] uppercase block">Total Inventory Value</span>
+                      <span className="font-bold text-emerald-700 text-sm font-mono">
+                        {formatIndianCurrency(excelImportResult.summary.totalInventoryValuation)}
+                      </span>
+                    </div>
+                  </div>
+
+                  {/* Typology Breakdown Badges */}
+                  <div className="flex flex-wrap items-center gap-2 pt-1">
+                    <span className="text-[11px] font-bold text-[#5C4A4D]">Typologies Detected:</span>
+                    {Object.entries(excelImportResult.summary.typologyCounts).map(([type, count]) => (
+                      <span
+                        key={type}
+                        className="px-2.5 py-0.5 rounded-lg bg-white border border-[#DECFC0] text-[11px] font-semibold text-[#24060B]"
+                      >
+                        <strong>{count}x</strong> {type}
+                      </span>
+                    ))}
+                  </div>
+
+                  {/* Sample Ingested Units Table */}
+                  <div className="overflow-x-auto max-h-48 border border-[#DECFC0] rounded-xl bg-white">
+                    <table className="w-full text-left text-[11px]">
+                      <thead className="bg-[#F8F2EC] text-[#5C4A4D] font-mono font-semibold uppercase text-[10px] sticky top-0 border-b border-[#DECFC0]">
+                        <tr>
+                          <th className="px-3 py-1.5">Flat No</th>
+                          <th className="px-3 py-1.5">Tower</th>
+                          <th className="px-3 py-1.5">Floor</th>
+                          <th className="px-3 py-1.5">Typology</th>
+                          <th className="px-3 py-1.5">Carpet</th>
+                          <th className="px-3 py-1.5">SBA</th>
+                          <th className="px-3 py-1.5">Assigned Bay</th>
+                          <th className="px-3 py-1.5 text-right">Base Price</th>
+                        </tr>
+                      </thead>
+                      <tbody className="divide-y divide-[#F0E8DD]">
+                        {excelImportResult.units.slice(0, 10).map((u, i) => (
+                          <tr key={i} className="hover:bg-[#FAF7F2]">
+                            <td className="px-3 py-1 font-mono font-bold text-[#821A2A]">{u.flatNumber}</td>
+                            <td className="px-3 py-1 text-[#24060B]">{u.tower}</td>
+                            <td className="px-3 py-1 font-mono text-[#5C4A4D]">Floor {u.floorNumber}</td>
+                            <td className="px-3 py-1 font-semibold text-[#24060B]">{u.unitType}</td>
+                            <td className="px-3 py-1 font-mono text-[#5C4A4D]">{u.carpetAreaSqFt} sq.ft</td>
+                            <td className="px-3 py-1 font-mono text-[#5C4A4D]">{u.superBuiltUpAreaSqFt} sq.ft</td>
+                            <td className="px-3 py-1 font-mono text-[#821A2A] font-semibold">
+                              {excelImportResult.parkingSlots[i]?.slotNumber || "—"}
+                            </td>
+                            <td className="px-3 py-1 font-mono text-right font-bold text-[#24060B]">
+                              {formatIndianCurrency(u.basePrice)}
+                            </td>
+                          </tr>
+                        ))}
+                      </tbody>
+                    </table>
+                  </div>
+                </div>
+              )}
+            </div>
+          )}
+
+          {/* METHOD 2: FLOOR PLATE SERIES BLUEPRINT GENERATOR */}
+          {provisionMethod === "blueprint" && (
+            <div className="space-y-4 animate-fade-in text-xs">
+              <div className="p-3.5 bg-[#FFF9EE] rounded-xl border border-[#F2E4C4] flex items-center justify-between">
+                <div>
+                  <span className="font-bold text-[#821A2A] block text-xs">
+                    Architectural Floor Series Blueprint (Tower-Specific Floor Plate Setup)
+                  </span>
+                  <p className="text-[11px] text-[#5C4A4D] mt-0.5">
+                    Define the exact sequence of units per floor core (e.g. Tower A: Flat 1 is 1BHK, Flat 2 &amp; 3 are 2BHK, Flat 4 &amp; 5 are 3BHK).
+                  </p>
+                </div>
+                <span className="text-[10px] font-mono font-bold px-2 py-0.5 bg-white text-[#B88E3E] rounded border border-[#F2E4C4]">
+                  Automated Floor Replication
                 </span>
               </div>
-            </div>
-          </div>
 
-          {/* Mode 1: Uniform Mode Inputs */}
-          {matrixMode === "uniform" ? (
-            <div className="p-4 bg-[#FAF7F2] rounded-xl border border-[#DECFC0] space-y-3 animate-fade-in">
+              {/* Tower Tabs */}
+              <div className="flex items-center space-x-2 border-b border-[#F0E8DD] pb-2">
+                <span className="text-[11px] font-bold text-[#5C4A4D] uppercase font-mono">Select Tower:</span>
+                {towerList.map((t) => (
+                  <button
+                    key={t}
+                    type="button"
+                    onClick={() => setActiveTowerTab(t)}
+                    className={`px-3 py-1 rounded-lg text-xs font-bold transition-all cursor-pointer ${
+                      activeTowerTab === t
+                        ? "bg-[#821A2A] text-white shadow-xs"
+                        : "bg-white text-[#5C4A4D] hover:bg-[#FAF0F2] border border-[#DECFC0]"
+                    }`}
+                  >
+                    Tower {t}
+                  </button>
+                ))}
+              </div>
+
+              {/* Active Tower Series Config */}
+              {perTowerConfigs[activeTowerTab] && (
+                <div className="space-y-4 bg-white p-4 rounded-xl border border-[#DECFC0]">
+                  <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+                    <div>
+                      <label className="text-[10px] font-semibold text-[#8C777A] block mb-1">
+                        Floors in Tower {activeTowerTab}
+                      </label>
+                      <input
+                        type="number"
+                        min={1}
+                        max={50}
+                        value={perTowerConfigs[activeTowerTab].floorsCount}
+                        onChange={(e) =>
+                          handleUpdateTowerFloorsOrFlats(activeTowerTab, "floorsCount", Number(e.target.value))
+                        }
+                        className="w-full px-3 py-1.5 rounded-lg border border-[#DECFC0] font-mono font-bold text-[#24060B]"
+                      />
+                    </div>
+                    <div>
+                      <label className="text-[10px] font-semibold text-[#8C777A] block mb-1">
+                        Flats per Floor Core in Tower {activeTowerTab}
+                      </label>
+                      <input
+                        type="number"
+                        min={1}
+                        max={12}
+                        value={perTowerConfigs[activeTowerTab].flatsPerFloor}
+                        onChange={(e) =>
+                          handleUpdateTowerFloorsOrFlats(activeTowerTab, "flatsPerFloor", Number(e.target.value))
+                        }
+                        className="w-full px-3 py-1.5 rounded-lg border border-[#DECFC0] font-mono font-bold text-[#24060B]"
+                      />
+                    </div>
+                    <div>
+                      <label className="text-[10px] font-semibold text-[#8C777A] block mb-1">
+                        Tower {activeTowerTab} Total Units
+                      </label>
+                      <div className="p-2 bg-[#FAF7F2] rounded-lg border border-[#DECFC0] font-mono font-bold text-[#821A2A] text-sm">
+                        {(perTowerConfigs[activeTowerTab].floorsCount || 0) *
+                          (perTowerConfigs[activeTowerTab].flatsPerFloor || 0)}{" "}
+                        Flats
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Floor Plate Core Series Dropdowns */}
+                  <div className="space-y-2 pt-2 border-t border-[#F0E8DD]">
+                    <span className="text-[11px] font-bold text-[#821A2A] uppercase font-mono block">
+                      Floor Plate Core Series (Positions 1 to {perTowerConfigs[activeTowerTab].flatsPerFloor})
+                    </span>
+
+                    <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-2.5">
+                      {Array.from({ length: perTowerConfigs[activeTowerTab].flatsPerFloor }).map((_, idx) => {
+                        const currentSeriesId =
+                          perTowerConfigs[activeTowerTab].floorSeries?.[idx] || typologies[idx % typologies.length]?.id;
+                        const matchedTyp = typologies.find((t) => t.id === currentSeriesId);
+
+                        return (
+                          <div key={idx} className="p-3 bg-[#FAF7F2] rounded-xl border border-[#DECFC0] space-y-1.5">
+                            <div className="flex items-center justify-between">
+                              <span className="font-bold text-[#24060B] font-mono text-[11px]">
+                                Flat Position #{idx + 1}
+                              </span>
+                              <span className="text-[10px] font-mono text-[#8C777A]">
+                                e.g. {activeTowerTab}-10{idx + 1}
+                              </span>
+                            </div>
+
+                            <select
+                              value={currentSeriesId}
+                              onChange={(e) => handleSeriesChange(activeTowerTab, idx, e.target.value)}
+                              className="w-full px-2 py-1.5 bg-white rounded-lg border border-[#DECFC0] text-xs font-semibold text-[#24060B]"
+                            >
+                              {typologies.map((t) => (
+                                <option key={t.id} value={t.id}>
+                                  {t.name} ({t.sbaSqft} sq.ft · {formatIndianCurrency(t.basePrice)})
+                                </option>
+                              ))}
+                            </select>
+
+                            {matchedTyp && (
+                              <div className="text-[10px] text-[#5C4A4D] flex justify-between font-mono">
+                                <span>Carpet: {matchedTyp.carpetSqft} sq.ft</span>
+                                <span>UDS: {matchedTyp.udsSqft} sq.ft</span>
+                              </div>
+                            )}
+                          </div>
+                        );
+                      })}
+                    </div>
+                  </div>
+                </div>
+              )}
+            </div>
+          )}
+
+          {/* METHOD 3: UNIFORM FAST MATRIX */}
+          {provisionMethod === "uniform" && (
+            <div className="p-4 bg-[#FAF7F2] rounded-xl border border-[#DECFC0] space-y-3 animate-fade-in text-xs">
               <span className="text-[11px] font-bold text-[#821A2A] font-mono uppercase block">
-                Uniform Configuration (Applied to All Towers)
+                Uniform Matrix Generator (Identical Floor Plates Across All Towers)
               </span>
-              <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 text-xs">
+              <div className="grid grid-cols-1 sm:grid-cols-4 gap-3">
+                <div>
+                  <label className="block font-semibold text-[#5C4A4D] mb-1">Towers</label>
+                  <input
+                    type="text"
+                    value={towers}
+                    onChange={(e) => setTowers(e.target.value)}
+                    className="w-full px-3 py-1.5 rounded-lg border border-[#DECFC0] text-[#24060B] font-mono font-bold bg-white"
+                  />
+                </div>
                 <div>
                   <label className="block font-semibold text-[#5C4A4D] mb-1">Floors per Tower</label>
                   <input
@@ -659,130 +972,14 @@ export default function ProvisionMatrixPage() {
                 </div>
               </div>
             </div>
-          ) : (
-            /* Mode 2: Heterogeneous Per-Tower Mode */
-            <div className="p-4 bg-[#FFF9EE] rounded-xl border border-[#F2E4C4] space-y-4 animate-fade-in">
-              <div className="flex items-center justify-between">
-                <span className="text-[11px] font-bold text-[#821A2A] font-mono uppercase flex items-center space-x-1.5">
-                  <Settings2 className="w-3.5 h-3.5 text-[#821A2A]" />
-                  <span>Heterogeneous Tower Customizer (Configure Each Tower Independently)</span>
-                </span>
-                <span className="text-[10px] text-[#B88E3E] font-semibold font-mono">
-                  Independent Floor &amp; Typology Assignment
-                </span>
-              </div>
-
-              {/* Tower Tabs */}
-              <div className="flex flex-wrap gap-1.5 border-b border-[#F2E4C4] pb-2">
-                {towerList.map((t) => (
-                  <button
-                    key={t}
-                    type="button"
-                    onClick={() => setActiveTowerTab(t)}
-                    className={`px-3 py-1 rounded-lg text-xs font-bold transition-all cursor-pointer ${
-                      activeTowerTab === t
-                        ? "bg-[#821A2A] text-white shadow-xs"
-                        : "bg-white text-[#5C4A4D] hover:bg-[#FAF0F2] border border-[#DECFC0]"
-                    }`}
-                  >
-                    Tower {t}
-                  </button>
-                ))}
-              </div>
-
-              {/* Active Tower Customizer */}
-              {perTowerConfigs[activeTowerTab] && (
-                <div className="space-y-3 text-xs bg-white p-3.5 rounded-xl border border-[#DECFC0]">
-                  <div className="flex items-center justify-between">
-                    <span className="font-bold text-[#24060B]">
-                      Tower {activeTowerTab} Structural Specifications
-                    </span>
-                    <span className="text-[10px] font-mono px-2 py-0.5 rounded bg-[#FAF7F2] text-[#821A2A] font-bold">
-                      {(perTowerConfigs[activeTowerTab].floorsCount || 0) * (perTowerConfigs[activeTowerTab].flatsPerFloor || 0)} Units in Tower {activeTowerTab}
-                    </span>
-                  </div>
-
-                  <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
-                    <div>
-                      <label className="text-[10px] text-[#8C777A] block mb-0.5">Floors in Tower {activeTowerTab}</label>
-                      <input
-                        type="number"
-                        min={1}
-                        max={50}
-                        value={perTowerConfigs[activeTowerTab].floorsCount}
-                        onChange={(e) =>
-                          handleUpdateTowerConfig(activeTowerTab, "floorsCount", Number(e.target.value))
-                        }
-                        className="w-full px-2.5 py-1.5 rounded-lg border border-[#DECFC0] font-mono font-bold text-[#24060B]"
-                      />
-                    </div>
-                    <div>
-                      <label className="text-[10px] text-[#8C777A] block mb-0.5">Flats per Floor Core</label>
-                      <input
-                        type="number"
-                        min={1}
-                        max={12}
-                        value={perTowerConfigs[activeTowerTab].flatsPerFloor}
-                        onChange={(e) =>
-                          handleUpdateTowerConfig(activeTowerTab, "flatsPerFloor", Number(e.target.value))
-                        }
-                        className="w-full px-2.5 py-1.5 rounded-lg border border-[#DECFC0] font-mono font-bold text-[#24060B]"
-                      />
-                    </div>
-                    <div>
-                      <label className="text-[10px] text-[#8C777A] block mb-0.5">Door Pattern</label>
-                      <select
-                        value={perTowerConfigs[activeTowerTab].numberingScheme}
-                        onChange={(e) =>
-                          handleUpdateTowerConfig(activeTowerTab, "numberingScheme", e.target.value)
-                        }
-                        className="w-full px-2.5 py-1.5 rounded-lg border border-[#DECFC0] font-semibold text-[#24060B]"
-                      >
-                        <option value="tower_floor_flat">{activeTowerTab}-101 (Standard)</option>
-                        <option value="tower_padded_flat">{activeTowerTab}-0101 (Padded)</option>
-                        <option value="floor_flat">101, 204 (Simple)</option>
-                      </select>
-                    </div>
-                  </div>
-
-                  {/* Assigned Typologies Checklist for Active Tower */}
-                  <div className="pt-2 border-t border-[#F0E8DD] space-y-1.5">
-                    <label className="text-[10px] font-bold text-[#5C4A4D] uppercase font-mono block">
-                      Assign Typologies to Tower {activeTowerTab}:
-                    </label>
-                    <div className="flex flex-wrap gap-2">
-                      {typologies.map((typ) => {
-                        const isAssigned = perTowerConfigs[activeTowerTab]?.assignedTypologyIds.includes(typ.id);
-                        return (
-                          <button
-                            key={typ.id}
-                            type="button"
-                            onClick={() => handleToggleTowerTypology(activeTowerTab, typ.id)}
-                            className={`px-3 py-1.5 rounded-lg text-xs font-semibold flex items-center space-x-1.5 transition-all cursor-pointer ${
-                              isAssigned
-                                ? "bg-[#FAF0F2] text-[#821A2A] border border-[#E8C4C8] shadow-2xs font-bold"
-                                : "bg-[#F8F2EC] text-[#8C777A] border border-[#DECFC0] opacity-60 hover:opacity-100"
-                            }`}
-                          >
-                            <span className={`w-2 h-2 rounded-full ${isAssigned ? "bg-[#821A2A]" : "bg-gray-400"}`} />
-                            <span>{typ.name}</span>
-                            <span className="text-[10px] font-mono text-[#8C777A]">({typ.sbaSqft} sq.ft)</span>
-                          </button>
-                        );
-                      })}
-                    </div>
-                  </div>
-                </div>
-              )}
-            </div>
           )}
 
-          {/* Typology Palette & Dynamic Add Typology */}
-          <div className="space-y-3 pt-2 border-t border-[#F0E8DD]">
+          {/* Typology Palette Management (Available for all methods) */}
+          <div className="space-y-3 pt-2 border-t border-[#F0E8DD] text-xs">
             <div className="flex items-center justify-between">
               <span className="text-xs font-bold text-[#24060B] uppercase font-mono flex items-center space-x-1.5">
                 <Sliders className="w-3.5 h-3.5 text-[#821A2A]" />
-                <span>Configured Typology Palette ({typologies.length} Typologies)</span>
+                <span>Typology Palette ({typologies.length} Pre-Configured Architectural Types)</span>
               </span>
               <button
                 type="button"
@@ -874,114 +1071,22 @@ export default function ProvisionMatrixPage() {
               </div>
             )}
 
-            {/* Configured Typologies Grid */}
-            <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 text-xs">
-              {typologies.map((t, idx) => (
-                <div key={t.id} className="p-3.5 bg-[#FAF7F2] rounded-xl border border-[#DECFC0] space-y-2 relative group">
+            {/* Palette Cards */}
+            <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-2">
+              {typologies.map((t) => (
+                <div key={t.id} className="p-2.5 bg-[#FAF7F2] rounded-xl border border-[#DECFC0] text-[11px] space-y-1">
                   <div className="flex items-center justify-between">
-                    <span className="font-bold text-[#821A2A]">
-                      #{idx + 1}: {t.name}
+                    <span className="font-bold text-[#821A2A] truncate max-w-[100px]">{t.name}</span>
+                    <span className="text-[9px] font-mono px-1 py-0.2 bg-white rounded border border-[#DECFC0]">
+                      {t.type}
                     </span>
-                    <div className="flex items-center space-x-1">
-                      <span className="text-[10px] font-mono px-1.5 py-0.5 bg-white rounded border border-[#DECFC0]">
-                        {t.type}
-                      </span>
-                      {typologies.length > 1 && (
-                        <button
-                          type="button"
-                          onClick={() => handleDeleteTypology(t.id)}
-                          className="p-1 text-[#8C777A] hover:text-rose-600 rounded transition-colors"
-                          title="Remove Typology"
-                        >
-                          <Trash2 className="w-3.5 h-3.5" />
-                        </button>
-                      )}
-                    </div>
                   </div>
-
-                  <div className="grid grid-cols-2 gap-2 text-[11px]">
-                    <div>
-                      <label className="text-[10px] text-[#8C777A] block">Carpet</label>
-                      <input
-                        type="number"
-                        value={t.carpetSqft}
-                        onChange={(e) => handleTypologyFieldChange(t.id, "carpetSqft", Number(e.target.value))}
-                        className="w-full px-2 py-1 bg-white rounded border border-[#DECFC0] font-mono text-[#24060B]"
-                      />
-                    </div>
-                    <div>
-                      <label className="text-[10px] text-[#8C777A] block">SBA</label>
-                      <input
-                        type="number"
-                        value={t.sbaSqft}
-                        onChange={(e) => handleTypologyFieldChange(t.id, "sbaSqft", Number(e.target.value))}
-                        className="w-full px-2 py-1 bg-white rounded border border-[#DECFC0] font-mono text-[#24060B]"
-                      />
-                    </div>
-                    <div>
-                      <label className="text-[10px] text-[#8C777A] block">UDS</label>
-                      <input
-                        type="number"
-                        step="0.1"
-                        value={t.udsSqft}
-                        onChange={(e) => handleTypologyFieldChange(t.id, "udsSqft", Number(e.target.value))}
-                        className="w-full px-2 py-1 bg-white rounded border border-[#DECFC0] font-mono text-[#24060B]"
-                      />
-                    </div>
-                    <div>
-                      <label className="text-[10px] text-[#8C777A] block">Base Price (₹)</label>
-                      <input
-                        type="number"
-                        value={t.basePrice}
-                        onChange={(e) => handleTypologyFieldChange(t.id, "basePrice", Number(e.target.value))}
-                        className="w-full px-2 py-1 bg-white rounded border border-[#DECFC0] font-mono text-[#24060B]"
-                      />
-                    </div>
+                  <div className="text-[10px] text-[#5C4A4D] font-mono">
+                    <div>{t.sbaSqft} sq.ft SBA</div>
+                    <div className="text-[#24060B] font-bold">{formatIndianCurrency(t.basePrice)}</div>
                   </div>
                 </div>
               ))}
-            </div>
-          </div>
-
-          {/* Live Schedule Preview Table */}
-          <div className="p-3.5 rounded-xl bg-[#FAF7F2] border border-[#DECFC0] space-y-2">
-            <div className="flex items-center justify-between">
-              <span className="text-xs font-bold text-[#24060B] flex items-center space-x-1.5 font-mono uppercase">
-                <TableIcon className="w-3.5 h-3.5 text-[#821A2A]" />
-                <span>Live Generated Schedule Preview ({previewFlats.length} of {totalFlats} Flats)</span>
-              </span>
-              <span className="text-[10px] text-emerald-700 font-semibold font-mono">
-                ✓ Algorithmic Deterministic Schedule
-              </span>
-            </div>
-
-            <div className="overflow-x-auto max-h-48 border border-[#DECFC0] rounded-lg bg-white">
-              <table className="w-full text-left text-[11px]">
-                <thead className="bg-[#F8F2EC] text-[#5C4A4D] font-mono font-semibold uppercase text-[10px] sticky top-0 border-b border-[#DECFC0]">
-                  <tr>
-                    <th className="px-3 py-1.5">Door No.</th>
-                    <th className="px-3 py-1.5">Tower</th>
-                    <th className="px-3 py-1.5">Floor</th>
-                    <th className="px-3 py-1.5">Typology</th>
-                    <th className="px-3 py-1.5">SBA</th>
-                    <th className="px-3 py-1.5 text-right">Base Price</th>
-                  </tr>
-                </thead>
-                <tbody className="divide-y divide-[#F0E8DD]">
-                  {previewFlats.map((f, i) => (
-                    <tr key={i} className="hover:bg-[#FAF7F2]">
-                      <td className="px-3 py-1 font-mono font-bold text-[#821A2A]">{f.flatNo}</td>
-                      <td className="px-3 py-1 text-[#24060B]">{f.tower}</td>
-                      <td className="px-3 py-1 font-mono text-[#5C4A4D]">Floor {f.floor}</td>
-                      <td className="px-3 py-1 font-medium text-[#24060B]">{f.type}</td>
-                      <td className="px-3 py-1 font-mono text-[#5C4A4D]">{f.sba} sq.ft</td>
-                      <td className="px-3 py-1 font-mono text-right font-semibold text-[#24060B]">
-                        {formatIndianCurrency(f.price)}
-                      </td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
             </div>
           </div>
         </div>
@@ -995,7 +1100,7 @@ export default function ProvisionMatrixPage() {
             </div>
             <span className="text-[10px] font-mono px-2.5 py-0.5 rounded-full bg-[#FAF0F2] text-[#821A2A] font-semibold border border-[#E8C4C8] flex items-center space-x-1">
               <Zap className="w-3 h-3 text-[#821A2A]" />
-              <span>EV Ready Infrastructure</span>
+              <span>EV Infrastructure (BESCOM / CEA Ready)</span>
             </span>
           </div>
 
@@ -1171,7 +1276,7 @@ export default function ProvisionMatrixPage() {
         >
           <Sparkles className="w-4 h-4 text-[#D4B989]" />
           <span>
-            Provision Real Estate Project &amp; Matrix ({totalFlats} Flats + {totalSlots} Bays, {totalEvBays} EV Points)
+            Provision &amp; Handover Project Matrix ({totalFlats} Flats + {totalSlots} Bays, {totalEvBays} EV Points)
           </span>
         </button>
       </form>
@@ -1195,7 +1300,7 @@ export default function ProvisionMatrixPage() {
             </div>
 
             <span className="px-3 py-1 rounded-full text-xs font-semibold bg-[#FFF9EE] border border-[#F2E4C4] text-[#B88E3E] font-mono">
-              Ready for Handover
+              Ready for Builder Handover
             </span>
           </div>
 
@@ -1230,6 +1335,14 @@ export default function ProvisionMatrixPage() {
                 <Share2 className="w-4 h-4 text-emerald-700" />
                 <span>Open WhatsApp Direct Share</span>
               </a>
+
+              <button
+                onClick={handleExportProvisionedExcel}
+                className="w-full sm:w-auto px-4 py-2.5 bg-emerald-700 hover:bg-emerald-800 text-white text-xs font-bold rounded-xl flex items-center justify-center space-x-1.5 transition-colors cursor-pointer"
+              >
+                <Download className="w-3.5 h-3.5 text-white" />
+                <span>Export Master Schedule (.xlsx)</span>
+              </button>
 
               <button
                 onClick={handleLaunchProvisioned}

@@ -6,6 +6,15 @@ const ACTIVE_PROJECT_KEY = "deedflow_active_project_id";
 
 export const DEFAULT_TYPOLOGIES: UnitTypology[] = [
   {
+    id: "typ_1bhk",
+    name: "1 BHK Compact",
+    type: "1BHK",
+    carpetSqft: 480,
+    sbaSqft: 650,
+    udsSqft: 162.5,
+    basePrice: 4800000,
+  },
+  {
     id: "typ_2bhk",
     name: "2 BHK Executive",
     type: "2BHK",
@@ -13,6 +22,15 @@ export const DEFAULT_TYPOLOGIES: UnitTypology[] = [
     sbaSqft: 1150,
     udsSqft: 287.5,
     basePrice: 8800000,
+  },
+  {
+    id: "typ_2bhk_large",
+    name: "2 BHK Large",
+    type: "2BHK",
+    carpetSqft: 900,
+    sbaSqft: 1220,
+    udsSqft: 305.0,
+    basePrice: 9400000,
   },
   {
     id: "typ_3bhk",
@@ -24,13 +42,22 @@ export const DEFAULT_TYPOLOGIES: UnitTypology[] = [
     basePrice: 12800000,
   },
   {
+    id: "typ_3_5bhk",
+    name: "3.5 BHK Royal",
+    type: "3BHK",
+    carpetSqft: 1620,
+    sbaSqft: 2100,
+    udsSqft: 525.0,
+    basePrice: 17500000,
+  },
+  {
     id: "typ_4bhk",
     name: "4 BHK Presidential",
     type: "4BHK",
-    carpetSqft: 1850,
-    sbaSqft: 2400,
-    udsSqft: 580.0,
-    basePrice: 19500000,
+    carpetSqft: 2050,
+    sbaSqft: 2600,
+    udsSqft: 650.0,
+    basePrice: 23000000,
   },
 ];
 
@@ -169,7 +196,14 @@ export function generateMatrixInventory(
 
       for (let floor = 1; floor <= towerCfg.floorsCount; floor++) {
         for (let flatIndex = 1; flatIndex <= towerCfg.flatsPerFloor; flatIndex++) {
-          const typology = typologiesForTower[(flatIndex - 1) % typologiesForTower.length];
+          let typology: UnitTypology;
+          if (towerCfg.floorSeries && towerCfg.floorSeries[flatIndex - 1]) {
+            const seriesId = towerCfg.floorSeries[flatIndex - 1];
+            typology = allTypologies.find((t) => t.id === seriesId) || typologiesForTower[0];
+          } else {
+            typology = typologiesForTower[(flatIndex - 1) % typologiesForTower.length];
+          }
+
           const flatNumber = formatFlatNumber(
             towerCfg.towerName,
             floor,

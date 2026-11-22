@@ -180,10 +180,25 @@ export interface ParkingSlot {
   evConnectorType?: string;
 }
 
+export type UnitLayoutCategory =
+  | "1BHK"
+  | "1.5BHK"
+  | "2BHK"
+  | "2.5BHK"
+  | "3BHK"
+  | "3.5BHK"
+  | "4BHK"
+  | "5BHK"
+  | "Penthouse"
+  | "Studio"
+  | "Duplex"
+  | "Row House"
+  | "Villa";
+
 export interface UnitTypology {
   id: string;
-  name: string; // "2 BHK Executive", "3 BHK Luxury", "4 BHK Penthouse", "Duplex Sky Villa"
-  type: "2BHK" | "3BHK" | "4BHK" | "Penthouse" | "Studio" | "Duplex";
+  name: string; // "1 BHK Compact", "2 BHK Executive", "3 BHK Luxury", "3.5 BHK Royal", etc.
+  type: UnitLayoutCategory;
   carpetSqft: number;
   sbaSqft: number;
   udsSqft: number;
@@ -196,10 +211,11 @@ export interface TowerConfig {
   flatsPerFloor: number;
   numberingScheme: "tower_floor_flat" | "floor_flat" | "tower_padded_flat";
   assignedTypologyIds: string[];
+  floorSeries?: string[];
 }
 
 export interface MatrixConfig {
-  mode: "uniform" | "per_tower";
+  mode: "uniform" | "per_tower" | "excel_import";
   towers: string[];
   floorsPerTower: number;
   flatsPerFloor: number;
