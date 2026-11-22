@@ -103,11 +103,11 @@ export default function DashboardOverview() {
       {/* Hero Greeting Section */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pt-1">
         <div className="space-y-1">
-          <div className="flex items-center space-x-2 text-[11px] font-mono font-bold tracking-wider text-[#7D1826] uppercase">
-            <span className="w-3 h-[2px] bg-[#7D1826] rounded-full" />
+          <div className="flex items-center space-x-2 text-[11px] font-mono font-bold tracking-wider text-[#821A2A] uppercase">
+            <span className="w-3 h-[2px] bg-[#821A2A] rounded-full" />
             <span>Document Operations</span>
           </div>
-          <h1 className="text-3xl sm:text-4xl font-bold font-serif text-[#24060B] tracking-tight">
+          <h1 className="text-2xl sm:text-3xl md:text-4xl font-bold font-serif text-[#24060B] tracking-tight">
             Good morning, Aidan<span className="text-[#B88E3E]">.</span>
           </h1>
           <p className="text-xs sm:text-sm text-[#5C4A4D]">
@@ -115,18 +115,18 @@ export default function DashboardOverview() {
           </p>
         </div>
 
-        <div className="flex items-center space-x-2.5">
+        <div className="flex flex-wrap sm:flex-nowrap items-center gap-2.5 w-full sm:w-auto">
           <Link
             href="/dashboard/parking"
-            className="px-4 py-2.5 glossy-btn-ivory text-[#24060B] rounded-xl text-xs font-semibold flex items-center space-x-1.5 shadow-xs transition-colors cursor-pointer"
+            className="flex-1 sm:flex-none justify-center px-4 py-2.5 glossy-btn-ivory text-[#24060B] rounded-xl text-xs font-semibold flex items-center space-x-1.5 shadow-xs transition-colors cursor-pointer"
           >
-            <Car className="w-4 h-4 text-[#7D1826]" />
+            <Car className="w-4 h-4 text-[#821A2A]" />
             <span>Basement Grid</span>
           </Link>
 
           <Link
             href="/dashboard/draft/new"
-            className="px-4 py-2.5 glossy-btn-burgundy text-white rounded-xl text-xs font-semibold flex items-center space-x-2 shadow-sm transition-colors cursor-pointer hover:brightness-105"
+            className="flex-1 sm:flex-none justify-center px-4 py-2.5 glossy-btn-burgundy text-white rounded-xl text-xs font-semibold flex items-center space-x-2 shadow-sm transition-colors cursor-pointer hover:brightness-105"
           >
             <Plus className="w-4 h-4 text-[#D4B989]" />
             <span>New document</span>
@@ -137,7 +137,7 @@ export default function DashboardOverview() {
       {/* Pending Diff Approvals Alert Banner */}
       <div className="p-4 glossy-card bg-[#FFFDFB] border border-[#DECFC0] rounded-2xl flex flex-col sm:flex-row sm:items-center justify-between gap-3 shadow-xs">
         <div className="flex items-center space-x-3">
-          <div className="w-8 h-8 rounded-lg bg-[#821A2A] text-white border border-[#821A2A]/40 flex items-center justify-center font-bold text-xs shadow-xs">
+          <div className="w-8 h-8 rounded-lg bg-[#821A2A] text-white border border-[#821A2A]/40 flex items-center justify-center font-bold text-xs shadow-xs shrink-0">
             3
           </div>
           <div>
@@ -152,7 +152,7 @@ export default function DashboardOverview() {
 
         <Link
           href="/dashboard/approvals"
-          className="px-4 py-2 glossy-btn-burgundy hover:brightness-105 text-white text-xs font-bold rounded-xl flex items-center space-x-1.5 shadow-xs w-fit cursor-pointer"
+          className="px-4 py-2 glossy-btn-burgundy hover:brightness-105 text-white text-xs font-bold rounded-xl flex items-center justify-center space-x-1.5 shadow-xs w-full sm:w-fit cursor-pointer shrink-0"
         >
           <span>Open Diff Queue</span>
           <ArrowUpRight className="w-3.5 h-3.5 text-[#D4B989]" />
@@ -160,15 +160,15 @@ export default function DashboardOverview() {
       </div>
 
       {/* 4 KPI Metrics Row */}
-      <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
         {/* Card 1: Total Documents */}
-        <div className="glossy-card bg-[#FFFDFB] rounded-2xl p-5 border border-[#E8DFD3] hover:border-[#B88E3E]/60 shadow-xs space-y-3 transition-colors">
+        <div className="glossy-card bg-[#FFFDFB] rounded-2xl p-4 sm:p-5 border border-[#E8DFD3] hover:border-[#B88E3E]/60 shadow-xs space-y-3 transition-colors">
           <div className="w-8 h-8 rounded-lg bg-[#F8F2EC] border border-[#E8DFD3] flex items-center justify-center text-[#821A2A]">
             <FileText className="w-4 h-4" />
           </div>
           <div className="space-y-0.5">
             <span className="text-xs text-[#5C4A4D] font-medium">Total documents</span>
-            <div className="text-3xl font-bold font-serif text-[#24060B] tracking-tight">
+            <div className="text-2xl sm:text-3xl font-bold font-serif text-[#24060B] tracking-tight">
               05
             </div>
             <span className="text-[11px] text-[#8C777A] block truncate">
@@ -178,13 +178,13 @@ export default function DashboardOverview() {
         </div>
 
         {/* Card 2: Awaiting Signature */}
-        <div className="glossy-card bg-[#FFFDFB] rounded-2xl p-5 border border-[#E8DFD3] hover:border-[#B88E3E]/60 shadow-xs space-y-3 transition-colors">
+        <div className="glossy-card bg-[#FFFDFB] rounded-2xl p-4 sm:p-5 border border-[#E8DFD3] hover:border-[#B88E3E]/60 shadow-xs space-y-3 transition-colors">
           <div className="w-8 h-8 rounded-lg bg-[#FFF9EE] flex items-center justify-center text-[#B88E3E] border border-[#F2E4C4]">
             <Clock className="w-4 h-4" />
           </div>
           <div className="space-y-0.5">
             <span className="text-xs text-[#5C4A4D] font-medium">Awaiting signature</span>
-            <div className="text-3xl font-bold font-serif text-[#24060B] tracking-tight">
+            <div className="text-2xl sm:text-3xl font-bold font-serif text-[#24060B] tracking-tight">
               02
             </div>
             <span className="text-[11px] text-[#8C777A] block truncate">
@@ -194,13 +194,13 @@ export default function DashboardOverview() {
         </div>
 
         {/* Card 3: Completed */}
-        <div className="glossy-card bg-[#FFFDFB] rounded-2xl p-5 border border-[#E8DFD3] hover:border-[#B88E3E]/60 shadow-xs space-y-3 transition-colors">
+        <div className="glossy-card bg-[#FFFDFB] rounded-2xl p-4 sm:p-5 border border-[#E8DFD3] hover:border-[#B88E3E]/60 shadow-xs space-y-3 transition-colors">
           <div className="w-8 h-8 rounded-lg bg-emerald-50/80 flex items-center justify-center text-emerald-700 border border-emerald-200">
             <CheckCircle2 className="w-4 h-4" />
           </div>
           <div className="space-y-0.5">
             <span className="text-xs text-[#5C4A4D] font-medium">Completed</span>
-            <div className="text-3xl font-bold font-serif text-[#24060B] tracking-tight">
+            <div className="text-2xl sm:text-3xl font-bold font-serif text-[#24060B] tracking-tight">
               01
             </div>
             <span className="text-[11px] text-[#8C777A] block truncate">
@@ -210,13 +210,13 @@ export default function DashboardOverview() {
         </div>
 
         {/* Card 4: In Progress */}
-        <div className="glossy-card bg-[#FFFDFB] rounded-2xl p-5 border border-[#E8DFD3] hover:border-[#B88E3E]/60 shadow-xs space-y-3 transition-colors">
-          <div className="w-8 h-8 rounded-lg bg-[#FAF0F2] flex items-center justify-center text-[#7D1826] border border-[#F0D5D9]">
+        <div className="glossy-card bg-[#FFFDFB] rounded-2xl p-4 sm:p-5 border border-[#E8DFD3] hover:border-[#B88E3E]/60 shadow-xs space-y-3 transition-colors">
+          <div className="w-8 h-8 rounded-lg bg-[#FAF0F2] flex items-center justify-center text-[#821A2A] border border-[#F0D5D9]">
             <Sparkles className="w-4 h-4" />
           </div>
           <div className="space-y-0.5">
             <span className="text-xs text-[#5C4A4D] font-medium">In progress</span>
-            <div className="text-3xl font-bold font-serif text-[#24060B] tracking-tight">
+            <div className="text-2xl sm:text-3xl font-bold font-serif text-[#24060B] tracking-tight">
               02
             </div>
             <span className="text-[11px] text-[#8C777A] block truncate">
@@ -283,8 +283,8 @@ export default function DashboardOverview() {
         </div>
 
         {/* Documents Table */}
-        <div className="overflow-x-auto">
-          <table className="w-full text-left text-xs">
+        <div className="overflow-x-auto -mx-5 px-5 sm:mx-0 sm:px-0">
+          <table className="w-full text-left text-xs min-w-[620px]">
             <thead>
               <tr className="border-b border-[#E8DFD3] text-[11px] font-mono text-[#8C777A] uppercase tracking-wider bg-[#F8F2EC]/60">
                 <th className="py-3 px-3 font-semibold rounded-l-lg">Document</th>
@@ -301,11 +301,11 @@ export default function DashboardOverview() {
                   {/* Document Column */}
                   <td className="py-3.5 px-3">
                     <div className="flex items-center space-x-3">
-                      <div className="w-8 h-8 rounded-lg bg-[#FAF0F2] border border-[#F0D5D9] flex items-center justify-center text-[#7D1826] shrink-0">
+                      <div className="w-8 h-8 rounded-lg bg-[#FAF0F2] border border-[#F0D5D9] flex items-center justify-center text-[#821A2A] shrink-0">
                         <Building className="w-4 h-4" />
                       </div>
                       <div>
-                        <div className="font-semibold text-[#24060B] group-hover:text-[#7D1826] transition-colors">
+                        <div className="font-semibold text-[#24060B] group-hover:text-[#821A2A] transition-colors">
                           {doc.name}
                         </div>
                         <div className="text-[11px] text-[#8C777A] mt-0.5">{doc.subtitle}</div>

@@ -15,6 +15,7 @@ import {
   FileArchive,
   RotateCcw,
   Building2,
+  X,
 } from "lucide-react";
 import clsx from "clsx";
 import { UserRole } from "@/lib/types";
@@ -61,30 +62,42 @@ export function Sidebar({ isOpen, onClose }: SidebarProps) {
 
       <aside
         className={clsx(
-          "fixed top-0 bottom-0 left-0 z-40 w-64 bg-[#FAF7F2] text-[#5C4A4D] flex flex-col justify-between border-r border-[#E8DFD3] spring-snap md:translate-x-0 select-none shadow-[1px_0_12px_rgba(74,14,23,0.02)]",
+          "fixed top-0 bottom-0 left-0 z-50 w-64 bg-[#FAF7F2] text-[#5C4A4D] flex flex-col justify-between border-r border-[#E8DFD3] spring-snap md:translate-x-0 select-none shadow-[1px_0_12px_rgba(74,14,23,0.02)]",
           isOpen ? "translate-x-0" : "-translate-x-full"
         )}
       >
         {/* Fixed Top Section: Brand & Workspace */}
         <div className="p-4 pb-2 space-y-3 shrink-0 border-b border-[#E8DFD3]/60 bg-[#FAF7F2]">
           {/* Top Brand Logo */}
-          <div className="flex items-center space-x-2.5 px-1 pt-1">
-            <div className="w-8 h-8 rounded-xl bg-[#821A2A]/10 border border-[#821A2A]/20 flex items-center justify-center text-[#821A2A] shadow-2xs">
-              <svg
-                className="w-5 h-5 text-[#821A2A]"
-                viewBox="0 0 24 24"
-                fill="none"
-                stroke="currentColor"
-                strokeWidth="2.5"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-              >
-                <path d="M7 17l9.2-9.2M17 17V7H7" />
-              </svg>
+          <div className="flex items-center justify-between px-1 pt-1">
+            <div className="flex items-center space-x-2.5">
+              <div className="w-8 h-8 rounded-xl bg-[#821A2A]/10 border border-[#821A2A]/20 flex items-center justify-center text-[#821A2A] shadow-2xs">
+                <svg
+                  className="w-5 h-5 text-[#821A2A]"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="2.5"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                >
+                  <path d="M7 17l9.2-9.2M17 17V7H7" />
+                </svg>
+              </div>
+              <span className="text-xl font-bold tracking-tight text-[#24060B] font-sans lowercase">
+                deedflow<span className="text-[#821A2A]">.</span>
+              </span>
             </div>
-            <span className="text-xl font-bold tracking-tight text-[#24060B] font-sans lowercase">
-              deedflow<span className="text-[#821A2A]">.</span>
-            </span>
+
+            {onClose && (
+              <button
+                onClick={onClose}
+                className="md:hidden p-1.5 rounded-lg text-[#8C777A] hover:text-[#24060B] hover:bg-[#F3EAE0] transition-colors"
+                aria-label="Close menu"
+              >
+                <X className="w-4 h-4" />
+              </button>
+            )}
           </div>
 
           {/* Workspace Selector Card */}
