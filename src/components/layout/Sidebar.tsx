@@ -17,9 +17,12 @@ import {
   RotateCcw,
   Building2,
   X,
+  Settings,
+  Shield,
 } from "lucide-react";
 import clsx from "clsx";
 import { UserRole } from "@/lib/types";
+import { DEMO_USERS } from "@/lib/mockData";
 
 interface SidebarProps {
   isOpen?: boolean;
@@ -39,18 +42,28 @@ export function Sidebar({ isOpen, onClose }: SidebarProps) {
     }
   }, []);
 
-  const navItems = [
-    { href: "/dashboard", label: "Overview", icon: LayoutGrid },
-    { href: "/dashboard/inventory", label: "Unit Dossiers", icon: Building2, isHighlighted: true },
-    { href: "/dashboard/parking", label: "Basement Grid", icon: Car },
-    { href: "/dashboard/draft/new", label: "Document Studio", icon: FileText },
-    { href: "/dashboard/approvals", label: "Approvals", icon: RotateCcw, badge: "3" },
-    { href: "/dashboard/batch", label: "Batch & Sale Deeds", icon: FileArchive },
-    { href: "/dashboard/governance", label: "Data Governance", icon: Layers },
-    { href: "/dashboard/templates", label: "Template Linter", icon: FileCode2 },
-    { href: "/dashboard/drafts", label: "Saved Drafts", icon: FileEdit, badge: "1" },
-    { href: "/dashboard/issued", label: "Issued Dossiers", icon: Send },
+  const allNavItems = [
+    { href: "/dashboard", label: "Overview", icon: LayoutGrid, roles: ["super_admin", "promoter_executive", "project_admin", "legal_counsel", "project_operator", "bank_auditor"] },
+    { href: "/dashboard/inventory", label: "Unit Dossiers", icon: Building2, isHighlighted: true, roles: ["super_admin", "promoter_executive", "project_admin", "legal_counsel", "project_operator", "bank_auditor"] },
+    { href: "/dashboard/parking", label: "Basement Grid", icon: Car, roles: ["super_admin", "promoter_executive", "project_admin", "project_operator"] },
+    { href: "/dashboard/draft/new", label: "Document Studio", icon: FileText, roles: ["super_admin", "project_admin", "project_operator"] },
+    { href: "/dashboard/approvals", label: "Approvals Queue", icon: RotateCcw, badge: "3", roles: ["super_admin", "project_admin"] },
+    { href: "/dashboard/templates", label: "Template Studio", icon: FileCode2, roles: ["super_admin", "legal_counsel"] },
+    { href: "/dashboard/batch", label: "Batch & Sale Deeds", icon: FileArchive, roles: ["super_admin", "project_admin", "legal_counsel"] },
+    { href: "/dashboard/governance", label: "Data Governance", icon: Layers, roles: ["super_admin", "promoter_executive", "project_admin", "legal_counsel"] },
+    { href: "/dashboard/drafts", label: "Saved Drafts", icon: FileEdit, badge: "1", roles: ["super_admin", "project_admin", "project_operator"] },
+    { href: "/dashboard/issued", label: "Issued Dossiers", icon: Send, roles: ["super_admin", "promoter_executive", "project_admin", "legal_counsel", "project_operator", "bank_auditor"] },
+    { href: "/dashboard/settings", label: "Settings & Profile", icon: Settings, roles: ["super_admin", "promoter_executive", "project_admin", "legal_counsel", "project_operator", "bank_auditor"] },
   ];
+
+  const navItems = allNavItems.filter((item) => item.roles.includes(currentRole));
+
+  const currentUser = DEMO_USERS[currentRole] || DEMO_USERS.project_admin;
+  const userInitials = currentUser.fullName
+    .split(" ")
+    .map((n) => n[0])
+    .join("")
+    .slice(0, 2);
 
   return (
     <>
@@ -166,28 +179,28 @@ export function Sidebar({ isOpen, onClose }: SidebarProps) {
         {/* Fixed Bottom Section: User Persona Profile Card */}
         <div className="p-3 border-t border-[#E8DFD3] bg-[#FAF7F2] shrink-0">
           <div className="p-2.5 rounded-xl bg-[#FFFDFB] border border-[#DECFC0] flex items-center justify-between text-xs text-[#5C4A4D] shadow-2xs">
-            <div className="flex items-center space-x-2.5">
-              <div className="w-8 h-8 rounded-full bg-[#821A2A] text-white font-bold flex items-center justify-center text-xs shadow-xs">
-                {currentRole === "super_admin" ? "SA" : currentRole === "project_admin" ? "AM" : "OP"}
+            <Link
+              href="/dashboard/settings"
+              className="flex items-center space-x-2.5 min-w-0 hover:opacity-85 transition-opacity"
+              title="View Profile & Settings"
+            >
+              <div className="w-8 h-8 rounded-full bg-[#821A2A] text-white font-bold flex items-center justify-center text-xs shadow-xs shrink-0">
+                {userInitials}
               </div>
-              <div className="flex flex-col text-left leading-tight">
-                <span className="font-semibold text-[#24060B] truncate max-w-[110px]">
-                  {currentRole === "super_admin"
-                    ? "Vikramaditya Rao"
-                    : currentRole === "project_admin"
-                    ? "Aidan Morgan"
-                    : "Ramesh Sharma"}
+              <div className="flex flex-col text-left leading-tight min-w-0">
+                <span className="font-semibold text-[#24060B] truncate max-w-[105px]">
+                  {currentUser.fullName}
                 </span>
-                <span className="text-[10px] text-[#8C777A] capitalize">
-                  {currentRole.replace("_", " ")}
+                <span className="text-[10px] text-[#8C777A] truncate max-w-[105px]">
+                  {currentUser.designation || currentRole.replace("_", " ")}
                 </span>
               </div>
-            </div>
+            </Link>
 
             <Link
               href="/login"
-              className="text-[10px] text-[#821A2A] hover:underline font-mono font-semibold"
-              title="Switch role"
+              className="text-[10px] text-[#821A2A] hover:underline font-mono font-semibold shrink-0 ml-1"
+              title="Switch role / Logout"
             >
               Switch
             </Link>

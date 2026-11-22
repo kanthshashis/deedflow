@@ -1,6 +1,54 @@
 import { z } from "zod";
 
-export type UserRole = "super_admin" | "project_admin" | "project_operator";
+export type UserRole =
+  | "super_admin"
+  | "promoter_executive"
+  | "project_admin"
+  | "legal_counsel"
+  | "project_operator"
+  | "bank_auditor";
+
+export type PermissionAction =
+  | "view_revenue_kpis"
+  | "manage_inventory"
+  | "allot_parking"
+  | "stage_swap_diff"
+  | "approve_diff_queue"
+  | "generate_documents"
+  | "manage_templates"
+  | "rollback_templates"
+  | "invite_team_members"
+  | "view_audit_stream"
+  | "configure_statutory_profile";
+
+export function hasPermission(role: UserRole, action: PermissionAction): boolean {
+  switch (action) {
+    case "view_revenue_kpis":
+      return ["super_admin", "promoter_executive", "project_admin"].includes(role);
+    case "manage_inventory":
+      return ["super_admin", "project_admin"].includes(role);
+    case "allot_parking":
+      return ["super_admin", "project_admin", "project_operator"].includes(role);
+    case "stage_swap_diff":
+      return ["super_admin", "project_admin", "project_operator"].includes(role);
+    case "approve_diff_queue":
+      return ["super_admin", "project_admin"].includes(role);
+    case "generate_documents":
+      return ["super_admin", "project_admin", "legal_counsel", "project_operator"].includes(role);
+    case "manage_templates":
+      return ["super_admin", "legal_counsel"].includes(role);
+    case "rollback_templates":
+      return ["super_admin", "legal_counsel"].includes(role);
+    case "invite_team_members":
+      return ["super_admin", "project_admin"].includes(role);
+    case "view_audit_stream":
+      return ["super_admin", "promoter_executive", "project_admin", "legal_counsel"].includes(role);
+    case "configure_statutory_profile":
+      return ["super_admin", "project_admin"].includes(role);
+    default:
+      return false;
+  }
+}
 
 export type EntityType = "sole" | "joint" | "nri_gpa" | "company";
 
@@ -10,9 +58,16 @@ export interface UserProfile {
   fullName: string;
   email: string;
   phone?: string;
+  designation?: string;
+  department?: string;
+  avatarUrl?: string;
   organizationId?: string;
+  organizationName?: string;
   projectId?: string;
   projectName?: string;
+  status?: "active" | "suspended";
+  lastLogin?: string;
+  twoFactorEnabled?: boolean;
 }
 
 export interface PaymentUtrRecord {

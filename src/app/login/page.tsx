@@ -73,7 +73,7 @@ export default function LoginPage() {
               </span>
             </div>
 
-            <div className="grid grid-cols-3 gap-1.5 p-1 rounded-xl bg-[#F8F2EC] border border-[#E8DFD3] text-xs">
+            <div className="grid grid-cols-2 sm:grid-cols-3 gap-1.5 p-1 rounded-xl bg-[#F8F2EC] border border-[#E8DFD3] text-xs">
               <button
                 type="button"
                 onClick={() => handleRoleSelect("super_admin")}
@@ -84,6 +84,17 @@ export default function LoginPage() {
                 }`}
               >
                 Super-Admin
+              </button>
+              <button
+                type="button"
+                onClick={() => handleRoleSelect("promoter_executive")}
+                className={`py-2 px-2 rounded-lg font-semibold text-center transition-all cursor-pointer ${
+                  selectedRole === "promoter_executive"
+                    ? "bg-[#821A2A] text-white shadow-xs font-bold"
+                    : "text-[#5C4A4D] hover:text-[#24060B] hover:bg-white/60"
+                }`}
+              >
+                Promoter MD
               </button>
               <button
                 type="button"
@@ -98,6 +109,17 @@ export default function LoginPage() {
               </button>
               <button
                 type="button"
+                onClick={() => handleRoleSelect("legal_counsel")}
+                className={`py-2 px-2 rounded-lg font-semibold text-center transition-all cursor-pointer ${
+                  selectedRole === "legal_counsel"
+                    ? "bg-[#821A2A] text-white shadow-xs font-bold"
+                    : "text-[#5C4A4D] hover:text-[#24060B] hover:bg-white/60"
+                }`}
+              >
+                Legal Counsel
+              </button>
+              <button
+                type="button"
                 onClick={() => handleRoleSelect("project_operator")}
                 className={`py-2 px-2 rounded-lg font-semibold text-center transition-all cursor-pointer ${
                   selectedRole === "project_operator"
@@ -105,24 +127,50 @@ export default function LoginPage() {
                     : "text-[#5C4A4D] hover:text-[#24060B] hover:bg-white/60"
                 }`}
               >
-                Site Operator
+                CRM Operator
+              </button>
+              <button
+                type="button"
+                onClick={() => handleRoleSelect("bank_auditor")}
+                className={`py-2 px-2 rounded-lg font-semibold text-center transition-all cursor-pointer ${
+                  selectedRole === "bank_auditor"
+                    ? "bg-[#821A2A] text-white shadow-xs font-bold"
+                    : "text-[#5C4A4D] hover:text-[#24060B] hover:bg-white/60"
+                }`}
+              >
+                Bank Liaison
               </button>
             </div>
 
             <div className="p-2.5 rounded-lg bg-[#FAF7F2] border border-[#E8DFD3] text-[11px] text-[#5C4A4D]">
               {selectedRole === "super_admin" && (
                 <span>
-                  <strong className="text-[#24060B]">Global Platform Owner:</strong> Provision builder projects, generate tower/parking matrices, issue credentials.
+                  <strong className="text-[#24060B]">Global Platform Owner:</strong> Provision builder organizations, manage project licenses, system health.
+                </span>
+              )}
+              {selectedRole === "promoter_executive" && (
+                <span>
+                  <strong className="text-[#24060B]">Builder MD / Promoter:</strong> Executive cash inflow monitoring, overview KPIs, read-only oversight.
                 </span>
               )}
               {selectedRole === "project_admin" && (
                 <span>
-                  <strong className="text-[#24060B]">Sobha Royal Pavilion Head:</strong> Gatekeeper for change approvals, 1-click rollback, bulk Sale Deed issuance.
+                  <strong className="text-[#24060B]">Head of CRM &amp; Operations:</strong> Master sheet imports, Diff Review Queue approver, slot swap authority.
+                </span>
+              )}
+              {selectedRole === "legal_counsel" && (
+                <span>
+                  <strong className="text-[#24060B]">Chief Legal Counsel:</strong> Template Studio authority, RERA Form N compliance, version rollback.
                 </span>
               )}
               {selectedRole === "project_operator" && (
                 <span>
-                  <strong className="text-[#24060B]">Site CRM Executive:</strong> Drafts documents, uploads KYC OCR. Changes automatically route to Diff Approval Queue.
+                  <strong className="text-[#24060B]">Site CRM Executive (Pooja):</strong> Drops KYC cards, 2-click document generation, auto-routes edits to Diff Queue.
+                </span>
+              )}
+              {selectedRole === "bank_auditor" && (
+                <span>
+                  <strong className="text-[#24060B]">SBI RACPC Bank Auditor:</strong> Verifies mortgage NOCs, payment milestone UTRs, title clearance hashes.
                 </span>
               )}
             </div>

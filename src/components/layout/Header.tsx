@@ -2,13 +2,31 @@
 
 import React, { useEffect, useState } from "react";
 import Link from "next/link";
-import { Menu, X } from "lucide-react";
+import { Menu, X, Settings, ShieldCheck } from "lucide-react";
 import { UserRole } from "@/lib/types";
 
 interface HeaderProps {
   onToggleMobileMenu?: () => void;
   isMobileMenuOpen?: boolean;
 }
+
+const ROLE_INITIALS: Record<UserRole, string> = {
+  super_admin: "SA",
+  promoter_executive: "VR",
+  project_admin: "AM",
+  legal_counsel: "KM",
+  project_operator: "PH",
+  bank_auditor: "RK",
+};
+
+const ROLE_LABELS: Record<UserRole, string> = {
+  super_admin: "Super Admin",
+  promoter_executive: "Promoter MD",
+  project_admin: "Project Admin",
+  legal_counsel: "Legal Counsel",
+  project_operator: "CRM Operator",
+  bank_auditor: "Bank Auditor",
+};
 
 export function Header({ onToggleMobileMenu, isMobileMenuOpen }: HeaderProps) {
   const [role, setRole] = useState<UserRole>("project_admin");
@@ -50,21 +68,29 @@ export function Header({ onToggleMobileMenu, isMobileMenuOpen }: HeaderProps) {
           </div>
         </div>
 
-        {/* Right: Workspace Tag & Role Badge */}
+        {/* Right: Settings, Role Badge & User Avatar */}
         <div className="flex items-center space-x-2 sm:space-x-3 shrink-0">
+          <Link
+            href="/dashboard/settings"
+            className="p-1.5 sm:p-2 text-[#5C4A4D] hover:text-[#821A2A] rounded-xl hover:bg-[#F3EAE0] transition-colors"
+            title="Enterprise Settings & Profile"
+          >
+            <Settings className="w-4 h-4" />
+          </Link>
+
           <div className="hidden sm:flex items-center space-x-2 px-3 py-1 rounded-full bg-white border border-[#DECFC0] text-[#5C4A4D] text-xs font-semibold shadow-2xs">
             <span className="w-2 h-2 rounded-full bg-[#B88E3E] animate-pulse" />
             <span className="font-mono text-[10px] tracking-wider uppercase text-[#24060B]">
-              Role: {role.replace("_", " ")}
+              Role: {ROLE_LABELS[role] || role}
             </span>
           </div>
 
           <Link
-            href="/login"
-            className="w-8 h-8 rounded-full bg-[#821A2A] text-white border border-[#821A2A]/30 flex items-center justify-center font-bold text-xs shadow-2xs hover:ring-2 hover:ring-[#821A2A]/40 transition-all shrink-0"
-            title="Switch User Role / Logout"
+            href="/dashboard/settings"
+            className="w-8 h-8 rounded-full bg-[#821A2A] text-white border border-[#821A2A]/30 flex items-center justify-center font-bold text-xs shadow-2xs hover:ring-2 hover:ring-[#821A2A]/40 transition-all shrink-0 cursor-pointer"
+            title="My Profile & Settings"
           >
-            {role === "super_admin" ? "SA" : role === "project_admin" ? "AM" : "OP"}
+            {ROLE_INITIALS[role] || "DF"}
           </Link>
         </div>
       </div>
