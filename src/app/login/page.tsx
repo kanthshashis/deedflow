@@ -3,7 +3,8 @@
 import React, { useState } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
-import { ShieldCheck, ArrowRight, Building2, UserCheck, Lock, Sparkles } from "lucide-react";
+import { Logo } from "@/components/ui/Logo";
+import { ShieldCheck, ArrowRight, UserCheck, Lock, Sparkles } from "lucide-react";
 import { DEMO_USERS } from "@/lib/mockData";
 import { UserRole } from "@/lib/types";
 
@@ -49,15 +50,8 @@ export default function LoginPage() {
       <div className="absolute top-0 inset-x-0 h-full pointer-events-none bg-grid-ivory opacity-60" />
 
       <div className="relative z-10 sm:mx-auto sm:w-full sm:max-w-md text-center">
-        {/* Brand Badge */}
-        <Link href="/" className="inline-flex items-center space-x-2.5 group">
-          <div className="w-10 h-10 rounded-xl bg-[#821A2A] border border-[#7D1826]/40 text-[#D4B989] flex items-center justify-center font-bold shadow-xs">
-            <Building2 className="w-5 h-5 text-[#D4B989]" />
-          </div>
-          <span className="text-2xl font-bold tracking-tight text-[#24060B] lowercase font-sans">
-            deedflow<span className="text-[#B88E3E]">.</span>
-          </span>
-        </Link>
+        {/* Unified Brand Logo */}
+        <Logo href="/" size="lg" className="justify-center" />
 
         <h2 className="mt-4 text-2xl sm:text-3xl font-bold font-serif tracking-tight text-[#24060B]">
           Institutional Builder Sign In

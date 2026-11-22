@@ -2,8 +2,8 @@
 
 import React, { useState } from "react";
 import Link from "next/link";
+import { Logo } from "@/components/ui/Logo";
 import {
-  Building2,
   FileCheck2,
   ShieldCheck,
   Car,
@@ -41,20 +41,8 @@ export default function LandingPage() {
       {/* Main Navigation Bar */}
       <nav className="sticky top-0 z-40 bg-[#FAF7F2]/90 backdrop-blur-md border-b border-[#E8DFD3]">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
-          {/* Brand */}
-          <Link href="/" className="flex items-center space-x-2.5 group">
-            <div className="w-9 h-9 rounded-xl flex items-center justify-center font-bold text-sm bg-[#821A2A] text-white border border-[#821A2A]/30 shadow-xs group-hover:scale-105 spring-snap">
-              <Building2 className="w-5 h-5 text-[#FAF7F2]" />
-            </div>
-            <div className="flex flex-col">
-              <span className="text-base font-extrabold tracking-tight text-[#24060B]">
-                DeedFlow
-              </span>
-              <span className="text-[9px] font-mono text-[#8C777A] uppercase tracking-wider -mt-0.5 font-semibold">
-                Royal Estate Edition
-              </span>
-            </div>
-          </Link>
+          {/* Brand Logo Consistent with App */}
+          <Logo href="/" size="md" />
 
           {/* Navigation Anchors */}
           <div className="hidden md:flex items-center space-x-6 text-xs font-semibold text-[#5C4A4D]">
@@ -336,16 +324,11 @@ export default function LandingPage() {
       {/* High-Craft Footer */}
       <footer className="border-t border-[#DECFC0] bg-[#F4ECE3] py-12 px-4 sm:px-6 lg:px-8 relative z-10">
         <div className="max-w-7xl mx-auto flex flex-col md:flex-row items-center justify-between gap-6">
-          <div className="flex items-center space-x-3">
-            <div className="w-8 h-8 rounded-lg flex items-center justify-center font-bold text-xs bg-[#821A2A] text-[#FAF7F2] border border-[#821A2A]/30 shadow-2xs">
-              <Building2 className="w-4 h-4" />
-            </div>
-            <div>
-              <span className="text-sm font-bold text-[#24060B]">DeedFlow</span>
-              <span className="text-[10px] font-mono text-[#8C777A] block -mt-0.5">
-                © 2026 DeedFlow Systems • Bengaluru, Karnataka
-              </span>
-            </div>
+          <div className="flex flex-col sm:flex-row sm:items-center space-y-2 sm:space-y-0 sm:space-x-4">
+            <Logo href="/" size="sm" />
+            <span className="text-[10px] font-mono text-[#8C777A] block sm:border-l sm:border-[#DECFC0] sm:pl-4">
+              © 2026 DeedFlow Systems • Bengaluru, Karnataka
+            </span>
           </div>
 
           <div className="flex items-center space-x-6 text-xs text-[#5C4A4D]">

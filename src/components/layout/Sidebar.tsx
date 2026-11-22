@@ -3,6 +3,7 @@
 import React, { useEffect, useState } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import { Logo } from "@/components/ui/Logo";
 import {
   LayoutGrid,
   FileText,
@@ -70,24 +71,7 @@ export function Sidebar({ isOpen, onClose }: SidebarProps) {
         <div className="p-4 pb-2 space-y-3 shrink-0 border-b border-[#E8DFD3]/60 bg-[#FAF7F2]">
           {/* Top Brand Logo */}
           <div className="flex items-center justify-between px-1 pt-1">
-            <div className="flex items-center space-x-2.5">
-              <div className="w-8 h-8 rounded-xl bg-[#821A2A]/10 border border-[#821A2A]/20 flex items-center justify-center text-[#821A2A] shadow-2xs">
-                <svg
-                  className="w-5 h-5 text-[#821A2A]"
-                  viewBox="0 0 24 24"
-                  fill="none"
-                  stroke="currentColor"
-                  strokeWidth="2.5"
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                >
-                  <path d="M7 17l9.2-9.2M17 17V7H7" />
-                </svg>
-              </div>
-              <span className="text-xl font-bold tracking-tight text-[#24060B] font-sans lowercase">
-                deedflow<span className="text-[#821A2A]">.</span>
-              </span>
-            </div>
+            <Logo href="/" size="md" />
 
             {onClose && (
               <button

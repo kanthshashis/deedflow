@@ -3,7 +3,8 @@
 import React from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { PlusCircle, ArrowLeft, Shield } from "lucide-react";
+import { Logo } from "@/components/ui/Logo";
+import { PlusCircle, ArrowLeft } from "lucide-react";
 
 export default function SuperAdminLayout({
   children,
@@ -24,14 +25,7 @@ export default function SuperAdminLayout({
       <header className="bg-[#FAF7F2]/95 border-b border-[#E8DFD3] text-[#24060B] sticky top-0 z-30 px-3 sm:px-6 py-2.5 shadow-xs backdrop-blur-md">
         <div className="max-w-7xl mx-auto flex items-center justify-between gap-2">
           <div className="flex items-center space-x-2 sm:space-x-3 min-w-0">
-            <Link href="/super-admin" className="flex items-center space-x-2 shrink-0">
-              <div className="w-8 h-8 rounded-lg bg-[#821A2A]/10 border border-[#821A2A]/20 flex items-center justify-center text-[#821A2A] font-bold shadow-2xs">
-                <Shield className="w-4 h-4 text-[#821A2A]" />
-              </div>
-              <span className="font-bold tracking-tight text-[#24060B] font-sans text-sm sm:text-base">
-                DeedFlow <span className="text-[10px] sm:text-xs font-mono uppercase bg-[#821A2A]/10 text-[#821A2A] px-1.5 sm:px-2 py-0.5 rounded border border-[#821A2A]/20 font-bold">Admin</span>
-              </span>
-            </Link>
+            <Logo href="/super-admin" size="sm" badge="Admin" />
 
             <span className="text-[#DECFC0] hidden sm:inline">|</span>
 
