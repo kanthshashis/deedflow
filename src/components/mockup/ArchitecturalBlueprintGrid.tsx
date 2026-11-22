@@ -1,47 +1,47 @@
 "use client";
 
 import React, { useState } from "react";
-import { Car, CheckCircle2, ShieldCheck, Clock, Layers, Compass, Zap } from "lucide-react";
+import {
+  Car,
+  CheckCircle2,
+  Clock,
+  Layers,
+} from "lucide-react";
 import clsx from "clsx";
 
 interface BlueprintBay {
   number: string;
-  type: "Standard" | "Compact" | "EV Wide" | "Tandem";
-  dimensions: string;
+  type: string;
   status: "available" | "allotted" | "reserved";
   flat?: string;
+  dimensions: string;
   col: string;
 }
 
 const DRAFTING_BAYS: BlueprintBay[] = [
-  { number: "B1-01", type: "Standard", dimensions: "2.6m × 5.0m", status: "allotted", flat: "B-101", col: "P-01" },
-  { number: "B1-02", type: "Standard", dimensions: "2.6m × 5.0m", status: "available", col: "P-02" },
-  { number: "B1-03", type: "EV Wide", dimensions: "2.8m × 5.2m", status: "allotted", flat: "B-201", col: "P-03" },
-  { number: "B1-04", type: "Compact", dimensions: "2.4m × 4.8m", status: "available", col: "P-04" },
-  { number: "B1-05", type: "Compact", dimensions: "2.4m × 4.8m", status: "available", col: "P-05" },
-  { number: "B1-06", type: "Tandem", dimensions: "2.6m × 9.8m", status: "reserved", flat: "B-103", col: "P-06" },
-
-  { number: "B1-07", type: "Standard", dimensions: "2.6m × 5.0m", status: "available", col: "P-07" },
-  { number: "B1-08", type: "Standard", dimensions: "2.6m × 5.0m", status: "allotted", flat: "B-302", col: "P-08" },
-  { number: "B1-09", type: "Standard", dimensions: "2.6m × 5.0m", status: "available", col: "P-09" },
-  { number: "B1-10", type: "Compact", dimensions: "2.4m × 4.8m", status: "available", col: "P-10" },
-  { number: "B1-11", type: "EV Wide", dimensions: "2.8m × 5.2m", status: "available", col: "P-11" },
-  { number: "B1-12", type: "Standard", dimensions: "2.6m × 5.0m", status: "allotted", flat: "B-404", col: "P-12" },
+  { number: "B1-001", type: "Covered", status: "allotted", flat: "A-101", dimensions: "2.5m x 5.0m", col: "Col 14-A" },
+  { number: "B1-002", type: "Covered", status: "available", dimensions: "2.5m x 5.0m", col: "Col 14-B" },
+  { number: "B1-003", type: "Tandem Upper", status: "reserved", flat: "A-102", dimensions: "2.4m x 9.8m", col: "Col 15-A" },
+  { number: "B1-004", type: "Tandem Lower", status: "available", dimensions: "2.4m x 9.8m", col: "Col 15-B" },
+  { number: "B1-005", type: "Covered", status: "allotted", flat: "H-801", dimensions: "2.6m x 5.2m", col: "Col 16-A" },
+  { number: "B1-006", type: "Covered", status: "available", dimensions: "2.5m x 5.0m", col: "Col 16-B" },
+  { number: "B1-007", type: "Covered", status: "allotted", flat: "B-204", dimensions: "2.5m x 5.0m", col: "Col 17-A" },
+  { number: "B1-008", type: "Covered", status: "available", dimensions: "2.5m x 5.0m", col: "Col 17-B" },
+  { number: "B1-009", type: "Stilt Open", status: "available", dimensions: "2.5m x 5.0m", col: "Col 18-A" },
+  { number: "B1-010", type: "Covered", status: "allotted", flat: "C-402", dimensions: "2.5m x 5.0m", col: "Col 18-B" },
+  { number: "B1-011", type: "Covered", status: "available", dimensions: "2.5m x 5.0m", col: "Col 19-A" },
+  { number: "B1-012", type: "Covered", status: "available", dimensions: "2.5m x 5.0m", col: "Col 19-B" },
 ];
 
 interface ArchitecturalBlueprintGridProps {
-  theme?: "stripe" | "linear" | "luxury";
+  theme?: string;
 }
 
-export function ArchitecturalBlueprintGrid({ theme = "stripe" }: ArchitecturalBlueprintGridProps) {
+export function ArchitecturalBlueprintGrid({}: ArchitecturalBlueprintGridProps) {
   const [bays, setBays] = useState<BlueprintBay[]>(DRAFTING_BAYS);
   const [selectedBay, setSelectedBay] = useState<BlueprintBay | null>(bays[1]);
   const [activeLevel, setActiveLevel] = useState<"B1 (Upper)" | "B2 (Lower)">("B1 (Upper)");
   const [notification, setNotification] = useState<string | null>(null);
-
-  const isLight = theme === "stripe";
-  const isDark = theme === "linear";
-  const isLuxury = theme === "luxury";
 
   const handleToggle = (bay: BlueprintBay) => {
     setSelectedBay(bay);
@@ -71,39 +71,26 @@ export function ArchitecturalBlueprintGrid({ theme = "stripe" }: ArchitecturalBl
   const allottedCount = bays.filter((b) => b.status === "allotted").length;
 
   return (
-    <div className="w-full max-w-6xl mx-auto space-y-6">
-      <div
-        className={clsx(
-          "rounded-2xl p-6 sm:p-8 space-y-6 border spring-snap",
-          isLight && "glossy-card border-[#DECFC0]",
-          isDark && "bg-surface border-border shadow-card",
-          isLuxury && "bg-white border-stone-300 shadow-sm"
-        )}
-      >
+    <div className="w-full max-w-6xl mx-auto space-y-6 font-sans">
+      <div className="rounded-2xl p-6 sm:p-8 space-y-6 border border-[#DECFC0] glossy-card spring-snap">
         {/* Top Blueprint Header Bar */}
-        <div className={clsx("flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b pb-5", isLight ? "border-[#E8DFD3]" : isDark ? "border-border" : "border-stone-200")}>
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-[#E8DFD3] pb-5">
           <div className="flex items-center space-x-3">
-            <div className={clsx(
-              "w-10 h-10 rounded-xl border flex items-center justify-center font-bold",
-              isLight ? "bg-[#FBF2F3] border-[#E8C8CC] text-[#7D1826]" : isDark ? "bg-brand/20 border-brand/40 text-brand" : "bg-stone-100 border-stone-300 text-stone-800"
-            )}>
+            <div className="w-10 h-10 rounded-xl border border-[#DECFC0] bg-[#FBF2F3] text-[#821A2A] flex items-center justify-center font-bold shadow-2xs">
               <Layers className="w-5 h-5 text-[#B88E3E]" />
             </div>
             <div>
-              <h3 className={clsx("text-base font-bold", isLight ? "text-[#24060B]" : isDark ? "text-ink" : "text-stone-900")}>
+              <h3 className="text-base font-bold text-[#24060B]">
                 Architectural Drawing: Scheme A-04 (Basement Bay Layout)
               </h3>
-              <p className={clsx("text-xs font-mono", isLight ? "text-[#5C4A4D]" : isDark ? "text-ink-muted" : "text-stone-500")}>
+              <p className="text-xs font-mono text-[#5C4A4D]">
                 Scale 1:100 • BBMP Sanction Plan Ref: LP/0114/2018-19 • Sobha Royal Pavilion
               </p>
             </div>
           </div>
 
           {/* Level Switcher */}
-          <div className={clsx(
-            "flex items-center space-x-1.5 p-1 rounded-xl text-xs font-semibold border",
-            isLight ? "bg-[#F8F2EC] border-[#DECFC0]" : isDark ? "bg-surface-muted border-border" : "bg-stone-100 border-stone-200"
-          )}>
+          <div className="flex items-center space-x-1.5 p-1 rounded-xl text-xs font-semibold border border-[#DECFC0] bg-[#FFFDFB] shadow-2xs">
             {(["B1 (Upper)", "B2 (Lower)"] as const).map((lvl) => (
               <button
                 key={lvl}
@@ -111,8 +98,8 @@ export function ArchitecturalBlueprintGrid({ theme = "stripe" }: ArchitecturalBl
                 className={clsx(
                   "px-3.5 py-1.5 rounded-lg spring-snap transition-all cursor-pointer",
                   activeLevel === lvl
-                    ? isLight ? "bg-[#4A0E17] text-[#FAF7F2] shadow-sm font-bold border border-[#6B1B26]" : isDark ? "bg-brand text-white shadow-glow" : "bg-stone-900 text-white shadow-sm font-bold"
-                    : isLight ? "text-[#5C4A4D] hover:text-[#4A0E17] hover:bg-[#F3EAE0]" : isDark ? "text-ink-secondary hover:text-ink" : "text-stone-600 hover:text-stone-900"
+                    ? "bg-[#821A2A] text-white shadow-xs font-bold border border-[#821A2A]"
+                    : "text-[#5C4A4D] hover:text-[#821A2A] hover:bg-[#F8F2EC]"
                 )}
               >
                 {lvl}
@@ -122,43 +109,29 @@ export function ArchitecturalBlueprintGrid({ theme = "stripe" }: ArchitecturalBl
         </div>
 
         {notification && (
-          <div className={clsx(
-            "p-3.5 border text-xs font-medium rounded-xl flex items-center space-x-2 animate-fade-in",
-            isLight ? "bg-[#FBF2F3] border-[#E8C8CC] text-[#7D1826]" : isDark ? "bg-emerald-500/10 border-emerald-500/30 text-emerald-300" : "bg-emerald-50 border-emerald-300 text-emerald-900"
-          )}>
-            <CheckCircle2 className={clsx("w-4 h-4 shrink-0", isLight ? "text-[#B88E3E]" : "text-emerald-600")} />
+          <div className="p-3.5 border border-[#DECFC0] text-xs font-medium rounded-xl flex items-center space-x-2 animate-fade-in bg-[#FBF2F3] text-[#821A2A]">
+            <CheckCircle2 className="w-4 h-4 shrink-0 text-[#B88E3E]" />
             <span>{notification}</span>
           </div>
         )}
 
         {/* The Architectural Drafting Canvas Sheet */}
-        <div
-          className={clsx(
-            "border rounded-xl p-6 sm:p-8 relative overflow-hidden",
-            isLight && "bg-[#FFFDFB] border-[#DECFC0] shadow-inner",
-            isDark && "bg-[#0A0C0E] border-border",
-            isLuxury && "bg-[#FAF9F5] border-stone-300 shadow-inner"
-          )}
-        >
+        <div className="border border-[#DECFC0] rounded-xl p-6 sm:p-8 relative overflow-hidden bg-[#FFFDFB] shadow-inner">
           {/* CAD Grid Background */}
           <div
             className="absolute inset-0 pointer-events-none opacity-30"
             style={{
-              backgroundImage: isDark
-                ? "linear-gradient(to right, rgba(94, 106, 210, 0.25) 1px, transparent 1px), linear-gradient(to bottom, rgba(94, 106, 210, 0.25) 1px, transparent 1px)"
-                : "linear-gradient(to right, rgba(184, 142, 62, 0.14) 1px, transparent 1px), linear-gradient(to bottom, rgba(184, 142, 62, 0.14) 1px, transparent 1px)",
+              backgroundImage:
+                "linear-gradient(to right, rgba(184, 142, 62, 0.14) 1px, transparent 1px), linear-gradient(to bottom, rgba(184, 142, 62, 0.14) 1px, transparent 1px)",
               backgroundSize: "24px 24px",
             }}
           />
 
           {/* Blueprint Title Block Corner */}
-          <div className={clsx(
-            "hidden sm:block absolute top-4 right-4 border rounded-lg p-3 text-[10px] font-mono text-right space-y-0.5",
-            isLight ? "glossy-card border-[#DECFC0] text-[#5C4A4D]" : isDark ? "bg-surface/90 border-border text-ink-muted" : "bg-white/95 border-stone-300 text-stone-600"
-          )}>
-            <div className={clsx("font-semibold", isLight ? "text-[#24060B]" : isDark ? "text-ink" : "text-stone-900")}>SOBHA ROYAL PAVILION</div>
+          <div className="hidden sm:block absolute top-4 right-4 border border-[#DECFC0] rounded-lg p-3 text-[10px] font-mono text-right space-y-0.5 glossy-card text-[#5C4A4D]">
+            <div className="font-semibold text-[#24060B]">SOBHA ROYAL PAVILION</div>
             <div>DWG NO: B1-PARK-REV3</div>
-            <div className={clsx("font-bold", isLight ? "text-[#7D1826]" : "text-emerald-600")}>STATUS: ATOMIC RECONCILED</div>
+            <div className="font-bold text-[#821A2A]">STATUS: ATOMIC RECONCILED</div>
           </div>
 
           {/* Bays Layout Grid */}
@@ -175,24 +148,12 @@ export function ArchitecturalBlueprintGrid({ theme = "stripe" }: ArchitecturalBl
                   className={clsx(
                     "cursor-pointer rounded-xl p-3 border spring-snap flex flex-col justify-between h-28 select-none relative group transition-all",
                     bay.status === "available" &&
-                      (isLight
-                        ? "bg-white/90 border-[#E8DFD3] hover:border-[#7D1826] hover:bg-[#FBF2F3]/40 text-[#24060B] shadow-2xs"
-                        : isDark
-                        ? "bg-surface-muted/80 border-border hover:border-brand/60 hover:bg-brand/10 text-ink"
-                        : "bg-white border-stone-200 hover:border-stone-800 hover:bg-stone-50 text-stone-800 shadow-xs"),
+                      "bg-white/90 border-[#E8DFD3] hover:border-[#821A2A] hover:bg-[#FBF2F3]/40 text-[#24060B] shadow-2xs",
                     isAllotted &&
-                      (isLight
-                        ? "bg-[#FBF2F3] border-[#E8C8CC] text-[#7D1826]"
-                        : isDark
-                        ? "bg-emerald-500/10 border-emerald-500/40 text-emerald-200"
-                        : "bg-emerald-50 border-emerald-300 text-emerald-900"),
+                      "bg-[#FBF2F3] border-[#DECFC0] text-[#821A2A]",
                     isReserved &&
-                      (isLight
-                        ? "bg-[#F7F1E6] border-[#DFD1B8] text-[#8C6D2D]"
-                        : isDark
-                        ? "bg-amber-500/10 border-amber-500/40 text-amber-200"
-                        : "bg-amber-50 border-amber-300 text-amber-900"),
-                    isSelected && (isLight ? "ring-2 ring-[#7D1826] shadow-sm" : isDark ? "ring-2 ring-brand" : "ring-2 ring-stone-900")
+                      "bg-[#F7F1E6] border-[#DFD1B8] text-[#8C6D2D]",
+                    isSelected && "ring-2 ring-[#821A2A] shadow-sm"
                   )}
                 >
                   <div className="flex items-center justify-between">
@@ -206,17 +167,17 @@ export function ArchitecturalBlueprintGrid({ theme = "stripe" }: ArchitecturalBl
 
                   <div className="my-1">
                     {isAllotted ? (
-                      <div className={clsx("text-[11px] font-bold flex items-center space-x-1", isLight ? "text-[#7D1826]" : "text-emerald-700")}>
-                        <CheckCircle2 className={clsx("w-3.5 h-3.5 shrink-0", isLight ? "text-[#B88E3E]" : "")} />
+                      <div className="text-[11px] font-bold flex items-center space-x-1 text-[#821A2A]">
+                        <CheckCircle2 className="w-3.5 h-3.5 shrink-0 text-[#B88E3E]" />
                         <span className="truncate">Flat {bay.flat}</span>
                       </div>
                     ) : isReserved ? (
-                      <div className={clsx("text-[11px] font-bold flex items-center space-x-1", isLight ? "text-[#8C6D2D]" : "text-amber-700")}>
-                        <Clock className={clsx("w-3.5 h-3.5 shrink-0", isLight ? "text-[#B88E3E]" : "")} />
+                      <div className="text-[11px] font-bold flex items-center space-x-1 text-[#8C6D2D]">
+                        <Clock className="w-3.5 h-3.5 shrink-0 text-[#B88E3E]" />
                         <span>Token Hold</span>
                       </div>
                     ) : (
-                      <div className={clsx("text-[11px] opacity-75 group-hover:text-[#7D1826] flex items-center space-x-1 font-medium", isLight ? "text-[#5C4A4D]" : "")}>
+                      <div className="text-[11px] text-[#5C4A4D] group-hover:text-[#821A2A] flex items-center space-x-1 font-medium">
                         <Car className="w-3.5 h-3.5 shrink-0" />
                         <span>Click to Allot</span>
                       </div>
@@ -234,21 +195,21 @@ export function ArchitecturalBlueprintGrid({ theme = "stripe" }: ArchitecturalBl
         </div>
 
         {/* Bottom Legend */}
-        <div className={clsx("flex flex-wrap items-center justify-between gap-4 text-xs pt-2", isLight ? "text-[#5C4A4D]" : isDark ? "text-ink-secondary" : "text-stone-600")}>
+        <div className="flex flex-wrap items-center justify-between gap-4 text-xs pt-2 text-[#5C4A4D]">
           <div className="flex items-center space-x-4">
             <span className="flex items-center space-x-1.5">
               <span className="w-2.5 h-2.5 rounded-full bg-[#E8DFD3] border border-[#DECFC0]" />
               <span>Available ({availableCount})</span>
             </span>
             <span className="flex items-center space-x-1.5">
-              <span className={clsx("w-2.5 h-2.5 rounded-full", isLight ? "bg-[#7D1826]" : "bg-emerald-500")} />
-              <span className={clsx("font-semibold", isLight ? "text-[#7D1826]" : "text-emerald-600")}>
+              <span className="w-2.5 h-2.5 rounded-full bg-[#821A2A]" />
+              <span className="font-semibold text-[#821A2A]">
                 Allotted ({allottedCount})
               </span>
             </span>
             <span className="flex items-center space-x-1.5">
-              <span className={clsx("w-2.5 h-2.5 rounded-full", isLight ? "bg-[#B88E3E]" : "bg-amber-500")} />
-              <span className={clsx("font-semibold", isLight ? "text-[#8C6D2D]" : "text-amber-600")}>Reserved (1)</span>
+              <span className="w-2.5 h-2.5 rounded-full bg-[#B88E3E]" />
+              <span className="font-semibold text-[#8C6D2D]">Reserved (1)</span>
             </span>
           </div>
 
