@@ -332,13 +332,24 @@ export default function ParkingDashboardPage() {
                   <span>Draft Allotment Letter</span>
                 </Link>
               ) : (
-                <button
-                  onClick={() => handleSimulateSwapRequest(selectedSlot)}
-                  className="px-4 py-2.5 bg-[#B88E3E] hover:bg-[#9E782E] text-white text-xs font-bold rounded-xl flex items-center space-x-2 shadow-xs transition-colors cursor-pointer"
-                >
-                  <RefreshCw className="w-3.5 h-3.5" />
-                  <span>Stage Slot Swap Request</span>
-                </button>
+                <div className="flex items-center space-x-2">
+                  {selectedSlot.allottedUnitFlat && (
+                    <Link
+                      href={`/dashboard/units/${encodeURIComponent(selectedSlot.allottedUnitFlat)}`}
+                      className="px-4 py-2.5 glossy-btn-burgundy hover:brightness-105 text-white text-xs font-bold rounded-xl flex items-center space-x-1.5 shadow-sm transition-colors cursor-pointer"
+                    >
+                      <span>Open Unit Dossier</span>
+                      <ArrowRight className="w-3.5 h-3.5 text-[#D4B989]" />
+                    </Link>
+                  )}
+                  <button
+                    onClick={() => handleSimulateSwapRequest(selectedSlot)}
+                    className="px-4 py-2.5 bg-[#FAF7F2] hover:bg-[#F2EAE0] text-[#24060B] border border-[#DECFC0] text-xs font-bold rounded-xl flex items-center space-x-1.5 shadow-xs transition-colors cursor-pointer"
+                  >
+                    <RefreshCw className="w-3.5 h-3.5 text-[#821A2A]" />
+                    <span>Swap Slot</span>
+                  </button>
+                </div>
               )}
             </div>
           </div>

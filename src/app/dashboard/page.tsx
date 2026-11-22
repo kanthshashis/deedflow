@@ -117,6 +117,14 @@ export default function DashboardOverview() {
 
         <div className="flex flex-wrap sm:flex-nowrap items-center gap-2.5 w-full sm:w-auto">
           <Link
+            href="/dashboard/inventory"
+            className="flex-1 sm:flex-none justify-center px-4 py-2.5 glossy-btn-burgundy text-white rounded-xl text-xs font-semibold flex items-center space-x-1.5 shadow-sm transition-colors cursor-pointer hover:brightness-105"
+          >
+            <Building className="w-4 h-4 text-[#D4B989]" />
+            <span>Unit Dossiers</span>
+          </Link>
+
+          <Link
             href="/dashboard/parking"
             className="flex-1 sm:flex-none justify-center px-4 py-2.5 glossy-btn-ivory text-[#24060B] rounded-xl text-xs font-semibold flex items-center space-x-1.5 shadow-xs transition-colors cursor-pointer"
           >
@@ -126,10 +134,10 @@ export default function DashboardOverview() {
 
           <Link
             href="/dashboard/draft/new"
-            className="flex-1 sm:flex-none justify-center px-4 py-2.5 glossy-btn-burgundy text-white rounded-xl text-xs font-semibold flex items-center space-x-2 shadow-sm transition-colors cursor-pointer hover:brightness-105"
+            className="flex-1 sm:flex-none justify-center px-4 py-2.5 glossy-btn-ivory border-[#DECFC0] text-[#24060B] rounded-xl text-xs font-semibold flex items-center space-x-1.5 shadow-xs transition-colors cursor-pointer"
           >
-            <Plus className="w-4 h-4 text-[#D4B989]" />
-            <span>New document</span>
+            <Plus className="w-4 h-4 text-[#821A2A]" />
+            <span>Document Studio</span>
           </Link>
         </div>
       </div>
@@ -320,9 +328,13 @@ export default function DashboardOverview() {
 
                   {/* Unit Column */}
                   <td className="py-3.5 px-2">
-                    <span className="px-2.5 py-1 rounded-md bg-[#F8F2EC] text-[#24060B] font-mono text-[11px] font-semibold border border-[#E8DFD3]">
+                    <Link
+                      href={`/dashboard/units/${encodeURIComponent(doc.unit.replace("*", ""))}`}
+                      className="px-2.5 py-1 rounded-md bg-[#F8F2EC] hover:bg-[#FAF0F2] text-[#24060B] hover:text-[#821A2A] font-mono text-[11px] font-semibold border border-[#E8DFD3] hover:border-[#E8C4C8] transition-colors inline-block"
+                      title="Open Unit Dossier"
+                    >
                       {doc.unit}
-                    </span>
+                    </Link>
                   </td>
 
                   {/* Status Column */}

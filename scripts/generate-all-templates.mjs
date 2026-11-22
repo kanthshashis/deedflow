@@ -298,6 +298,167 @@ const costSheetDocXml = `<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
   </w:body>
 </w:document>`;
 
+// 4. KARNATAKA RERA FORM N MODEL AGREEMENT FOR SALE
+const reraAtsDocXml = `<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<w:document xmlns:w="http://schemas.openxmlformats.org/wordprocessingml/2006/main">
+  <w:body>
+    <w:p>
+      <w:pPr><w:jc w:val="center"/></w:pPr>
+      <w:r><w:rPr><w:sz w:val="18"/><w:color w:val="64748B"/></w:rPr><w:t>KARNATAKA REAL ESTATE REGULATORY AUTHORITY (RERA)</w:t></w:r>
+    </w:p>
+    <w:p>
+      <w:pPr><w:jc w:val="center"/></w:pPr>
+      <w:r><w:rPr><w:b/><w:sz w:val="30"/><w:color w:val="0F172A"/></w:rPr><w:t>AGREEMENT FOR SALE (FORM 'N')</w:t></w:r>
+    </w:p>
+    <w:p>
+      <w:pPr><w:jc w:val="center"/></w:pPr>
+      <w:r><w:rPr><w:sz w:val="18"/><w:color w:val="64748B"/></w:rPr><w:t>Under Section 13(2) of Real Estate (Regulation and Development) Act, 2016</w:t></w:r>
+    </w:p>
+    <w:p><w:r><w:t></w:t></w:r></w:p>
+    <w:p>
+      <w:r><w:t>This Agreement for Sale is executed at Bengaluru on this </w:t></w:r>
+      <w:r><w:rPr><w:b/></w:rPr><w:t>{date_dd_mm_yyyy}</w:t></w:r>
+      <w:r><w:t> BY AND BETWEEN:</w:t></w:r>
+    </w:p>
+    <w:p><w:r><w:t></w:t></w:r></w:p>
+    <w:p>
+      <w:r><w:rPr><w:b/></w:rPr><w:t>1. {company_name}</w:t></w:r>
+      <w:r><w:t>, a company incorporated under the Companies Act, CIN: {company_cin}, having its Registered Office at Bengaluru, represented by its Authorized Signatory (hereinafter referred to as the "PROMOTER/DEVELOPER").</w:t></w:r>
+    </w:p>
+    <w:p><w:r><w:jc w:val="center"/><w:rPr><w:b/><w:sz w:val="20"/></w:rPr><w:t>AND</w:t></w:r></w:p>
+    <w:p>
+      <w:r><w:rPr><w:b/></w:rPr><w:t>2. {buyer_name}</w:t></w:r>
+      <w:r><w:t>, PAN: {buyer_pan}, Aadhaar Ref: {buyer_aadhaar_masked}, residing at {buyer_address} (hereinafter referred to as the "{allottee_noun}").</w:t></w:r>
+    </w:p>
+    <w:p><w:r><w:t>{legal_representation}</w:t></w:r></w:p>
+    <w:p><w:r><w:t></w:t></w:r></w:p>
+    <w:p>
+      <w:r><w:rPr><w:b/><w:u w:val="single"/><w:color w:val="1E3A8A"/></w:rPr><w:t>CLAUSE 1: PARTICULARS OF THE APARTMENT &amp; CAR PARKING</w:t></w:r>
+    </w:p>
+    <w:p>
+      <w:r><w:t>The Promoter hereby agrees to sell and the Allottee agrees to purchase Apartment/Flat No. </w:t></w:r>
+      <w:r><w:rPr><w:b/></w:rPr><w:t>{flat_no}</w:t></w:r>
+      <w:r><w:t> on the {floor_ordinal} Floor, {tower_name}, in the project '{project_name}' (Karnataka RERA Reg No: {project_rera_no}) with Carpet Area of </w:t></w:r>
+      <w:r><w:rPr><w:b/></w:rPr><w:t>{carpet_sqft} sq.ft</w:t></w:r>
+      <w:r><w:t>, Super Built-up Area of {sba_sqft} sq.ft, along with undivided share of land (UDS) measuring </w:t></w:r>
+      <w:r><w:rPr><w:b/></w:rPr><w:t>{uds_sqft} sq.ft</w:t></w:r>
+      <w:r><w:t>, and dedicated {parking_type} Car Parking Bay No. </w:t></w:r>
+      <w:r><w:rPr><w:b/></w:rPr><w:t>{parking_slot_no}</w:t></w:r>
+      <w:r><w:t> in {parking_level}.</w:t></w:r>
+    </w:p>
+    <w:p><w:r><w:t></w:t></w:r></w:p>
+    <w:p>
+      <w:r><w:rPr><w:b/><w:u w:val="single"/><w:color w:val="1E3A8A"/></w:rPr><w:t>CLAUSE 2: TOTAL SALE CONSIDERATION &amp; PAYMENT SCHEDULE</w:t></w:r>
+    </w:p>
+    <w:p>
+      <w:r><w:t>The total agreed sale consideration for the Apartment and appurtenant parking space is </w:t></w:r>
+      <w:r><w:rPr><w:b/></w:rPr><w:t>{total_sale_price_formatted} ({total_sale_price_words})</w:t></w:r>
+      <w:r><w:t> payable as per the construction-linked milestone schedule below:</w:t></w:r>
+    </w:p>
+    <w:p><w:r><w:t>1. On Booking / Token Advance (10%): {token_amount_formatted}</w:t></w:r></w:p>
+    <w:p><w:r><w:t>2. On Execution of this Agreement (10%): {agreement_milestone_formatted}</w:t></w:r></w:p>
+    <w:p><w:r><w:t>3. On Completion of Plinth / Foundation (15%): {plinth_milestone_formatted}</w:t></w:r></w:p>
+    <w:p><w:r><w:t>4. On Completion of Respective Floor Slab (25%): {slab_milestone_formatted}</w:t></w:r></w:p>
+    <w:p><w:r><w:t>5. On Completion of Flooring &amp; Plastering (35%): {finishing_milestone_formatted}</w:t></w:r></w:p>
+    <w:p><w:r><w:t>6. On Intimation of Possession / Handover (5%): {possession_milestone_formatted}</w:t></w:r></w:p>
+    <w:p><w:r><w:t></w:t></w:r></w:p>
+    <w:p>
+      <w:r><w:rPr><w:b/><w:u w:val="single"/><w:color w:val="1E3A8A"/></w:rPr><w:t>CLAUSE 3: STATUTORY COVENANTS &amp; POSSESSION</w:t></w:r>
+    </w:p>
+    <w:p>
+      <w:r><w:t>The Promoter undertakes to deliver possession of the Apartment with Occupancy Certificate on or before {possession_date}, subject to force majeure. In accordance with Section 14(3) of RERA Act, 2016, the Promoter shall rectify any structural or workmanship defect within 30 days of notice for a period of 5 years from possession date.</w:t></w:r>
+    </w:p>
+    <w:p><w:r><w:t></w:t></w:r></w:p>
+    <w:p><w:r><w:rPr><w:b/></w:rPr><w:t>IN WITNESS WHEREOF the parties have set their hands on the day, month, and year first above written.</w:t></w:r></w:p>
+    <w:p><w:r><w:t></w:t></w:r></w:p>
+    <w:p><w:r><w:rPr><w:b/></w:rPr><w:t>For {company_name} (Promoter)               {buyer_name} (Allottee)</w:t></w:r></w:p>
+    <w:p><w:r><w:t>Authorized Signatory                             Signature of Allottee</w:t></w:r></w:p>
+  </w:body>
+</w:document>`;
+
+// 5. KAVERİ 2.0 SUB-REGISTRAR ABSOLUTE SALE DEED DOSSIER (SCHEDULES A, B, C, D)
+const saleDeedDocXml = `<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<w:document xmlns:w="http://schemas.openxmlformats.org/wordprocessingml/2006/main">
+  <w:body>
+    <w:p>
+      <w:pPr><w:jc w:val="center"/></w:pPr>
+      <w:r><w:rPr><w:sz w:val="18"/><w:color w:val="64748B"/></w:rPr><w:t>GOVERNMENT OF KARNATAKA — DEPARTMENT OF STAMPS &amp; REGISTRATION (KAVERI 2.0)</w:t></w:r>
+    </w:p>
+    <w:p>
+      <w:pPr><w:jc w:val="center"/></w:pPr>
+      <w:r><w:rPr><w:b/><w:sz w:val="32"/><w:color w:val="0F172A"/></w:rPr><w:t>DEED OF ABSOLUTE SALE</w:t></w:r>
+    </w:p>
+    <w:p>
+      <w:pPr><w:jc w:val="center"/></w:pPr>
+      <w:r><w:rPr><w:b/><w:sz w:val="18"/><w:color w:val="821A2A"/></w:rPr><w:t>e-Stamp Certificate No: {e_stamp_certificate_no} | Date: {date_dd_mm_yyyy}</w:t></w:r>
+    </w:p>
+    <w:p><w:r><w:t></w:t></w:r></w:p>
+    <w:p>
+      <w:r><w:t>This DEED OF ABSOLUTE SALE is made on this </w:t></w:r>
+      <w:r><w:rPr><w:b/></w:rPr><w:t>{date_dd_mm_yyyy}</w:t></w:r>
+      <w:r><w:t> between {company_name} (hereinafter referred to as the "VENDOR") and {buyer_name}, PAN: {buyer_pan}, Aadhaar Ref: {buyer_aadhaar_masked}, residing at {buyer_address} (hereinafter referred to as the "PURCHASER").</w:t></w:r>
+    </w:p>
+    <w:p><w:r><w:t></w:t></w:r></w:p>
+    <w:p>
+      <w:r><w:t>The VENDOR acknowledges receipt of full and final sale consideration of </w:t></w:r>
+      <w:r><w:rPr><w:b/></w:rPr><w:t>{total_sale_price_formatted} ({total_sale_price_words})</w:t></w:r>
+      <w:r><w:t> and hereby conveys, transfers, and assigns unto the PURCHASER the Schedule property described below.</w:t></w:r>
+    </w:p>
+    <w:p><w:r><w:t></w:t></w:r></w:p>
+    <w:p>
+      <w:r><w:rPr><w:b/><w:u w:val="single"/><w:color w:val="821A2A"/></w:rPr><w:t>SCHEDULE 'A' (MASTER PROPERTY)</w:t></w:r>
+    </w:p>
+    <w:p>
+      <w:r><w:t>All that piece and parcel of immovable residential converted land bearing {survey_numbers}, situated at {location}, {taluk}, {district}, and bounded as follows:</w:t></w:r>
+    </w:p>
+    <w:p><w:r><w:t>• North by: {master_north}</w:t></w:r></w:p>
+    <w:p><w:r><w:t>• South by: {master_south}</w:t></w:r></w:p>
+    <w:p><w:r><w:t>• East by: {master_east}</w:t></w:r></w:p>
+    <w:p><w:r><w:t>• West by: {master_west}</w:t></w:r></w:p>
+    <w:p><w:r><w:t></w:t></w:r></w:p>
+    <w:p>
+      <w:r><w:rPr><w:b/><w:u w:val="single"/><w:color w:val="821A2A"/></w:rPr><w:t>SCHEDULE 'B' (MULTISTORIED BUILDING)</w:t></w:r>
+    </w:p>
+    <w:p>
+      <w:r><w:t>The entire multistoried residential complex known as '{project_name}', constructed on Schedule 'A' property comprising Basement, Ground, and Upper Floors sanctioned under Plan No: {sanction_plan_no}.</w:t></w:r>
+    </w:p>
+    <w:p><w:r><w:t></w:t></w:r></w:p>
+    <w:p>
+      <w:r><w:rPr><w:b/><w:u w:val="single"/><w:color w:val="821A2A"/></w:rPr><w:t>SCHEDULE 'C' (THE APARTMENT CONVEYED)</w:t></w:r>
+    </w:p>
+    <w:p>
+      <w:r><w:t>Residential Apartment/Flat No. </w:t></w:r>
+      <w:r><w:rPr><w:b/></w:rPr><w:t>{flat_no}</w:t></w:r>
+      <w:r><w:t>, situated on the {floor_ordinal} Floor, {tower_name}, having a Carpet Area of {carpet_sqft} sq.ft, Super Built-Up Area of {sba_sqft} sq.ft, and bounded internally as follows:</w:t></w:r>
+    </w:p>
+    <w:p><w:r><w:t>• North by: {unit_north}</w:t></w:r></w:p>
+    <w:p><w:r><w:t>• South by: {unit_south}</w:t></w:r></w:p>
+    <w:p><w:r><w:t>• East by: {unit_east}</w:t></w:r></w:p>
+    <w:p><w:r><w:t>• West by: {unit_west}</w:t></w:r></w:p>
+    <w:p><w:r><w:t></w:t></w:r></w:p>
+    <w:p>
+      <w:r><w:rPr><w:b/><w:u w:val="single"/><w:color w:val="821A2A"/></w:rPr><w:t>SCHEDULE 'D' (UNDIVIDED SHARE &amp; CAR PARKING)</w:t></w:r>
+    </w:p>
+    <w:p>
+      <w:r><w:t>1. An Undivided Share of Land (UDS) equivalent to </w:t></w:r>
+      <w:r><w:rPr><w:b/></w:rPr><w:t>{uds_sqft} sq.ft</w:t></w:r>
+      <w:r><w:t> in the Schedule 'A' Property.</w:t></w:r>
+    </w:p>
+    <w:p>
+      <w:r><w:t>2. Exclusive perpetual right to park motor vehicle in dedicated {parking_type} Car Parking Bay No. </w:t></w:r>
+      <w:r><w:rPr><w:b/></w:rPr><w:t>{parking_slot_no}</w:t></w:r>
+      <w:r><w:t> situated in </w:t></w:r>
+      <w:r><w:rPr><w:b/></w:rPr><w:t>{parking_level}</w:t></w:r>
+      <w:r><w:t> of Schedule 'B' property.</w:t></w:r>
+    </w:p>
+    <w:p><w:r><w:t></w:t></w:r></w:p>
+    <w:p><w:r><w:rPr><w:b/></w:rPr><w:t>IN WITNESS WHEREOF, the VENDOR and the PURCHASER have executed this Absolute Sale Deed on the date first mentioned above.</w:t></w:r></w:p>
+    <w:p><w:r><w:t></w:t></w:r></w:p>
+    <w:p><w:r><w:rPr><w:b/></w:rPr><w:t>VENDOR: For {company_name}                       PURCHASER: {buyer_name}</w:t></w:r></w:p>
+    <w:p><w:r><w:t>Authorized Signatory                             Purchaser / Allottee</w:t></w:r></w:p>
+  </w:body>
+</w:document>`;
+
 // Output directory
 const outputDir = path.resolve(process.cwd(), "public/templates");
 if (!fs.existsSync(outputDir)) {
@@ -307,8 +468,12 @@ if (!fs.existsSync(outputDir)) {
 fs.writeFileSync(path.join(outputDir, "car-parking-allotment.docx"), buildDocx(parkingDocXml));
 fs.writeFileSync(path.join(outputDir, "builder-home-loan-noc.docx"), buildDocx(nocDocXml));
 fs.writeFileSync(path.join(outputDir, "unit-cost-sheet.docx"), buildDocx(costSheetDocXml));
+fs.writeFileSync(path.join(outputDir, "karnataka-rera-sale-agreement.docx"), buildDocx(reraAtsDocXml));
+fs.writeFileSync(path.join(outputDir, "kaveri-sale-deed-dossier.docx"), buildDocx(saleDeedDocXml));
 
-console.log("Successfully generated all 3 genuine .docx templates in public/templates/:");
+console.log("Successfully generated all 5 genuine .docx templates in public/templates/:");
 console.log("  1. car-parking-allotment.docx");
 console.log("  2. builder-home-loan-noc.docx");
 console.log("  3. unit-cost-sheet.docx");
+console.log("  4. karnataka-rera-sale-agreement.docx");
+console.log("  5. kaveri-sale-deed-dossier.docx");

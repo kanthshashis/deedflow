@@ -41,11 +41,12 @@ export function Sidebar({ isOpen, onClose }: SidebarProps) {
 
   const navItems = [
     { href: "/dashboard", label: "Overview", icon: LayoutGrid },
-    { href: "/dashboard/draft/new", label: "Verification Studio", icon: FileText, isHighlighted: true },
+    { href: "/dashboard/inventory", label: "Unit Dossiers", icon: Building2, isHighlighted: true },
     { href: "/dashboard/parking", label: "Basement Grid", icon: Car },
-    { href: "/dashboard/approvals", label: "Diff Approvals", icon: RotateCcw, badge: "3" },
-    { href: "/dashboard/governance", label: "Data Governance", icon: Layers },
+    { href: "/dashboard/draft/new", label: "Document Studio", icon: FileText },
+    { href: "/dashboard/approvals", label: "Approvals", icon: RotateCcw, badge: "3" },
     { href: "/dashboard/batch", label: "Batch & Sale Deeds", icon: FileArchive },
+    { href: "/dashboard/governance", label: "Data Governance", icon: Layers },
     { href: "/dashboard/templates", label: "Template Linter", icon: FileCode2 },
     { href: "/dashboard/drafts", label: "Saved Drafts", icon: FileEdit, badge: "1" },
     { href: "/dashboard/issued", label: "Issued Dossiers", icon: Send },
