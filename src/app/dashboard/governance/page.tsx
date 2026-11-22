@@ -79,29 +79,29 @@ export default function GovernancePage() {
       {/* Title */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
-          <div className="flex items-center space-x-2 text-[11px] font-mono font-bold tracking-wider text-slate-500 uppercase">
-            <span className="w-2.5 h-2.5 rounded-full bg-emerald-500 animate-pulse" />
+          <div className="flex items-center space-x-2 text-[11px] font-mono font-bold tracking-wider text-[#7D1826] uppercase">
+            <span className="w-2.5 h-2.5 rounded-full bg-[#B88E3E] animate-pulse" />
             <span>Master Data Governance</span>
           </div>
-          <h1 className="text-2xl sm:text-3xl font-extrabold text-slate-900 tracking-tight mt-1">
+          <h1 className="text-2xl sm:text-3xl font-bold font-serif text-[#24060B] tracking-tight mt-1">
             Data Governance &amp; Smart Document Vault
           </h1>
-          <p className="text-xs text-slate-500 mt-0.5">
+          <p className="text-xs text-[#5C4A4D] mt-0.5">
             Initial unassigned records commit directly. Any edits to existing owners automatically route to the Diff Review Queue.
           </p>
         </div>
 
         <Link
           href="/dashboard/approvals"
-          className="px-4 py-2.5 bg-[#0F172A] hover:bg-black text-white text-xs font-semibold rounded-xl flex items-center justify-center space-x-2 shadow-xs cursor-pointer w-fit"
+          className="px-4 py-2.5 glossy-btn-burgundy hover:brightness-105 text-white text-xs font-semibold rounded-xl flex items-center justify-center space-x-2 shadow-sm cursor-pointer w-fit"
         >
           <span>Open Diff Approval Queue</span>
-          <ArrowRight className="w-3.5 h-3.5 text-emerald-400" />
+          <ArrowRight className="w-3.5 h-3.5 text-[#D4B989]" />
         </Link>
       </div>
 
       {uploadNotice && (
-        <div className="p-3.5 bg-emerald-50 border border-emerald-300 text-emerald-900 rounded-xl text-xs font-semibold flex items-center space-x-2 shadow-xs animate-fade-in">
+        <div className="p-3.5 bg-[#FFFDFB] border border-[#DECFC0] text-[#24060B] rounded-xl text-xs font-semibold flex items-center space-x-2 shadow-xs animate-fade-in">
           <CheckCircle2 className="w-4 h-4 text-emerald-600 shrink-0" />
           <span>{uploadNotice}</span>
         </div>
@@ -110,53 +110,53 @@ export default function GovernancePage() {
       {/* Two-Column Governance Layout */}
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
         {/* Left Column: Bulk Add vs Gated Update */}
-        <div className="lg:col-span-6 bg-white p-6 rounded-2xl border border-slate-200/80 shadow-xs space-y-5">
-          <div className="flex items-center justify-between border-b border-slate-100 pb-3">
-            <div className="flex items-center space-x-2 text-xs font-bold uppercase text-slate-700">
-              <Upload className="w-4 h-4 text-emerald-600" />
+        <div className="lg:col-span-6 glossy-card bg-[#FFFDFB] p-6 rounded-2xl border border-[#DECFC0] shadow-xs space-y-5">
+          <div className="flex items-center justify-between border-b border-[#F0E8DD] pb-3">
+            <div className="flex items-center space-x-2 text-xs font-bold uppercase text-[#7D1826] font-serif">
+              <Upload className="w-4 h-4 text-[#7D1826]" />
               <span>Bulk Ingestion Engine</span>
             </div>
-            <span className="text-[10px] font-mono px-2 py-0.5 rounded bg-emerald-50 text-emerald-800 font-semibold border border-emerald-200">
+            <span className="text-[10px] font-mono px-2 py-0.5 rounded bg-[#FFF9EE] text-[#B88E3E] font-semibold border border-[#F2E4C4]">
               Smart Routing
             </span>
           </div>
 
-          <p className="text-xs text-slate-600 leading-relaxed">
+          <p className="text-xs text-[#5C4A4D] leading-relaxed">
             Upload your project schedule (.xlsx/.csv). DeedFlow automatically differentiates between fresh allottees and existing owner modifications:
           </p>
 
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 text-xs">
-            <div className="p-3.5 rounded-xl bg-slate-50 border border-slate-200/60 space-y-1">
-              <div className="font-bold text-slate-900 flex items-center space-x-1.5">
+            <div className="p-3.5 rounded-xl bg-[#FAF7F2] border border-[#E8DFD3] space-y-1">
+              <div className="font-bold text-[#24060B] flex items-center space-x-1.5">
                 <CheckCircle2 className="w-3.5 h-3.5 text-emerald-600" />
                 <span>Unassigned Flat (New)</span>
               </div>
-              <p className="text-[11px] text-slate-500">
+              <p className="text-[11px] text-[#5C4A4D]">
                 Directly inserts owner profile and commits to live database without friction.
               </p>
             </div>
 
-            <div className="p-3.5 rounded-xl bg-slate-50 border border-slate-200/60 space-y-1">
-              <div className="font-bold text-slate-900 flex items-center space-x-1.5">
-                <AlertTriangle className="w-3.5 h-3.5 text-amber-600" />
+            <div className="p-3.5 rounded-xl bg-[#FAF7F2] border border-[#E8DFD3] space-y-1">
+              <div className="font-bold text-[#24060B] flex items-center space-x-1.5">
+                <AlertTriangle className="w-3.5 h-3.5 text-[#B88E3E]" />
                 <span>Assigned Flat (Update)</span>
               </div>
-              <p className="text-[11px] text-slate-500">
+              <p className="text-[11px] text-[#5C4A4D]">
                 Safely isolates change into Diff Queue. Requires Project Admin approval before mutation.
               </p>
             </div>
           </div>
 
           {/* Upload Zone */}
-          <div className="border-2 border-dashed border-slate-200 hover:border-slate-400 p-6 rounded-2xl text-center space-y-3 bg-slate-50/50 transition-colors">
-            <Upload className="w-8 h-8 text-slate-400 mx-auto" />
+          <div className="border-2 border-dashed border-[#DECFC0] hover:border-[#7D1826] p-6 rounded-2xl text-center space-y-3 bg-[#FAF7F2] transition-colors">
+            <Upload className="w-8 h-8 text-[#8C777A] mx-auto" />
             <div>
-              <p className="text-xs font-bold text-slate-800">Drop Master Inventory (.xlsx or .csv)</p>
-              <p className="text-[11px] text-slate-500 mt-0.5">Supports Sole, Joint, NRI GPA, and Corporate columns</p>
+              <p className="text-xs font-bold text-[#24060B]">Drop Master Inventory (.xlsx or .csv)</p>
+              <p className="text-[11px] text-[#5C4A4D] mt-0.5">Supports Sole, Joint, NRI GPA, and Corporate columns</p>
             </div>
             <button
               onClick={handleSimulateBulkIngestion}
-              className="px-4 py-2 bg-white border border-slate-300 hover:bg-slate-50 text-slate-800 text-xs font-semibold rounded-xl shadow-xs cursor-pointer"
+              className="px-4 py-2 glossy-btn-ivory text-[#24060B] border-[#DECFC0] hover:border-[#B88E3E]/60 text-xs font-semibold rounded-xl shadow-xs cursor-pointer"
             >
               Simulate Ingestion of 5 Flats
             </button>
@@ -164,22 +164,22 @@ export default function GovernancePage() {
         </div>
 
         {/* Right Column: Smart Document Vault Auto-Classifier */}
-        <div className="lg:col-span-6 bg-white p-6 rounded-2xl border border-slate-200/80 shadow-xs space-y-5">
-          <div className="flex items-center justify-between border-b border-slate-100 pb-3">
-            <div className="flex items-center space-x-2 text-xs font-bold uppercase text-slate-700">
-              <Sparkles className="w-4 h-4 text-indigo-600" />
+        <div className="lg:col-span-6 glossy-card bg-[#FFFDFB] p-6 rounded-2xl border border-[#DECFC0] shadow-xs space-y-5">
+          <div className="flex items-center justify-between border-b border-[#F0E8DD] pb-3">
+            <div className="flex items-center space-x-2 text-xs font-bold uppercase text-[#7D1826] font-serif">
+              <Sparkles className="w-4 h-4 text-[#B88E3E]" />
               <span>Smart Document Vault Auto-Classifier</span>
             </div>
-            <span className="text-[10px] font-mono px-2 py-0.5 rounded bg-indigo-50 text-indigo-800 font-semibold border border-indigo-200">
+            <span className="text-[10px] font-mono px-2 py-0.5 rounded bg-[#FFF9EE] text-[#B88E3E] font-semibold border border-[#F2E4C4]">
               Gemini 2.5 Flash
             </span>
           </div>
 
-          <p className="text-xs text-slate-600 leading-relaxed">
+          <p className="text-xs text-[#5C4A4D] leading-relaxed">
             Drag-and-drop up to 50 mixed PDFs/photos (PAN cards, application forms, bank NOCs). The model identifies document category, detects flat number, and organizes them automatically:
           </p>
 
-          <label className="border-2 border-dashed border-indigo-200 hover:border-indigo-400 p-5 rounded-2xl text-center space-y-2 bg-indigo-50/20 transition-colors block cursor-pointer">
+          <label className="border-2 border-dashed border-[#DECFC0] hover:border-[#7D1826] p-5 rounded-2xl text-center space-y-2 bg-[#FAF7F2] transition-colors block cursor-pointer">
             <input
               type="file"
               multiple
@@ -187,32 +187,32 @@ export default function GovernancePage() {
               className="hidden"
               onChange={handleDropFiles}
             />
-            <FolderArchive className="w-7 h-7 text-indigo-600 mx-auto" />
-            <p className="text-xs font-bold text-slate-800">
+            <FolderArchive className="w-7 h-7 text-[#7D1826] mx-auto" />
+            <p className="text-xs font-bold text-[#24060B]">
               {isClassifying ? "Gemini 2.5 Flash Classifying Documents..." : "Click or Drop Mixed KYC Files Here"}
             </p>
-            <p className="text-[11px] text-slate-500">Auto-routes to Flat Digital Dossier</p>
+            <p className="text-[11px] text-[#5C4A4D]">Auto-routes to Flat Digital Dossier</p>
           </label>
 
           {/* Classified Vault Items Table */}
           <div className="space-y-2">
-            <div className="text-[11px] font-bold text-slate-500 uppercase font-mono">
+            <div className="text-[11px] font-bold text-[#5C4A4D] uppercase font-mono">
               Classified Document Dossiers ({vaultDocs.length})
             </div>
-            <div className="divide-y divide-slate-100 border border-slate-200/80 rounded-xl overflow-hidden text-xs">
+            <div className="divide-y divide-[#F0E8DD] border border-[#DECFC0] rounded-xl overflow-hidden text-xs bg-white">
               {vaultDocs.map((doc) => (
-                <div key={doc.id} className="p-3 flex items-center justify-between hover:bg-slate-50/50 transition-colors">
+                <div key={doc.id} className="p-3 flex items-center justify-between hover:bg-[#FAF7F2] transition-colors">
                   <div className="flex items-center space-x-2.5">
-                    <FileText className="w-4 h-4 text-slate-400 shrink-0" />
+                    <FileText className="w-4 h-4 text-[#8C777A] shrink-0" />
                     <div>
-                      <div className="font-semibold text-slate-900 truncate max-w-xs">{doc.filename}</div>
-                      <div className="text-[10px] text-slate-500">
-                        {doc.detectedType} • Confidence: <span className="font-mono font-bold text-emerald-700">{(doc.confidence * 100).toFixed(0)}%</span>
+                      <div className="font-semibold text-[#24060B] truncate max-w-xs">{doc.filename}</div>
+                      <div className="text-[10px] text-[#5C4A4D]">
+                        {doc.detectedType} • Confidence: <span className="font-mono font-bold text-emerald-800">{(doc.confidence * 100).toFixed(0)}%</span>
                       </div>
                     </div>
                   </div>
 
-                  <span className="px-2.5 py-1 rounded-lg bg-[#0F172A] text-white font-mono font-bold text-xs">
+                  <span className="px-2.5 py-1 rounded-lg bg-[#4A0E17] text-white font-mono font-bold text-xs shadow-xs">
                     Flat {doc.detectedFlat}
                   </span>
                 </div>

@@ -49,11 +49,11 @@ export function PdfCoordinateMapper() {
   };
 
   return (
-    <div className="bg-surface border border-border rounded-2xl p-5 shadow-sm space-y-4">
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-border pb-3">
+    <div className="glossy-card bg-[#FFFDFB] border border-[#DECFC0] rounded-2xl p-5 sm:p-6 shadow-xs space-y-4">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-[#F0E8DD] pb-3">
         <div>
-          <h3 className="text-sm font-bold text-obsidian">Pre-Printed Letterhead (X, Y) Coordinate Mapper</h3>
-          <p className="text-xs text-slate-500">
+          <h3 className="text-sm font-bold font-serif text-[#24060B]">Pre-Printed Letterhead (X, Y) Coordinate Mapper</h3>
+          <p className="text-xs text-[#5C4A4D]">
             Click anywhere on the preview canvas to drop exact coordinate overlays for blank stamp paper
           </p>
         </div>
@@ -63,29 +63,29 @@ export function PdfCoordinateMapper() {
             type="text"
             value={activeLabel}
             onChange={(e) => setActiveLabel(e.target.value)}
-            className="px-2.5 py-1 border border-border rounded-lg bg-slate-50 text-slate-800"
+            className="px-2.5 py-1.5 border border-[#DECFC0] rounded-xl bg-white text-[#24060B] focus:outline-none focus:border-[#4A0E17]"
             placeholder="Field Name"
           />
-          <span className="text-slate-400 font-mono text-[11px]">(Click canvas to place)</span>
+          <span className="text-[#8C777A] font-mono text-[11px]">(Click canvas to place)</span>
         </div>
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-5">
         {/* The Mock A4 Letterhead Canvas */}
-        <div className="lg:col-span-2 flex justify-center bg-slate-100 p-4 rounded-xl border border-slate-200">
+        <div className="lg:col-span-2 flex justify-center bg-[#FAF7F2] p-4 rounded-xl border border-[#DECFC0]">
           <div
             onClick={handleCanvasClick}
-            className="relative w-full max-w-md aspect-[1/1.414] bg-white border border-slate-300 shadow-md rounded cursor-crosshair overflow-hidden select-none"
+            className="relative w-full max-w-md aspect-[1/1.414] bg-white border border-[#DECFC0] shadow-md rounded cursor-crosshair overflow-hidden select-none"
           >
             {/* Mock Header on Letterhead */}
-            <div className="p-4 border-b border-slate-100 text-center">
-              <div className="text-[10px] font-bold tracking-widest text-slate-400 uppercase">
+            <div className="p-4 border-b border-[#F0E8DD] text-center">
+              <div className="text-[10px] font-bold tracking-widest text-[#8C777A] uppercase font-mono">
                 [Pre-Printed Builder Letterhead Header Margin — 80pt]
               </div>
             </div>
 
             {/* Subtle grid lines */}
-            <div className="absolute inset-0 bg-[radial-gradient(#cbd5e1_1px,transparent_1px)] [background-size:16px_16px] opacity-40 pointer-events-none" />
+            <div className="absolute inset-0 bg-grid-ivory opacity-60 pointer-events-none" />
 
             {/* Coordinate Markers */}
             {markers.map((m) => (
@@ -95,18 +95,18 @@ export function PdfCoordinateMapper() {
                 className="absolute -translate-x-1/2 -translate-y-1/2 group pointer-events-auto"
                 onClick={(e) => e.stopPropagation()}
               >
-                <div className="w-5 h-5 rounded-full bg-blue-600 text-white flex items-center justify-center text-[10px] font-bold shadow-md ring-2 ring-white">
+                <div className="w-5 h-5 rounded-full bg-[#7D1826] text-white flex items-center justify-center text-[10px] font-bold shadow-md ring-2 ring-white">
                   <Crosshair className="w-3 h-3" />
                 </div>
-                <div className="absolute left-6 top-1/2 -translate-y-1/2 bg-slate-900 text-white px-2 py-0.5 rounded text-[10px] font-mono whitespace-nowrap shadow-lg">
+                <div className="absolute left-6 top-1/2 -translate-y-1/2 bg-[#1A0508] text-[#FAF7F2] border border-[#34070E] px-2 py-0.5 rounded text-[10px] font-mono whitespace-nowrap shadow-lg">
                   {m.label} ({m.pdfX}, {m.pdfY})
                 </div>
               </div>
             ))}
 
             {/* Mock Footer Margin */}
-            <div className="absolute bottom-0 inset-x-0 p-3 border-t border-slate-100 text-center bg-slate-50/50">
-              <div className="text-[9px] text-slate-400 font-mono">
+            <div className="absolute bottom-0 inset-x-0 p-3 border-t border-[#F0E8DD] text-center bg-[#FAF7F2]/70">
+              <div className="text-[9px] text-[#8C777A] font-mono">
                 [Bottom Margin — 60pt for QR Authenticity Seal]
               </div>
             </div>
@@ -115,26 +115,26 @@ export function PdfCoordinateMapper() {
 
         {/* Placed Markers Table */}
         <div className="space-y-3">
-          <div className="text-xs font-bold text-slate-800 flex items-center justify-between">
+          <div className="text-xs font-bold text-[#24060B] flex items-center justify-between font-serif">
             <span>Configured Field Positions:</span>
-            <span className="text-[11px] text-slate-500 font-mono">{markers.length} mapped</span>
+            <span className="text-[11px] text-[#8C777A] font-mono font-normal">{markers.length} mapped</span>
           </div>
 
           <div className="space-y-2 max-h-80 overflow-y-auto">
             {markers.map((m) => (
               <div
                 key={m.id}
-                className="p-2.5 bg-slate-50 border border-slate-200 rounded-lg flex items-center justify-between text-xs"
+                className="p-2.5 bg-[#FAF7F2] border border-[#DECFC0] rounded-xl flex items-center justify-between text-xs"
               >
                 <div>
-                  <div className="font-semibold text-slate-800">{m.label}</div>
-                  <div className="text-[10px] text-slate-500 font-mono">
+                  <div className="font-semibold text-[#24060B]">{m.label}</div>
+                  <div className="text-[10px] text-[#8C777A] font-mono">
                     PDF X: {m.pdfX} pt • Y: {m.pdfY} pt ({m.xPct}%, {m.yPct}%)
                   </div>
                 </div>
                 <button
                   onClick={() => handleRemove(m.id)}
-                  className="p-1 text-slate-400 hover:text-red-600 hover:bg-red-50 rounded"
+                  className="p-1 text-[#8C777A] hover:text-[#7D1826] hover:bg-[#FAF0F2] rounded cursor-pointer"
                 >
                   <Trash2 className="w-3.5 h-3.5" />
                 </button>
@@ -145,9 +145,9 @@ export function PdfCoordinateMapper() {
           <div className="pt-2">
             <button
               onClick={() => alert("Calibration coordinates saved to local profile!")}
-              className="w-full px-3 py-2 bg-obsidian text-white rounded-lg text-xs font-semibold flex items-center justify-center space-x-1.5"
+              className="w-full px-3 py-2.5 glossy-btn-burgundy hover:brightness-105 text-white rounded-xl text-xs font-semibold flex items-center justify-center space-x-1.5 shadow-sm cursor-pointer"
             >
-              <CheckCircle2 className="w-3.5 h-3.5 text-sky-400" />
+              <CheckCircle2 className="w-3.5 h-3.5 text-[#D4B989]" />
               <span>Save Coordinate Profile</span>
             </button>
           </div>

@@ -31,14 +31,14 @@ export default function GeneratePage() {
   return (
     <div className="space-y-6">
       <div>
-        <div className="flex items-center space-x-2 text-[11px] font-mono font-bold tracking-wider text-slate-500 uppercase">
-          <span className="w-3 h-[2px] bg-emerald-600 rounded-full" />
+        <div className="flex items-center space-x-2 text-[11px] font-mono font-bold tracking-wider text-[#7D1826] uppercase">
+          <span className="w-3 h-[2px] bg-[#7D1826] rounded-full" />
           <span>Document Studio</span>
         </div>
-        <h1 className="text-3xl font-extrabold text-slate-900 tracking-tight mt-1">
-          1-Click Home Loan Bank Kit Studio<span className="text-emerald-600">.</span>
+        <h1 className="text-3xl font-bold font-serif text-[#24060B] tracking-tight mt-1">
+          1-Click Home Loan Bank Kit Studio<span className="text-[#B88E3E]">.</span>
         </h1>
-        <p className="text-xs sm:text-sm text-slate-500 mt-0.5">
+        <p className="text-xs sm:text-sm text-[#5C4A4D] mt-0.5">
           Generate Car Parking Allotment + Builder Home Loan NOC + Unit Cost Sheet from KYC in 15 seconds.
         </p>
       </div>

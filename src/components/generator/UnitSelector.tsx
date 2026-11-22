@@ -26,17 +26,17 @@ export function UnitSelector({
   const currentSlot = slots.find((s) => s.id === selectedSlotId) || slots[0];
 
   return (
-    <div className="bg-white border border-[#E5E7EB] rounded-2xl p-6 sm:p-7 shadow-[0_1px_3px_rgba(0,0,0,0.03)] space-y-5">
-      <div className="border-b border-slate-100 pb-4">
-        <h3 className="text-base font-bold text-slate-900">Unit &amp; Dedicated Parking Bay Allocation</h3>
-        <p className="text-xs text-slate-500">Auto-injects boundary schedules and RERA area computations</p>
+    <div className="glossy-card bg-[#FFFDFB] border border-[#DECFC0] rounded-2xl p-6 sm:p-7 shadow-xs space-y-5">
+      <div className="border-b border-[#F0E8DD] pb-4">
+        <h3 className="text-base font-bold font-serif text-[#24060B]">Unit &amp; Dedicated Parking Bay Allocation</h3>
+        <p className="text-xs text-[#5C4A4D]">Auto-injects boundary schedules and RERA area computations</p>
       </div>
 
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
         {/* Flat Dropdown */}
         <div className="space-y-2">
-          <label className="text-xs font-bold text-slate-700 uppercase tracking-wider flex items-center space-x-2">
-            <Building className="w-4 h-4 text-emerald-600" />
+          <label className="text-xs font-bold text-[#5C4A4D] uppercase tracking-wider flex items-center space-x-2">
+            <Building className="w-4 h-4 text-[#7D1826]" />
             <span>Select Flat / Unit:</span>
           </label>
           <select
@@ -45,7 +45,7 @@ export function UnitSelector({
               const u = units.find((item) => item.id === e.target.value);
               if (u) onSelectUnit(u);
             }}
-            className="w-full text-xs font-bold px-3.5 py-2.5 border border-[#E5E7EB] rounded-xl bg-slate-50 text-slate-900 focus:outline-none focus:border-emerald-600 focus:bg-white"
+            className="w-full text-xs font-bold px-3.5 py-2.5 border border-[#DECFC0] rounded-xl bg-white text-[#24060B] focus:outline-none focus:border-[#4A0E17]"
           >
             {units.map((u) => (
               <option key={u.id} value={u.id}>
@@ -56,22 +56,22 @@ export function UnitSelector({
 
           {/* Unit Specs Quick Grid */}
           {currentUnit && (
-            <div className="p-3.5 bg-slate-50 rounded-xl border border-[#E5E7EB] text-xs grid grid-cols-3 gap-2">
+            <div className="p-3.5 bg-[#FAF7F2] rounded-xl border border-[#DECFC0] text-xs grid grid-cols-3 gap-2">
               <div>
-                <span className="text-slate-400 block text-[10px] font-mono">SBA:</span>
-                <span className="font-bold text-slate-900">{currentUnit.superBuiltUpAreaSqFt} sq.ft</span>
+                <span className="text-[#8C777A] block text-[10px] font-mono">SBA:</span>
+                <span className="font-bold text-[#24060B]">{currentUnit.superBuiltUpAreaSqFt} sq.ft</span>
               </div>
               <div>
-                <span className="text-slate-400 block text-[10px] font-mono">CARPET:</span>
-                <span className="font-bold text-slate-900">{currentUnit.carpetAreaSqFt} sq.ft</span>
+                <span className="text-[#8C777A] block text-[10px] font-mono">CARPET:</span>
+                <span className="font-bold text-[#24060B]">{currentUnit.carpetAreaSqFt} sq.ft</span>
               </div>
               <div>
-                <span className="text-slate-400 block text-[10px] font-mono">UDS:</span>
-                <span className="font-bold text-indigo-700">{currentUnit.undividedShareLandSqFt} sq.ft</span>
+                <span className="text-[#8C777A] block text-[10px] font-mono">UDS:</span>
+                <span className="font-bold text-[#7D1826]">{currentUnit.undividedShareLandSqFt} sq.ft</span>
               </div>
-              <div className="col-span-3 pt-2 border-t border-slate-200 flex justify-between items-center">
-                <span className="text-slate-500">Base Price:</span>
-                <span className="font-bold font-mono text-emerald-700 text-sm">
+              <div className="col-span-3 pt-2 border-t border-[#DECFC0] flex justify-between items-center">
+                <span className="text-[#5C4A4D]">Base Price:</span>
+                <span className="font-bold font-mono text-[#24060B] text-sm">
                   {formatIndianCurrency(currentUnit.basePrice)}
                 </span>
               </div>
@@ -81,8 +81,8 @@ export function UnitSelector({
 
         {/* Parking Bay Dropdown */}
         <div className="space-y-2">
-          <label className="text-xs font-bold text-slate-700 uppercase tracking-wider flex items-center space-x-2">
-            <Car className="w-4 h-4 text-emerald-600" />
+          <label className="text-xs font-bold text-[#5C4A4D] uppercase tracking-wider flex items-center space-x-2">
+            <Car className="w-4 h-4 text-[#7D1826]" />
             <span>Dedicated Car Parking Bay:</span>
           </label>
           <select
@@ -91,7 +91,7 @@ export function UnitSelector({
               const s = slots.find((item) => item.id === e.target.value);
               if (s) onSelectSlot(s);
             }}
-            className="w-full text-xs font-bold px-3.5 py-2.5 border border-[#E5E7EB] rounded-xl bg-slate-50 text-slate-900 focus:outline-none focus:border-emerald-600 focus:bg-white"
+            className="w-full text-xs font-bold px-3.5 py-2.5 border border-[#DECFC0] rounded-xl bg-white text-[#24060B] focus:outline-none focus:border-[#4A0E17]"
           >
             {slots.map((s) => (
               <option key={s.id} value={s.id}>
@@ -102,18 +102,18 @@ export function UnitSelector({
 
           {/* Slot Specs */}
           {currentSlot && (
-            <div className="p-3.5 bg-slate-50 rounded-xl border border-[#E5E7EB] text-xs space-y-1.5">
+            <div className="p-3.5 bg-[#FAF7F2] rounded-xl border border-[#DECFC0] text-xs space-y-1.5">
               <div className="flex justify-between">
-                <span className="text-slate-500">Basement Level:</span>
-                <span className="font-bold text-slate-900">{currentSlot.level}</span>
+                <span className="text-[#5C4A4D]">Basement Level:</span>
+                <span className="font-bold text-[#24060B]">{currentSlot.level}</span>
               </div>
               <div className="flex justify-between">
-                <span className="text-slate-500">Bay Category:</span>
-                <span className="font-bold text-indigo-700">{currentSlot.slotType}</span>
+                <span className="text-[#5C4A4D]">Bay Category:</span>
+                <span className="font-bold text-[#7D1826]">{currentSlot.slotType}</span>
               </div>
-              <div className="flex justify-between pt-2 border-t border-slate-200 items-center">
-                <span className="text-slate-500">Allotment Fee:</span>
-                <span className="font-bold font-mono text-emerald-700 text-sm">
+              <div className="flex justify-between pt-2 border-t border-[#DECFC0] items-center">
+                <span className="text-[#5C4A4D]">Allotment Fee:</span>
+                <span className="font-bold font-mono text-[#24060B] text-sm">
                   {formatIndianCurrency(350000)}
                 </span>
               </div>

@@ -12,12 +12,18 @@ export default function DashboardLayout({
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
   return (
-    <div className="min-h-screen bg-[#F8F9FA] text-[#0F172A] antialiased">
+    <div className="min-h-screen bg-[#FAF7F2] text-[#24060B] antialiased relative selection:bg-[#4A0E17] selection:text-white font-sans">
+      {/* Dynamic Ambient Horizon Glow */}
+      <div className="absolute top-0 inset-x-0 h-[500px] pointer-events-none ambient-glow-ivory opacity-80" />
+
+      {/* Grid Pattern Overlay */}
+      <div className="absolute top-0 inset-x-0 h-full pointer-events-none bg-grid-ivory opacity-45" />
+
       <Header
         onToggleMobileMenu={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
         isMobileMenuOpen={isMobileMenuOpen}
       />
-      <div className="flex">
+      <div className="flex relative z-10">
         <Sidebar
           isOpen={isMobileMenuOpen}
           onClose={() => setIsMobileMenuOpen(false)}

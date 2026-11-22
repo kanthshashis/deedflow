@@ -62,20 +62,20 @@ export function KycUploadZone({ onExtracted }: KycUploadZoneProps) {
   };
 
   return (
-    <div className="bg-white border border-[#E5E7EB] rounded-2xl p-6 sm:p-7 shadow-[0_1px_3px_rgba(0,0,0,0.03)] space-y-4">
+    <div className="glossy-card bg-[#FFFDFB] border border-[#DECFC0] rounded-2xl p-6 sm:p-7 shadow-xs space-y-4">
       <div className="flex items-center justify-between">
         <div className="flex items-center space-x-3">
-          <div className="w-10 h-10 rounded-xl bg-emerald-50 border border-emerald-200 flex items-center justify-center text-emerald-700">
+          <div className="w-10 h-10 rounded-xl bg-[#FAF0F2] border border-[#F0D5D9] flex items-center justify-center text-[#7D1826]">
             <Camera className="w-5 h-5" />
           </div>
           <div>
-            <h3 className="text-base font-bold text-slate-900">Buyer KYC In-Memory OCR</h3>
-            <p className="text-xs text-slate-500">Upload or snap photo of PAN Card, Aadhaar, or Passport</p>
+            <h3 className="text-base font-bold font-serif text-[#24060B]">Buyer KYC In-Memory OCR</h3>
+            <p className="text-xs text-[#5C4A4D]">Upload or snap photo of PAN Card, Aadhaar, or Passport</p>
           </div>
         </div>
 
-        <div className="flex items-center space-x-1.5 text-xs text-emerald-800 bg-emerald-50 px-3 py-1 rounded-full border border-emerald-200 font-mono font-semibold">
-          <ShieldCheck className="w-4 h-4 text-emerald-600" />
+        <div className="flex items-center space-x-1.5 text-xs text-[#B88E3E] bg-[#FFF9EE] px-3 py-1 rounded-full border border-[#F2E4C4] font-mono font-semibold">
+          <ShieldCheck className="w-4 h-4 text-[#B88E3E]" />
           <span>Zero-Retention Privacy</span>
         </div>
       </div>
@@ -85,7 +85,7 @@ export function KycUploadZone({ onExtracted }: KycUploadZoneProps) {
         onDragOver={(e) => e.preventDefault()}
         onDrop={handleDrop}
         onClick={() => fileInputRef.current?.click()}
-        className="cursor-pointer border-2 border-dashed border-[#E5E7EB] hover:border-emerald-600 rounded-2xl p-8 text-center bg-slate-50/50 hover:bg-emerald-50/20 spring-snap flex flex-col items-center justify-center space-y-3 group transition-colors"
+        className="cursor-pointer border-2 border-dashed border-[#DECFC0] hover:border-[#7D1826] rounded-2xl p-8 text-center bg-[#FAF7F2] hover:bg-[#F8F2EC] spring-snap flex flex-col items-center justify-center space-y-3 group transition-colors"
       >
         <input
           ref={fileInputRef}
@@ -96,7 +96,7 @@ export function KycUploadZone({ onExtracted }: KycUploadZoneProps) {
         />
 
         {previewUrl ? (
-          <div className="relative w-40 h-28 rounded-xl overflow-hidden border border-slate-300 shadow-sm">
+          <div className="relative w-40 h-28 rounded-xl overflow-hidden border border-[#DECFC0] shadow-sm">
             {/* eslint-disable-next-line @next/next/no-img-element */}
             <img src={previewUrl} alt="KYC Preview" className="w-full h-full object-cover" />
             <div className="absolute inset-0 bg-black/40 flex items-center justify-center text-white text-[11px] font-bold">
@@ -104,29 +104,29 @@ export function KycUploadZone({ onExtracted }: KycUploadZoneProps) {
             </div>
           </div>
         ) : (
-          <div className="w-12 h-12 rounded-xl bg-emerald-50 border border-emerald-200 flex items-center justify-center text-emerald-700 group-hover:scale-105 spring-snap">
+          <div className="w-12 h-12 rounded-xl bg-[#FAF0F2] border border-[#F0D5D9] flex items-center justify-center text-[#7D1826] group-hover:scale-105 spring-snap">
             <Upload className="w-5 h-5" />
           </div>
         )}
 
         <div className="text-xs">
-          <span className="font-bold text-slate-900 group-hover:text-emerald-700 spring-snap">
+          <span className="font-bold text-[#24060B] group-hover:text-[#7D1826] spring-snap">
             Click to upload KYC photo
           </span>{" "}
-          <span className="text-slate-500">or drag &amp; drop here</span>
-          <p className="text-[11px] text-slate-400 font-mono mt-1">JPEG, PNG, WebP up to 10MB</p>
+          <span className="text-[#5C4A4D]">or drag &amp; drop here</span>
+          <p className="text-[11px] text-[#8C777A] font-mono mt-1">JPEG, PNG, WebP up to 10MB</p>
         </div>
 
         {isProcessing && (
-          <div className="flex items-center space-x-2 text-xs font-mono text-emerald-700 bg-emerald-50 px-3 py-1.5 rounded-lg border border-emerald-200 animate-pulse">
-            <Loader2 className="w-3.5 h-3.5 animate-spin" />
+          <div className="flex items-center space-x-2 text-xs text-[#7D1826] font-semibold animate-pulse">
+            <Loader2 className="w-4 h-4 animate-spin text-[#7D1826]" />
             <span>{statusMessage}</span>
           </div>
         )}
 
         {!isProcessing && statusMessage && (
-          <div className="flex items-center space-x-1.5 text-xs text-emerald-800 bg-emerald-50 px-3 py-1 rounded-lg border border-emerald-200">
-            <Sparkles className="w-3.5 h-3.5 text-emerald-600" />
+          <div className="flex items-center space-x-1.5 text-xs text-emerald-800 font-semibold bg-emerald-50 px-3 py-1 rounded-full border border-emerald-200">
+            <FileCheck className="w-4 h-4 text-emerald-600" />
             <span>{statusMessage}</span>
           </div>
         )}
@@ -135,52 +135,40 @@ export function KycUploadZone({ onExtracted }: KycUploadZoneProps) {
   );
 }
 
-// Client-side image downscaling
+// Client-side image downscaler to conserve bandwidth
 async function downscaleImage(file: File, maxDim: number, quality: number): Promise<Blob> {
-  return new Promise((resolve, reject) => {
+  return new Promise((resolve) => {
     const reader = new FileReader();
-    reader.onload = (e) => {
+    reader.readAsDataURL(file);
+    reader.onload = (event) => {
       const img = new Image();
+      img.src = event.target?.result as string;
       img.onload = () => {
         let width = img.width;
         let height = img.height;
 
-        if (width > height) {
-          if (width > maxDim) {
-            height = Math.round((height * maxDim) / width);
-            width = maxDim;
-          }
-        } else {
-          if (height > maxDim) {
-            width = Math.round((width * maxDim) / height);
-            height = maxDim;
-          }
+        if (width > height && width > maxDim) {
+          height = Math.round((height * maxDim) / width);
+          width = maxDim;
+        } else if (height > maxDim) {
+          width = Math.round((width * maxDim) / height);
+          height = maxDim;
         }
 
         const canvas = document.createElement("canvas");
         canvas.width = width;
         canvas.height = height;
-
         const ctx = canvas.getContext("2d");
-        if (!ctx) {
-          reject(new Error("Canvas context failed"));
-          return;
-        }
+        ctx?.drawImage(img, 0, 0, width, height);
 
-        ctx.drawImage(img, 0, 0, width, height);
         canvas.toBlob(
           (blob) => {
-            if (blob) resolve(blob);
-            else reject(new Error("Canvas toBlob failed"));
+            resolve(blob || file);
           },
           "image/jpeg",
           quality
         );
       };
-      img.onerror = reject;
-      img.src = e.target?.result as string;
     };
-    reader.onerror = reject;
-    reader.readAsDataURL(file);
   });
 }

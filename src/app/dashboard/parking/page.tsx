@@ -78,14 +78,14 @@ export default function ParkingDashboardPage() {
       {/* Title & Three-Way Modes Bar */}
       <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4">
         <div>
-          <div className="flex items-center space-x-2 text-[11px] font-mono font-bold tracking-wider text-slate-500 uppercase">
-            <span className="w-2.5 h-2.5 rounded-full bg-emerald-500 animate-pulse" />
+          <div className="flex items-center space-x-2 text-[11px] font-mono font-bold tracking-wider text-[#7D1826] uppercase">
+            <span className="w-2.5 h-2.5 rounded-full bg-[#B88E3E] animate-pulse" />
             <span>Cadastral Parking Engine (UC-05)</span>
           </div>
-          <h1 className="text-2xl sm:text-3xl font-extrabold text-slate-900 tracking-tight mt-1">
+          <h1 className="text-2xl sm:text-3xl font-bold font-serif text-[#24060B] tracking-tight mt-1">
             Three-Way Basement Parking Lot Studio
           </h1>
-          <p className="text-xs text-slate-500 mt-0.5">
+          <p className="text-xs text-[#5C4A4D] mt-0.5">
             Synchronized across Visual CAD Grid, Physical Photocopy Register Vision OCR, and Excel Bulk Sync.
           </p>
         </div>
@@ -93,8 +93,8 @@ export default function ParkingDashboardPage() {
         {/* 3 Synchronization Action Triggers */}
         <div className="flex flex-wrap items-center gap-2">
           {/* Mode 2: Photocopy Register OCR */}
-          <label className="px-3.5 py-2 bg-white border border-slate-300 hover:bg-slate-50 text-slate-700 text-xs font-semibold rounded-xl flex items-center space-x-1.5 shadow-xs cursor-pointer transition-colors">
-            <Camera className="w-3.5 h-3.5 text-indigo-600" />
+          <label className="px-3.5 py-2 glossy-btn-ivory text-[#24060B] border-[#DECFC0] hover:border-[#B88E3E]/60 text-xs font-semibold rounded-xl flex items-center space-x-1.5 shadow-xs cursor-pointer transition-colors">
+            <Camera className="w-3.5 h-3.5 text-[#7D1826]" />
             <span>Upload Register Scan / Photo</span>
             <input
               type="file"
@@ -107,25 +107,25 @@ export default function ParkingDashboardPage() {
           {/* Mode 3: Excel Export/Sync */}
           <button
             onClick={handleExportParkingCsv}
-            className="px-3.5 py-2 bg-white border border-slate-300 hover:bg-slate-50 text-slate-700 text-xs font-semibold rounded-xl flex items-center space-x-1.5 shadow-xs cursor-pointer transition-colors"
+            className="px-3.5 py-2 glossy-btn-ivory text-[#24060B] border-[#DECFC0] hover:border-[#B88E3E]/60 text-xs font-semibold rounded-xl flex items-center space-x-1.5 shadow-xs cursor-pointer transition-colors"
           >
-            <Download className="w-3.5 h-3.5 text-slate-600" />
+            <Download className="w-3.5 h-3.5 text-[#5C4A4D]" />
             <span>Export .CSV Sheet</span>
           </button>
 
           {/* Link to Diff Approvals */}
           <Link
             href="/dashboard/approvals"
-            className="px-3.5 py-2 bg-[#0F172A] hover:bg-black text-white text-xs font-semibold rounded-xl flex items-center space-x-1.5 shadow-xs transition-colors"
+            className="px-3.5 py-2 glossy-btn-burgundy hover:brightness-105 text-white text-xs font-semibold rounded-xl flex items-center space-x-1.5 shadow-sm transition-colors"
           >
             <span>Review Diff Queue</span>
-            <ArrowRight className="w-3.5 h-3.5 text-emerald-400" />
+            <ArrowRight className="w-3.5 h-3.5 text-[#D4B989]" />
           </Link>
         </div>
       </div>
 
       {notification && (
-        <div className="p-3.5 bg-emerald-50 border border-emerald-300 text-emerald-900 rounded-xl text-xs font-semibold flex items-center space-x-2 shadow-xs animate-fade-in">
+        <div className="p-3.5 bg-[#FFFDFB] border border-[#DECFC0] text-[#24060B] rounded-xl text-xs font-semibold flex items-center space-x-2 shadow-xs animate-fade-in">
           <CheckCircle2 className="w-4 h-4 text-emerald-600 shrink-0" />
           <span>{notification}</span>
         </div>
@@ -133,23 +133,23 @@ export default function ParkingDashboardPage() {
 
       {/* OCR Results Staging Drawer if active */}
       {ocrResults && (
-        <div className="p-5 bg-indigo-50/60 border border-indigo-200 rounded-2xl space-y-4 animate-fade-in">
-          <div className="flex items-center justify-between border-b border-indigo-100 pb-3">
-            <div className="flex items-center space-x-2 text-xs font-bold text-indigo-950">
-              <Camera className="w-4 h-4 text-indigo-600" />
+        <div className="p-5 bg-[#FAF7F2] border border-[#DECFC0] rounded-2xl space-y-4 animate-fade-in shadow-xs">
+          <div className="flex items-center justify-between border-b border-[#E8DFD3] pb-3">
+            <div className="flex items-center space-x-2 text-xs font-bold text-[#24060B] font-serif">
+              <Camera className="w-4 h-4 text-[#7D1826]" />
               <span>Physical Register Vision OCR Staging Grid ({ocrResults.length} Rows)</span>
             </div>
             <button
               onClick={() => setOcrResults(null)}
-              className="text-xs text-indigo-700 hover:text-indigo-900 font-semibold cursor-pointer"
+              className="text-xs text-[#7D1826] hover:underline font-semibold cursor-pointer"
             >
               Dismiss
             </button>
           </div>
 
           <div className="overflow-x-auto">
-            <table className="w-full text-left text-xs bg-white rounded-xl border border-indigo-100 overflow-hidden">
-              <thead className="bg-indigo-100/50 text-[10px] uppercase font-mono tracking-wider text-indigo-900">
+            <table className="w-full text-left text-xs bg-white rounded-xl border border-[#DECFC0] overflow-hidden">
+              <thead className="bg-[#F8F2EC] text-[10px] uppercase font-mono tracking-wider text-[#5C4A4D] border-b border-[#DECFC0]">
                 <tr>
                   <th className="px-4 py-2">Flat #</th>
                   <th className="px-4 py-2">Detected Slot</th>
@@ -158,26 +158,26 @@ export default function ParkingDashboardPage() {
                   <th className="px-4 py-2">Routing Determination</th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-slate-100 font-mono">
+              <tbody className="divide-y divide-[#F0E8DD] font-mono">
                 {ocrResults.map((row, i) => (
-                  <tr key={i} className="hover:bg-slate-50">
-                    <td className="px-4 py-2.5 font-bold text-slate-900">{row.flatNumber}</td>
-                    <td className="px-4 py-2.5 text-indigo-700 font-bold">{row.slotNumber}</td>
-                    <td className="px-4 py-2.5 text-slate-600">{row.level}</td>
-                    <td className="px-4 py-2.5 font-sans text-slate-800">{row.ownerName}</td>
+                  <tr key={i} className="hover:bg-[#FAF7F2]">
+                    <td className="px-4 py-2.5 font-bold text-[#24060B]">{row.flatNumber}</td>
+                    <td className="px-4 py-2.5 text-[#7D1826] font-bold">{row.slotNumber}</td>
+                    <td className="px-4 py-2.5 text-[#5C4A4D]">{row.level}</td>
+                    <td className="px-4 py-2.5 font-sans text-[#24060B]">{row.ownerName}</td>
                     <td className="px-4 py-2.5 font-sans">
                       {row.status === "existing_allotted" && (
-                        <span className="text-[10px] font-semibold text-slate-500 bg-slate-100 px-2 py-0.5 rounded">
+                        <span className="text-[10px] font-semibold text-[#5C4A4D] bg-[#F8F2EC] px-2 py-0.5 rounded border border-[#E8DFD3]">
                           Already Committed
                         </span>
                       )}
                       {row.status === "new_assignment" && (
-                        <span className="text-[10px] font-semibold text-emerald-800 bg-emerald-100 px-2 py-0.5 rounded">
+                        <span className="text-[10px] font-semibold text-emerald-800 bg-emerald-50 px-2 py-0.5 rounded border border-emerald-200">
                           Direct Commit (New)
                         </span>
                       )}
                       {row.status === "conflict_swap_needed" && (
-                        <span className="text-[10px] font-semibold text-amber-800 bg-amber-100 px-2 py-0.5 rounded">
+                        <span className="text-[10px] font-semibold text-[#B88E3E] bg-[#FFF9EE] px-2 py-0.5 rounded border border-[#F2E4C4]">
                           Staged to Diff Queue
                         </span>
                       )}
@@ -191,11 +191,11 @@ export default function ParkingDashboardPage() {
       )}
 
       {/* MODE 1: INTERACTIVE VISUAL CAD BASEMENT GRID */}
-      <div className="bg-white p-6 sm:p-8 rounded-2xl border border-slate-200/80 shadow-xs space-y-6">
+      <div className="glossy-card bg-[#FFFDFB] p-6 sm:p-8 rounded-2xl border border-[#DECFC0] shadow-xs space-y-6">
         {/* Level Switcher & Legend */}
-        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-slate-100 pb-5">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-[#F0E8DD] pb-5">
           {/* Level Switcher Tabs */}
-          <div className="flex items-center space-x-1.5 p-1 rounded-xl bg-slate-100 border border-slate-200 text-xs">
+          <div className="flex items-center space-x-1.5 p-1 rounded-xl bg-[#F8F2EC] border border-[#DECFC0] text-xs">
             {(["Basement 1", "Basement 2"] as const).map((lvl) => (
               <button
                 key={lvl}
@@ -205,8 +205,8 @@ export default function ParkingDashboardPage() {
                 }}
                 className={`px-4 py-2 rounded-lg font-bold transition-all cursor-pointer ${
                   activeLevel === lvl
-                    ? "bg-[#0F172A] text-white shadow-xs"
-                    : "text-slate-600 hover:text-slate-900 hover:bg-white/50"
+                    ? "bg-[#4A0E17] text-white shadow-xs font-bold"
+                    : "text-[#5C4A4D] hover:text-[#24060B] hover:bg-white/60"
                 }`}
               >
                 {lvl} {lvl === "Basement 1" ? "(Upper)" : "(Lower)"}
@@ -217,16 +217,16 @@ export default function ParkingDashboardPage() {
           {/* Color-Coded Status Legend */}
           <div className="flex flex-wrap items-center gap-4 text-xs">
             <span className="flex items-center space-x-1.5">
-              <span className="w-3 h-3 rounded bg-[#059669]" />
-              <span className="font-semibold text-slate-700">Available ({availableCount})</span>
+              <span className="w-3 h-3 rounded bg-emerald-600" />
+              <span className="font-semibold text-[#5C4A4D]">Available ({availableCount})</span>
             </span>
             <span className="flex items-center space-x-1.5">
-              <span className="w-3 h-3 rounded bg-[#D97706]" />
-              <span className="font-semibold text-slate-700">Reserved ({reservedCount})</span>
+              <span className="w-3 h-3 rounded bg-[#B88E3E]" />
+              <span className="font-semibold text-[#5C4A4D]">Reserved ({reservedCount})</span>
             </span>
             <span className="flex items-center space-x-1.5">
-              <span className="w-3 h-3 rounded bg-[#475569]" />
-              <span className="font-semibold text-slate-700">Allotted ({allottedCount})</span>
+              <span className="w-3 h-3 rounded bg-[#4A0E17]" />
+              <span className="font-semibold text-[#5C4A4D]">Allotted ({allottedCount})</span>
             </span>
           </div>
         </div>
@@ -245,21 +245,21 @@ export default function ParkingDashboardPage() {
                 onClick={() => handleSlotClick(slot)}
                 className={`p-3.5 rounded-xl border flex flex-col justify-between h-32 select-none relative group transition-all cursor-pointer ${
                   isAvailable
-                    ? "bg-emerald-50/40 border-emerald-300 hover:border-emerald-500 hover:bg-emerald-100/60"
+                    ? "bg-emerald-50/40 border-emerald-300 hover:border-emerald-500 hover:bg-emerald-100/50"
                     : isReserved
-                    ? "bg-amber-50/50 border-amber-300 hover:border-amber-500"
-                    : "bg-slate-100/80 border-slate-300 hover:border-slate-400"
+                    ? "bg-[#FFF9EE] border-[#F2E4C4] hover:border-[#B88E3E]"
+                    : "bg-[#FAF7F2] border-[#DECFC0] hover:border-[#8C777A]"
                 } ${
-                  isSelected ? "ring-3 ring-[#1E3A8A] ring-offset-2 border-transparent" : ""
+                  isSelected ? "ring-3 ring-[#4A0E17] ring-offset-2 border-transparent shadow-md" : ""
                 }`}
               >
                 {/* Header: Slot No & Level */}
                 <div className="flex items-center justify-between">
-                  <span className="font-mono font-extrabold text-sm tracking-tight text-slate-900">
+                  <span className="font-mono font-extrabold text-sm tracking-tight text-[#24060B]">
                     {slot.slotNumber}
                   </span>
                   {slot.slotType === "Covered EV-Ready" && (
-                    <span className="px-1.5 py-0.2 rounded text-[9px] font-mono font-bold bg-emerald-600 text-white">
+                    <span className="px-1.5 py-0.2 rounded text-[9px] font-mono font-bold bg-[#B88E3E] text-white">
                       EV
                     </span>
                   )}
@@ -269,19 +269,19 @@ export default function ParkingDashboardPage() {
                 <div className="my-1">
                   {isAllotted ? (
                     <div className="space-y-0.5">
-                      <div className="text-xs font-bold text-slate-800 flex items-center space-x-1">
-                        <CheckCircle2 className="w-3.5 h-3.5 text-slate-600 shrink-0" />
+                      <div className="text-xs font-bold text-[#24060B] flex items-center space-x-1">
+                        <CheckCircle2 className="w-3.5 h-3.5 text-[#4A0E17] shrink-0" />
                         <span className="truncate">Flat {slot.allottedUnitFlat}</span>
                       </div>
-                      <span className="text-[10px] font-mono text-slate-500 block">Locked</span>
+                      <span className="text-[10px] font-mono text-[#8C777A] block">Locked</span>
                     </div>
                   ) : isReserved ? (
                     <div className="space-y-0.5">
-                      <div className="text-xs font-bold text-amber-800 flex items-center space-x-1">
-                        <Clock className="w-3.5 h-3.5 text-amber-600 shrink-0" />
+                      <div className="text-xs font-bold text-[#B88E3E] flex items-center space-x-1">
+                        <Clock className="w-3.5 h-3.5 text-[#B88E3E] shrink-0" />
                         <span>Token Hold</span>
                       </div>
-                      <span className="text-[10px] font-mono text-amber-700 block">Pending KYC</span>
+                      <span className="text-[10px] font-mono text-[#A88C40] block">Pending KYC</span>
                     </div>
                   ) : (
                     <div className="space-y-0.5">
@@ -295,7 +295,7 @@ export default function ParkingDashboardPage() {
                 </div>
 
                 {/* Footer: Type & Dimensions */}
-                <div className="border-t border-slate-200/60 pt-1 flex items-center justify-between text-[10px] font-mono text-slate-500">
+                <div className="border-t border-[#DECFC0]/60 pt-1 flex items-center justify-between text-[10px] font-mono text-[#8C777A]">
                   <span className="truncate">{slot.slotType}</span>
                 </div>
               </div>
@@ -305,17 +305,17 @@ export default function ParkingDashboardPage() {
 
         {/* Selected Slot Action Drawer */}
         {selectedSlot && (
-          <div className="p-5 bg-slate-50 border border-slate-200 rounded-2xl flex flex-col sm:flex-row sm:items-center justify-between gap-4 animate-fade-in">
+          <div className="p-5 bg-[#FAF7F2] border border-[#DECFC0] rounded-2xl flex flex-col sm:flex-row sm:items-center justify-between gap-4 animate-fade-in shadow-xs">
             <div className="space-y-1">
               <div className="flex items-center space-x-2">
-                <span className="font-mono font-bold text-base text-slate-900">
+                <span className="font-mono font-bold text-base text-[#24060B]">
                   Selected Slot {selectedSlot.slotNumber}
                 </span>
-                <span className="text-xs px-2.5 py-0.5 rounded-full font-semibold bg-white border border-slate-200 text-slate-700">
+                <span className="text-xs px-2.5 py-0.5 rounded-full font-semibold bg-white border border-[#DECFC0] text-[#5C4A4D]">
                   {selectedSlot.level} • {selectedSlot.slotType}
                 </span>
               </div>
-              <p className="text-xs text-slate-500">
+              <p className="text-xs text-[#5C4A4D]">
                 {selectedSlot.status === "available"
                   ? "This slot is in builder open inventory. Ready for immediate allotment."
                   : `Currently allotted to Flat ${selectedSlot.allottedUnitFlat}. Swapping requires Maker-Checker sign-off.`}
@@ -326,15 +326,15 @@ export default function ParkingDashboardPage() {
               {selectedSlot.status === "available" ? (
                 <Link
                   href={`/dashboard/draft/new?slot=${selectedSlot.slotNumber}&level=${selectedSlot.level}`}
-                  className="px-4 py-2.5 bg-[#0F172A] hover:bg-black text-white text-xs font-bold rounded-xl flex items-center space-x-2 shadow-xs transition-colors cursor-pointer"
+                  className="px-4 py-2.5 glossy-btn-burgundy hover:brightness-105 text-white text-xs font-bold rounded-xl flex items-center space-x-2 shadow-sm transition-colors cursor-pointer"
                 >
-                  <Zap className="w-3.5 h-3.5 text-emerald-400" />
+                  <Zap className="w-3.5 h-3.5 text-[#D4B989]" />
                   <span>Draft Allotment Letter</span>
                 </Link>
               ) : (
                 <button
                   onClick={() => handleSimulateSwapRequest(selectedSlot)}
-                  className="px-4 py-2.5 bg-amber-600 hover:bg-amber-700 text-white text-xs font-bold rounded-xl flex items-center space-x-2 shadow-xs transition-colors cursor-pointer"
+                  className="px-4 py-2.5 bg-[#B88E3E] hover:bg-[#9E782E] text-white text-xs font-bold rounded-xl flex items-center space-x-2 shadow-xs transition-colors cursor-pointer"
                 >
                   <RefreshCw className="w-3.5 h-3.5" />
                   <span>Stage Slot Swap Request</span>

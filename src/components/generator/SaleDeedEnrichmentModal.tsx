@@ -75,26 +75,26 @@ export function SaleDeedEnrichmentModal({
 
   return (
     <div className="fixed inset-0 z-50 bg-black/60 backdrop-blur-xs flex items-center justify-center p-4 overflow-y-auto">
-      <div className="bg-white rounded-2xl border border-slate-200 w-full max-w-3xl max-h-[90vh] overflow-y-auto shadow-2xl space-y-6 p-6 sm:p-8 animate-fade-in font-sans">
+      <div className="glossy-card bg-[#FFFDFB] rounded-2xl border border-[#DECFC0] w-full max-w-3xl max-h-[90vh] overflow-y-auto shadow-2xl space-y-6 p-6 sm:p-8 animate-fade-in font-sans">
         {/* Header */}
-        <div className="flex items-center justify-between border-b border-slate-100 pb-4">
+        <div className="flex items-center justify-between border-b border-[#F0E8DD] pb-4">
           <div className="space-y-0.5">
             <div className="flex items-center space-x-2">
-              <span className="px-2.5 py-0.5 rounded-full text-[10px] font-mono font-bold bg-[#0F172A] text-white">
+              <span className="px-2.5 py-0.5 rounded-full text-[10px] font-mono font-bold bg-[#4A0E17] text-white">
                 Flat {unit.flatNumber} ({unit.tower})
               </span>
-              <h2 className="text-lg font-bold text-slate-900 tracking-tight">
+              <h2 className="text-lg font-bold font-serif text-[#24060B] tracking-tight">
                 Sale Deed Pre-Generation Statutory Enrichment (UC-08)
               </h2>
             </div>
-            <p className="text-xs text-slate-500">
+            <p className="text-xs text-[#5C4A4D]">
               Validates e-stamp certificates, banking UTR payments, UDS math, and 2 legal witnesses before printing.
             </p>
           </div>
 
           <button
             onClick={onClose}
-            className="p-1 rounded-lg text-slate-400 hover:text-slate-800 hover:bg-slate-100 transition-colors cursor-pointer"
+            className="p-1 rounded-lg text-[#8C777A] hover:text-[#24060B] hover:bg-[#F8F2EC] transition-colors cursor-pointer"
           >
             <X className="w-5 h-5" />
           </button>
@@ -102,13 +102,13 @@ export function SaleDeedEnrichmentModal({
 
         {/* 7-Point Statutory Checklist Banner */}
         <div className={`p-4 rounded-xl border text-xs flex items-center justify-between ${
-          isAllValid ? "bg-emerald-50 border-emerald-300 text-emerald-900" : "bg-amber-50 border-amber-300 text-amber-900"
+          isAllValid ? "bg-[#FFF9EE] border-[#F2E4C4] text-[#B88E3E]" : "bg-[#FAF0F2] border-[#F0D5D9] text-[#7D1826]"
         }`}>
           <div className="flex items-center space-x-2.5">
             {isAllValid ? (
-              <CheckCircle2 className="w-5 h-5 text-emerald-600 shrink-0" />
+              <CheckCircle2 className="w-5 h-5 text-[#B88E3E] shrink-0" />
             ) : (
-              <AlertTriangle className="w-5 h-5 text-amber-600 shrink-0" />
+              <AlertTriangle className="w-5 h-5 text-[#7D1826] shrink-0" />
             )}
             <span className="font-semibold">
               {isAllValid
@@ -117,7 +117,7 @@ export function SaleDeedEnrichmentModal({
             </span>
           </div>
 
-          <span className="font-mono font-bold text-xs uppercase px-2 py-0.5 rounded bg-white border">
+          <span className="font-mono font-bold text-xs uppercase px-2 py-0.5 rounded bg-white border border-[#DECFC0]">
             {isAllValid ? "Passed" : "Action Required"}
           </span>
         </div>
@@ -126,48 +126,48 @@ export function SaleDeedEnrichmentModal({
         <div className="space-y-5 text-xs">
           {/* Section 1: E-Stamp & Duty */}
           <div className="space-y-3">
-            <h4 className="font-bold text-slate-800 uppercase text-[11px] font-mono text-slate-500">
+            <h4 className="font-bold text-[#7D1826] uppercase text-[11px] font-mono">
               1. Government E-Stamp Certificate &amp; Duty Paid
             </h4>
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <div>
-                <label className="block font-semibold text-slate-700 mb-1">E-Stamp Certificate Number</label>
+                <label className="block font-semibold text-[#5C4A4D] mb-1">E-Stamp Certificate Number</label>
                 <input
                   type="text"
                   value={eStampNo}
                   onChange={(e) => setEStampNo(e.target.value.toUpperCase())}
-                  className="w-full px-3 py-2 rounded-xl border border-slate-300 font-mono font-bold text-slate-900 focus:outline-none focus:ring-1 focus:ring-slate-900"
+                  className="w-full px-3 py-2 rounded-xl border border-[#DECFC0] font-mono font-bold text-[#24060B] bg-white focus:outline-none focus:border-[#4A0E17]"
                   placeholder="IN-KA92847192847102U"
                 />
               </div>
               <div>
-                <label className="block font-semibold text-slate-700 mb-1">E-Stamp Issue Date</label>
+                <label className="block font-semibold text-[#5C4A4D] mb-1">E-Stamp Issue Date</label>
                 <input
                   type="date"
                   value={eStampDate}
                   onChange={(e) => setEStampDate(e.target.value)}
-                  className="w-full px-3 py-2 rounded-xl border border-slate-300 font-mono text-slate-900 focus:outline-none focus:ring-1 focus:ring-slate-900"
+                  className="w-full px-3 py-2 rounded-xl border border-[#DECFC0] font-mono text-[#24060B] bg-white focus:outline-none focus:border-[#4A0E17]"
                 />
               </div>
               <div>
-                <label className="block font-semibold text-slate-700 mb-1">State Stamp Duty Paid (₹)</label>
+                <label className="block font-semibold text-[#5C4A4D] mb-1">State Stamp Duty Paid (₹)</label>
                 <input
                   type="number"
                   value={stampDutyAmount}
                   onChange={(e) => setStampDutyAmount(Number(e.target.value))}
-                  className="w-full px-3 py-2 rounded-xl border border-slate-300 font-mono font-bold text-slate-900 focus:outline-none focus:ring-1 focus:ring-slate-900"
+                  className="w-full px-3 py-2 rounded-xl border border-[#DECFC0] font-mono font-bold text-[#24060B] bg-white focus:outline-none focus:border-[#4A0E17]"
                 />
-                <span className="text-[10px] text-slate-500 mt-0.5 block">{formatIndianCurrency(stampDutyAmount)}</span>
+                <span className="text-[10px] text-[#8C777A] mt-0.5 block">{formatIndianCurrency(stampDutyAmount)}</span>
               </div>
               <div>
-                <label className="block font-semibold text-slate-700 mb-1">Registration &amp; Surcharge Fees (₹)</label>
+                <label className="block font-semibold text-[#5C4A4D] mb-1">Registration &amp; Surcharge Fees (₹)</label>
                 <input
                   type="number"
                   value={regFeeAmount}
                   onChange={(e) => setRegFeeAmount(Number(e.target.value))}
-                  className="w-full px-3 py-2 rounded-xl border border-slate-300 font-mono font-bold text-slate-900 focus:outline-none focus:ring-1 focus:ring-slate-900"
+                  className="w-full px-3 py-2 rounded-xl border border-[#DECFC0] font-mono font-bold text-[#24060B] bg-white focus:outline-none focus:border-[#4A0E17]"
                 />
-                <span className="text-[10px] text-slate-500 mt-0.5 block">{formatIndianCurrency(regFeeAmount)}</span>
+                <span className="text-[10px] text-[#8C777A] mt-0.5 block">{formatIndianCurrency(regFeeAmount)}</span>
               </div>
             </div>
           </div>
@@ -175,22 +175,22 @@ export function SaleDeedEnrichmentModal({
           {/* Section 2: Banking Payment UTR Schedule */}
           <div className="space-y-3 pt-2">
             <div className="flex items-center justify-between">
-              <h4 className="font-bold text-slate-800 uppercase text-[11px] font-mono text-slate-500">
+              <h4 className="font-bold text-[#7D1826] uppercase text-[11px] font-mono">
                 2. Mandatory Payment UTR Schedule (Schedule B of Sale Deed)
               </h4>
               <button
                 type="button"
                 onClick={handleAddUtrRow}
-                className="px-2.5 py-1 rounded-lg bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-semibold flex items-center space-x-1 cursor-pointer transition-colors"
+                className="px-2.5 py-1 rounded-lg bg-[#F8F2EC] hover:bg-[#F3EAE0] text-[#24060B] text-xs font-semibold flex items-center space-x-1 cursor-pointer transition-colors border border-[#DECFC0]"
               >
-                <Plus className="w-3.5 h-3.5" />
+                <Plus className="w-3.5 h-3.5 text-[#7D1826]" />
                 <span>Add Tranche</span>
               </button>
             </div>
 
-            <div className="border border-slate-200 rounded-xl overflow-hidden">
+            <div className="border border-[#DECFC0] rounded-xl overflow-hidden">
               <table className="w-full text-left text-xs">
-                <thead className="bg-slate-50 text-[10px] uppercase font-mono tracking-wider text-slate-500 border-b border-slate-200">
+                <thead className="bg-[#F8F2EC] text-[10px] uppercase font-mono tracking-wider text-[#5C4A4D] border-b border-[#DECFC0]">
                   <tr>
                     <th className="px-3 py-2">Milestone</th>
                     <th className="px-3 py-2">Amount (₹)</th>
@@ -200,9 +200,9 @@ export function SaleDeedEnrichmentModal({
                     <th className="px-2 py-2"></th>
                   </tr>
                 </thead>
-                <tbody className="divide-y divide-slate-100 font-mono">
+                <tbody className="divide-y divide-[#F0E8DD] font-mono">
                   {utrSchedule.map((row, idx) => (
-                    <tr key={idx}>
+                    <tr key={idx} className="hover:bg-[#FAF7F2]">
                       <td className="p-2">
                         <input
                           type="text"
@@ -212,7 +212,7 @@ export function SaleDeedEnrichmentModal({
                             updated[idx].milestone = e.target.value;
                             setUtrSchedule(updated);
                           }}
-                          className="w-full px-2 py-1 border rounded text-xs"
+                          className="w-full px-2 py-1 border border-[#DECFC0] rounded text-xs bg-white text-[#24060B]"
                         />
                       </td>
                       <td className="p-2">
@@ -224,7 +224,7 @@ export function SaleDeedEnrichmentModal({
                             updated[idx].amount = Number(e.target.value);
                             setUtrSchedule(updated);
                           }}
-                          className="w-24 px-2 py-1 border rounded text-xs font-bold"
+                          className="w-24 px-2 py-1 border border-[#DECFC0] rounded text-xs font-bold bg-white text-[#24060B]"
                         />
                       </td>
                       <td className="p-2">
@@ -236,7 +236,7 @@ export function SaleDeedEnrichmentModal({
                             updated[idx].bankName = e.target.value;
                             setUtrSchedule(updated);
                           }}
-                          className="w-24 px-2 py-1 border rounded text-xs"
+                          className="w-24 px-2 py-1 border border-[#DECFC0] rounded text-xs bg-white text-[#24060B]"
                         />
                       </td>
                       <td className="p-2">
@@ -248,7 +248,7 @@ export function SaleDeedEnrichmentModal({
                             updated[idx].utrNumber = e.target.value;
                             setUtrSchedule(updated);
                           }}
-                          className="w-32 px-2 py-1 border rounded text-xs font-bold text-indigo-700"
+                          className="w-32 px-2 py-1 border border-[#DECFC0] rounded text-xs font-bold text-[#7D1826] bg-white"
                         />
                       </td>
                       <td className="p-2">
@@ -260,14 +260,14 @@ export function SaleDeedEnrichmentModal({
                             updated[idx].date = e.target.value;
                             setUtrSchedule(updated);
                           }}
-                          className="w-32 px-2 py-1 border rounded text-xs"
+                          className="w-32 px-2 py-1 border border-[#DECFC0] rounded text-xs bg-white text-[#24060B]"
                         />
                       </td>
                       <td className="p-2 text-center">
                         <button
                           type="button"
                           onClick={() => handleRemoveUtrRow(idx)}
-                          className="text-slate-400 hover:text-rose-600 transition-colors cursor-pointer"
+                          className="text-[#8C777A] hover:text-[#7D1826] transition-colors cursor-pointer"
                         >
                           <Trash2 className="w-3.5 h-3.5" />
                         </button>
@@ -281,44 +281,44 @@ export function SaleDeedEnrichmentModal({
 
           {/* Section 3: UDS & Possession & Witnesses */}
           <div className="space-y-3 pt-2">
-            <h4 className="font-bold text-slate-800 uppercase text-[11px] font-mono text-slate-500">
+            <h4 className="font-bold text-[#7D1826] uppercase text-[11px] font-mono">
               3. Undivided Share (UDS), Possession &amp; Witnesses
             </h4>
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <div>
-                <label className="block font-semibold text-slate-700 mb-1">Undivided Share of Land (sq.ft)</label>
+                <label className="block font-semibold text-[#5C4A4D] mb-1">Undivided Share of Land (sq.ft)</label>
                 <input
                   type="number"
                   value={udsSqft}
                   onChange={(e) => setUdsSqft(Number(e.target.value))}
-                  className="w-full px-3 py-2 rounded-xl border border-slate-300 font-mono font-bold text-slate-900"
+                  className="w-full px-3 py-2 rounded-xl border border-[#DECFC0] font-mono font-bold text-[#24060B] bg-white"
                 />
               </div>
               <div>
-                <label className="block font-semibold text-slate-700 mb-1">Possession Handover Date</label>
+                <label className="block font-semibold text-[#5C4A4D] mb-1">Possession Handover Date</label>
                 <input
                   type="date"
                   value={possessionDate}
                   onChange={(e) => setPossessionDate(e.target.value)}
-                  className="w-full px-3 py-2 rounded-xl border border-slate-300 font-mono text-slate-900"
+                  className="w-full px-3 py-2 rounded-xl border border-[#DECFC0] font-mono text-[#24060B] bg-white"
                 />
               </div>
               <div>
-                <label className="block font-semibold text-slate-700 mb-1">Witness 1 (Name, Address, ID)</label>
+                <label className="block font-semibold text-[#5C4A4D] mb-1">Witness 1 (Name, Address, ID)</label>
                 <input
                   type="text"
                   value={witness1}
                   onChange={(e) => setWitness1(e.target.value)}
-                  className="w-full px-3 py-2 rounded-xl border border-slate-300 text-slate-900"
+                  className="w-full px-3 py-2 rounded-xl border border-[#DECFC0] text-[#24060B] bg-white"
                 />
               </div>
               <div>
-                <label className="block font-semibold text-slate-700 mb-1">Witness 2 (Name, Address, ID)</label>
+                <label className="block font-semibold text-[#5C4A4D] mb-1">Witness 2 (Name, Address, ID)</label>
                 <input
                   type="text"
                   value={witness2}
                   onChange={(e) => setWitness2(e.target.value)}
-                  className="w-full px-3 py-2 rounded-xl border border-slate-300 text-slate-900"
+                  className="w-full px-3 py-2 rounded-xl border border-[#DECFC0] text-[#24060B] bg-white"
                 />
               </div>
             </div>
@@ -326,11 +326,11 @@ export function SaleDeedEnrichmentModal({
         </div>
 
         {/* Footer Actions */}
-        <div className="border-t border-slate-100 pt-4 flex flex-col sm:flex-row items-center justify-between gap-3">
+        <div className="border-t border-[#F0E8DD] pt-4 flex flex-col sm:flex-row items-center justify-between gap-3">
           <button
             type="button"
             onClick={() => onSave(unit.id, buildPayload())}
-            className="w-full sm:w-auto px-5 py-2.5 rounded-xl border border-slate-300 hover:bg-slate-50 text-slate-800 text-xs font-bold transition-colors cursor-pointer"
+            className="w-full sm:w-auto px-5 py-2.5 rounded-xl glossy-btn-ivory text-[#24060B] border-[#DECFC0] hover:border-[#B88E3E]/60 text-xs font-bold transition-colors cursor-pointer shadow-xs"
           >
             Save Draft Enrichment
           </button>
@@ -339,9 +339,9 @@ export function SaleDeedEnrichmentModal({
             type="button"
             disabled={!isAllValid}
             onClick={() => onGenerateDeed(unit, buildPayload())}
-            className="w-full sm:w-auto px-6 py-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold flex items-center justify-center space-x-2 shadow-sm transition-colors cursor-pointer disabled:opacity-50"
+            className="w-full sm:w-auto px-6 py-2.5 rounded-xl glossy-btn-burgundy hover:brightness-105 text-white text-xs font-bold flex items-center justify-center space-x-2 shadow-sm transition-colors cursor-pointer disabled:opacity-50"
           >
-            <FileText className="w-4 h-4 text-white" />
+            <FileText className="w-4 h-4 text-[#D4B989]" />
             <span>Generate Official Sale Deed (.DOCX)</span>
           </button>
         </div>
