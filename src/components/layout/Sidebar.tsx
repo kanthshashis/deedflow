@@ -1,6 +1,6 @@
 "use client";
 
-import React from "react";
+import React, { useEffect, useState } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import {
@@ -12,10 +12,15 @@ import {
   Car,
   ShieldCheck,
   ChevronDown,
-  MoreHorizontal,
-  Plus,
+  Layers,
+  Sparkles,
+  FileArchive,
+  RotateCcw,
+  PlusCircle,
+  Building2,
 } from "lucide-react";
 import clsx from "clsx";
+import { UserRole } from "@/lib/types";
 
 interface SidebarProps {
   isOpen?: boolean;
@@ -24,14 +29,27 @@ interface SidebarProps {
 
 export function Sidebar({ isOpen, onClose }: SidebarProps) {
   const pathname = usePathname();
+  const [currentRole, setCurrentRole] = useState<UserRole>("project_admin");
+
+  useEffect(() => {
+    if (typeof window !== "undefined") {
+      const storedRole = localStorage.getItem("deedflow_active_role") as UserRole | null;
+      if (storedRole) {
+        setCurrentRole(storedRole);
+      }
+    }
+  }, []);
 
   const navItems = [
     { href: "/dashboard", label: "Overview", icon: LayoutGrid },
-    { href: "/dashboard/generate", label: "Documents", icon: FileText },
-    { href: "/dashboard/drafts", label: "Drafts", icon: FileEdit, badge: "1" },
-    { href: "/dashboard/issued", label: "Issued", icon: Send },
-    { href: "/dashboard/templates", label: "Templates", icon: FileCode2 },
-    { href: "/dashboard/parking", label: "Basement Grid", icon: Car, isSpecial: true },
+    { href: "/dashboard/draft/new", label: "Verification Studio", icon: FileText, isHighlighted: true },
+    { href: "/dashboard/parking", label: "Basement Grid", icon: Car },
+    { href: "/dashboard/approvals", label: "Diff Approvals", icon: RotateCcw, badge: "3", badgeColor: "bg-emerald-500" },
+    { href: "/dashboard/governance", label: "Data Governance", icon: Layers },
+    { href: "/dashboard/batch", label: "Batch & Sale Deeds", icon: FileArchive },
+    { href: "/dashboard/templates", label: "Template Linter", icon: FileCode2 },
+    { href: "/dashboard/drafts", label: "Saved Drafts", icon: FileEdit, badge: "1" },
+    { href: "/dashboard/issued", label: "Issued Dossiers", icon: Send },
   ];
 
   return (
@@ -40,7 +58,7 @@ export function Sidebar({ isOpen, onClose }: SidebarProps) {
       {isOpen && (
         <div
           onClick={onClose}
-          className="fixed inset-0 z-40 bg-black/60 backdrop-blur-sm md:hidden"
+          className="fixed inset-0 z-40 bg-black/60 backdrop-blur-xs md:hidden"
         />
       )}
 
@@ -50,7 +68,7 @@ export function Sidebar({ isOpen, onClose }: SidebarProps) {
           isOpen ? "translate-x-0" : "-translate-x-full"
         )}
       >
-        <div className="p-4 space-y-4">
+        <div className="p-4 space-y-4 overflow-y-auto">
           {/* Top Brand Logo */}
           <div className="flex items-center space-x-2.5 px-2 pt-2">
             <div className="w-8 h-8 rounded-xl bg-emerald-500/15 border border-emerald-500/30 flex items-center justify-center text-emerald-400">
@@ -67,7 +85,7 @@ export function Sidebar({ isOpen, onClose }: SidebarProps) {
               </svg>
             </div>
             <span className="text-xl font-bold tracking-tight text-white font-sans lowercase">
-              deedflow
+              deedflow<span className="text-emerald-500">.</span>
             </span>
           </div>
 
@@ -75,20 +93,34 @@ export function Sidebar({ isOpen, onClose }: SidebarProps) {
           <div className="p-2.5 rounded-xl bg-[#14232B] border border-[#1C303B] flex items-center justify-between text-xs text-white group cursor-pointer hover:border-emerald-500/40 transition-colors">
             <div className="flex items-center space-x-2.5">
               <div className="w-7 h-7 rounded-lg bg-emerald-600 flex items-center justify-center font-bold text-white text-xs shadow-xs">
-                N
+                S
               </div>
               <div className="flex flex-col text-left leading-tight">
                 <span className="text-[10px] text-[#6E8592] font-medium">Workspace</span>
-                <span className="font-semibold text-white truncate max-w-[120px]">Northline Homes</span>
+                <span className="font-semibold text-white truncate max-w-[120px]">Sobha Royal Pavilion</span>
               </div>
             </div>
             <ChevronDown className="w-4 h-4 text-[#6E8592] group-hover:text-white transition-colors" />
           </div>
 
+          {/* Super-Admin Access Button if authorized or available */}
+          <Link
+            href="/super-admin"
+            className="p-2 rounded-xl bg-slate-800/80 hover:bg-slate-800 border border-slate-700/80 text-xs text-slate-200 flex items-center justify-between transition-colors"
+          >
+            <div className="flex items-center space-x-2">
+              <Building2 className="w-4 h-4 text-emerald-400" />
+              <span className="font-semibold">Super-Admin Center</span>
+            </div>
+            <span className="text-[9px] font-mono bg-emerald-500/20 text-emerald-300 px-1.5 py-0.5 rounded font-bold">
+              Global
+            </span>
+          </Link>
+
           {/* Nav List */}
-          <div className="space-y-1 pt-2">
+          <div className="space-y-1 pt-1">
             <div className="px-3 pb-1.5 text-[10px] font-mono font-bold tracking-widest uppercase text-[#536B77]">
-              Workspace
+              Workspace Modules
             </div>
 
             {navItems.map((item) => {
@@ -101,30 +133,30 @@ export function Sidebar({ isOpen, onClose }: SidebarProps) {
                   href={item.href}
                   onClick={onClose}
                   className={clsx(
-                    "flex items-center justify-between px-3 py-2 rounded-xl text-xs font-medium spring-snap transition-all relative group",
+                    "flex items-center justify-between px-3 py-2 rounded-xl text-xs font-medium transition-all group",
                     isActive
-                      ? "bg-[#182C35] text-white font-semibold"
-                      : "text-[#8EA4B0] hover:text-white hover:bg-[#13222A]"
+                      ? "bg-[#182C35] text-white font-bold"
+                      : "text-[#8EA4B0] hover:text-white hover:bg-[#14232B]"
                   )}
                 >
-                  {/* Active Green Bar on Left Edge */}
-                  {isActive && (
-                    <div className="absolute left-0 top-1.5 bottom-1.5 w-1 bg-emerald-500 rounded-r-full" />
-                  )}
-
-                  <div className="flex items-center space-x-2.5">
-                    <Icon className={clsx("w-4 h-4", isActive ? "text-emerald-400" : "text-[#708896] group-hover:text-emerald-400")} />
+                  <div className="flex items-center space-x-3">
+                    <Icon
+                      className={clsx(
+                        "w-4 h-4 shrink-0 transition-colors",
+                        isActive ? "text-emerald-400" : "text-[#536B77] group-hover:text-[#8EA4B0]"
+                      )}
+                    />
                     <span>{item.label}</span>
                   </div>
 
                   {item.badge && (
-                    <span className="px-1.5 py-0.5 text-[10px] font-mono rounded-md bg-[#13222A] text-[#8EA4B0] border border-[#1C303B]">
+                    <span
+                      className={clsx(
+                        "text-[10px] font-mono font-bold px-1.5 py-0.2 rounded-full",
+                        item.badgeColor ? `${item.badgeColor} text-white` : "bg-[#1C303B] text-[#8EA4B0]"
+                      )}
+                    >
                       {item.badge}
-                    </span>
-                  )}
-                  {item.isSpecial && (
-                    <span className="px-1.5 py-0.5 text-[9px] font-mono font-bold rounded-md bg-emerald-500/15 text-emerald-400 border border-emerald-500/30">
-                      CAD
                     </span>
                   )}
                 </Link>
@@ -133,24 +165,33 @@ export function Sidebar({ isOpen, onClose }: SidebarProps) {
           </div>
         </div>
 
-        {/* Bottom User Profile Section */}
-        <div className="p-4 border-t border-[#15252E] space-y-3 bg-[#0A1419]">
-          <div className="flex items-center space-x-2 text-[11px] text-[#587381] px-1">
+        {/* Bottom User Profile */}
+        <div className="p-3 border-t border-[#15252E] space-y-2">
+          <div className="flex items-center space-x-2 text-[11px] text-[#6E8592] px-2">
             <ShieldCheck className="w-3.5 h-3.5 text-emerald-500" />
-            <span>Secure document workspace</span>
+            <span className="font-mono text-[10px]">UIDAI Masked Workspace</span>
           </div>
 
-          <div className="flex items-center justify-between p-2 rounded-xl hover:bg-[#13222A] cursor-pointer transition-colors">
+          <div className="p-2 rounded-xl bg-[#14232B] border border-[#1C303B] flex items-center justify-between">
             <div className="flex items-center space-x-2.5">
-              <div className="w-8 h-8 rounded-full bg-[#785437] text-white flex items-center justify-center font-bold text-xs shadow-xs">
+              <div className="w-7 h-7 rounded-full bg-amber-600/20 border border-amber-500/40 text-amber-400 font-bold text-xs flex items-center justify-center">
                 AM
               </div>
-              <div className="flex flex-col text-left leading-tight">
-                <span className="text-xs font-semibold text-white">Aidan Morgan</span>
-                <span className="text-[10px] text-[#6E8592]">Workspace admin</span>
+              <div className="text-left text-xs leading-tight">
+                <span className="font-bold text-white block">Aidan Morgan</span>
+                <span className="text-[10px] text-[#6E8592] block capitalize">
+                  {currentRole.replace("_", " ")}
+                </span>
               </div>
             </div>
-            <MoreHorizontal className="w-4 h-4 text-[#6E8592] hover:text-white" />
+
+            <Link
+              href="/login"
+              className="text-[10px] font-mono text-emerald-400 hover:text-emerald-300 p-1"
+              title="Switch Role"
+            >
+              Exit
+            </Link>
           </div>
         </div>
       </aside>

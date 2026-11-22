@@ -11,7 +11,7 @@ interface BuyerDetailsFormProps {
 }
 
 export function BuyerDetailsForm({ buyer, onChange }: BuyerDetailsFormProps) {
-  const handleFieldChange = (field: keyof BuyerProfile, value: string) => {
+  const handleFieldChange = (field: keyof BuyerProfile, value: any) => {
     onChange({
       ...buyer,
       [field]: value,

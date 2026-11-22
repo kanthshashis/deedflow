@@ -125,13 +125,38 @@ export default function DashboardOverview() {
           </Link>
 
           <Link
-            href="/dashboard/generate"
-            className="px-4 py-2.5 bg-[#059669] hover:bg-[#047857] text-white rounded-xl text-xs font-semibold flex items-center space-x-2 shadow-sm transition-colors"
+            href="/dashboard/draft/new"
+            className="px-4 py-2.5 bg-[#059669] hover:bg-[#047857] text-white rounded-xl text-xs font-semibold flex items-center space-x-2 shadow-sm transition-colors cursor-pointer"
           >
             <Plus className="w-4 h-4" />
             <span>New document</span>
           </Link>
         </div>
+      </div>
+
+      {/* Pending Diff Approvals Alert Banner */}
+      <div className="p-4 bg-emerald-50/70 border border-emerald-300 rounded-2xl flex flex-col sm:flex-row sm:items-center justify-between gap-3 shadow-2xs">
+        <div className="flex items-center space-x-3">
+          <div className="w-8 h-8 rounded-lg bg-emerald-600 text-white flex items-center justify-center font-bold text-xs">
+            3
+          </div>
+          <div>
+            <h3 className="text-xs font-bold text-emerald-950">
+              3 Pending Diff Requests Awaiting Project Admin Sign-Off
+            </h3>
+            <p className="text-[11px] text-emerald-800">
+              Updates to parking bays and owner profiles from OCR and Grid are held in the Diff Queue.
+            </p>
+          </div>
+        </div>
+
+        <Link
+          href="/dashboard/approvals"
+          className="px-4 py-2 bg-[#0F172A] hover:bg-black text-white text-xs font-bold rounded-xl flex items-center space-x-1.5 shadow-xs w-fit cursor-pointer"
+        >
+          <span>Open Diff Queue</span>
+          <ArrowUpRight className="w-3.5 h-3.5 text-emerald-400" />
+        </Link>
       </div>
 
       {/* 4 KPI Metrics Row */}
