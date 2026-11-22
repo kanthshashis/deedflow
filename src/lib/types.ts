@@ -174,27 +174,45 @@ export interface ParkingSlot {
   allottedUnitId?: string;
   allotmentDate?: string;
   notes?: string;
+  evPointId?: string;
+  evMeterNumber?: string;
+  evPowerKw?: number;
+  evConnectorType?: string;
 }
 
 export interface UnitTypology {
   id: string;
-  name: string; // "2 BHK Executive", "3 BHK Luxury", "4 BHK Penthouse"
-  type: "2BHK" | "3BHK" | "4BHK" | "Penthouse";
+  name: string; // "2 BHK Executive", "3 BHK Luxury", "4 BHK Penthouse", "Duplex Sky Villa"
+  type: "2BHK" | "3BHK" | "4BHK" | "Penthouse" | "Studio" | "Duplex";
   carpetSqft: number;
   sbaSqft: number;
   udsSqft: number;
   basePrice: number;
 }
 
+export interface TowerConfig {
+  towerName: string;
+  floorsCount: number;
+  flatsPerFloor: number;
+  numberingScheme: "tower_floor_flat" | "floor_flat" | "tower_padded_flat";
+  assignedTypologyIds: string[];
+}
+
 export interface MatrixConfig {
+  mode: "uniform" | "per_tower";
   towers: string[];
   floorsPerTower: number;
   flatsPerFloor: number;
   numberingScheme: "tower_floor_flat" | "floor_flat" | "tower_padded_flat";
   typologies: UnitTypology[];
+  towerConfigs?: TowerConfig[];
   basementLevels: string[];
   slotsPerLevel: number;
   evSlotFrequency: number;
+  evPointPrefix?: string;
+  evPowerKw?: number;
+  evConnectorType?: string;
+  customEvSlots?: string[];
 }
 
 export interface ProjectMetadata {

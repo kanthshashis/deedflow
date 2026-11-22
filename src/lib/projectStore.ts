@@ -155,40 +155,83 @@ export function generateMatrixInventory(
   config: MatrixConfig
 ): { units: UnitInventory[]; parkingSlots: ParkingSlot[] } {
   const units: UnitInventory[] = [];
-  const typologies = config.typologies.length > 0 ? config.typologies : DEFAULT_TYPOLOGIES;
+  const allTypologies = config.typologies.length > 0 ? config.typologies : DEFAULT_TYPOLOGIES;
 
   let unitCounter = 1;
 
-  for (const tower of config.towers) {
-    for (let floor = 1; floor <= config.floorsPerTower; floor++) {
-      for (let flatIndex = 1; flatIndex <= config.flatsPerFloor; flatIndex++) {
-        // Distribute typologies sequentially across flats on a floor
-        const typology = typologies[(flatIndex - 1) % typologies.length];
-        const flatNumber = formatFlatNumber(tower, floor, flatIndex, config.numberingScheme);
+  if (config.mode === "per_tower" && config.towerConfigs && config.towerConfigs.length > 0) {
+    // Heterogeneous Per-Tower Generation
+    for (const towerCfg of config.towerConfigs) {
+      const activeTypologies = allTypologies.filter((t) =>
+        towerCfg.assignedTypologyIds.includes(t.id)
+      );
+      const typologiesForTower = activeTypologies.length > 0 ? activeTypologies : allTypologies;
 
-        units.push({
-          id: `unit_${project.id}_${unitCounter++}`,
-          flatNumber,
-          tower: `Tower ${tower}`,
-          floorNumber: floor,
-          unitType: typology.type,
-          carpetAreaSqFt: typology.carpetSqft,
-          superBuiltUpAreaSqFt: typology.sbaSqft,
-          undividedShareLandSqFt: typology.udsSqft,
-          northBoundary: `Corridor / Flat ${formatFlatNumber(tower, floor, Math.max(1, flatIndex - 1), config.numberingScheme)}`,
-          southBoundary: `External Open Space / Driveway`,
-          eastBoundary: `Common Lift Lobby & Staircase`,
-          westBoundary: `External Landscape Gardens`,
-          basePrice: typology.basePrice,
-          status: "available",
-        });
+      for (let floor = 1; floor <= towerCfg.floorsCount; floor++) {
+        for (let flatIndex = 1; flatIndex <= towerCfg.flatsPerFloor; flatIndex++) {
+          const typology = typologiesForTower[(flatIndex - 1) % typologiesForTower.length];
+          const flatNumber = formatFlatNumber(
+            towerCfg.towerName,
+            floor,
+            flatIndex,
+            towerCfg.numberingScheme
+          );
+
+          units.push({
+            id: `unit_${project.id}_${unitCounter++}`,
+            flatNumber,
+            tower: `Tower ${towerCfg.towerName}`,
+            floorNumber: floor,
+            unitType: typology.type,
+            carpetAreaSqFt: typology.carpetSqft,
+            superBuiltUpAreaSqFt: typology.sbaSqft,
+            undividedShareLandSqFt: typology.udsSqft,
+            northBoundary: `Corridor / Flat ${formatFlatNumber(towerCfg.towerName, floor, Math.max(1, flatIndex - 1), towerCfg.numberingScheme)}`,
+            southBoundary: `External Open Space / Driveway`,
+            eastBoundary: `Common Lift Lobby & Staircase`,
+            westBoundary: `External Landscape Gardens`,
+            basePrice: typology.basePrice,
+            status: "available",
+          });
+        }
+      }
+    }
+  } else {
+    // Uniform Generation Across All Towers
+    for (const tower of config.towers) {
+      for (let floor = 1; floor <= config.floorsPerTower; floor++) {
+        for (let flatIndex = 1; flatIndex <= config.flatsPerFloor; flatIndex++) {
+          const typology = allTypologies[(flatIndex - 1) % allTypologies.length];
+          const flatNumber = formatFlatNumber(tower, floor, flatIndex, config.numberingScheme);
+
+          units.push({
+            id: `unit_${project.id}_${unitCounter++}`,
+            flatNumber,
+            tower: `Tower ${tower}`,
+            floorNumber: floor,
+            unitType: typology.type,
+            carpetAreaSqFt: typology.carpetSqft,
+            superBuiltUpAreaSqFt: typology.sbaSqft,
+            undividedShareLandSqFt: typology.udsSqft,
+            northBoundary: `Corridor / Flat ${formatFlatNumber(tower, floor, Math.max(1, flatIndex - 1), config.numberingScheme)}`,
+            southBoundary: `External Open Space / Driveway`,
+            eastBoundary: `Common Lift Lobby & Staircase`,
+            westBoundary: `External Landscape Gardens`,
+            basePrice: typology.basePrice,
+            status: "available",
+          });
+        }
       }
     }
   }
 
-  // Generate Parking Slots
+  // Generate Parking Slots with Detailed EV Point Designation
   const parkingSlots: ParkingSlot[] = [];
   let slotCounter = 1;
+  const customEvSet = new Set(config.customEvSlots || []);
+  const evPrefix = config.evPointPrefix || "BESCOM-EV-";
+  const evKw = config.evPowerKw || 7.4;
+  const evConnector = config.evConnectorType || "Type-2 AC Fast";
 
   for (const levelStr of config.basementLevels) {
     const levelName =
@@ -199,9 +242,15 @@ export function generateMatrixInventory(
         : ("Basement 1" as const);
 
     for (let i = 1; i <= config.slotsPerLevel; i++) {
-      const isEv = config.evSlotFrequency > 0 && i % config.evSlotFrequency === 0;
       const slotNumStr = i < 10 ? `0${i}` : `${i}`;
       const slotNumber = `${levelStr}-${slotNumStr}`;
+
+      const isEv =
+        customEvSet.has(slotNumber) ||
+        (config.evSlotFrequency > 0 && i % config.evSlotFrequency === 0);
+
+      const evPointId = isEv ? `${evPrefix}${slotNumber}` : undefined;
+      const evMeterNumber = isEv ? `MTR-EV-${slotCounter.toString().padStart(4, "0")}` : undefined;
 
       parkingSlots.push({
         id: `slot_${project.id}_${slotCounter++}`,
@@ -209,6 +258,10 @@ export function generateMatrixInventory(
         level: levelName,
         slotType: isEv ? "Covered EV-Ready" : "Standard Covered",
         status: "available",
+        evPointId,
+        evMeterNumber,
+        evPowerKw: isEv ? evKw : undefined,
+        evConnectorType: isEv ? evConnector : undefined,
       });
     }
   }
