@@ -2,12 +2,14 @@
 
 import React from "react";
 import Link from "next/link";
+import { Building2 } from "lucide-react";
 import clsx from "clsx";
 
 interface LogoProps {
   href?: string;
   size?: "sm" | "md" | "lg";
   badge?: string;
+  subtitle?: string | boolean;
   className?: string;
 }
 
@@ -15,39 +17,54 @@ export function Logo({
   href = "/",
   size = "md",
   badge,
+  subtitle = "Royal Estate Edition",
   className,
 }: LogoProps) {
-  const iconSize = size === "sm" ? "w-7 h-7" : size === "lg" ? "w-9 h-9" : "w-8 h-8";
-  const svgSize = size === "sm" ? "w-4 h-4" : size === "lg" ? "w-5 h-5" : "w-4.5 h-4.5";
-  const textSize = size === "sm" ? "text-lg" : size === "lg" ? "text-2xl" : "text-xl";
+  const iconBox =
+    size === "sm"
+      ? "w-8 h-8 rounded-lg"
+      : size === "lg"
+      ? "w-10 h-10 rounded-xl"
+      : "w-9 h-9 rounded-xl";
+
+  const iconSize =
+    size === "sm" ? "w-4 h-4" : size === "lg" ? "w-5.5 h-5.5" : "w-5 h-5";
+
+  const titleSize =
+    size === "sm" ? "text-sm" : size === "lg" ? "text-xl sm:text-2xl" : "text-base";
+
+  const subtitleText = typeof subtitle === "string" ? subtitle : "Royal Estate Edition";
+  const showSubtitle = subtitle !== false;
 
   const content = (
     <div className={clsx("flex items-center space-x-2.5 select-none group", className)}>
+      {/* High-Rise Estate Crest Icon Tile */}
       <div
         className={clsx(
-          iconSize,
-          "rounded-xl bg-[#821A2A]/10 border border-[#821A2A]/25 flex items-center justify-center text-[#821A2A] shadow-2xs group-hover:scale-105 group-hover:bg-[#821A2A]/15 transition-all spring-snap shrink-0"
+          iconBox,
+          "flex items-center justify-center font-bold bg-gradient-to-b from-[#992437] to-[#821A2A] text-white border border-[#992437]/40 shadow-xs group-hover:scale-105 spring-snap shrink-0 relative overflow-hidden"
         )}
       >
-        <svg
-          className={clsx(svgSize, "text-[#821A2A]")}
-          viewBox="0 0 24 24"
-          fill="none"
-          stroke="currentColor"
-          strokeWidth="2.5"
-          strokeLinecap="round"
-          strokeLinejoin="round"
-        >
-          <path d="M7 17l9.2-9.2M17 17V7H7" />
-        </svg>
+        {/* Subtle interior highlight glow */}
+        <div className="absolute inset-0 bg-gradient-to-tr from-transparent via-white/10 to-white/20 pointer-events-none" />
+        <Building2 className={clsx(iconSize, "text-[#FAF7F2] relative z-10")} />
       </div>
-      <div className="flex items-center space-x-2">
-        <span className={clsx(textSize, "font-extrabold tracking-tight text-[#24060B] font-sans lowercase leading-none")}>
-          deedflow<span className="text-[#821A2A]">.</span>
-        </span>
-        {badge && (
-          <span className="text-[10px] font-mono uppercase bg-[#821A2A]/10 text-[#821A2A] border border-[#821A2A]/20 px-1.5 py-0.5 rounded font-bold">
-            {badge}
+
+      {/* Brand Wordmark & Subtitle */}
+      <div className="flex flex-col text-left">
+        <div className="flex items-center space-x-1.5 leading-none">
+          <span className={clsx(titleSize, "font-extrabold tracking-tight text-[#24060B] font-sans")}>
+            DeedFlow
+          </span>
+          {badge && (
+            <span className="text-[9px] font-mono uppercase bg-[#821A2A]/10 text-[#821A2A] border border-[#821A2A]/20 px-1.5 py-0.5 rounded font-bold">
+              {badge}
+            </span>
+          )}
+        </div>
+        {showSubtitle && (
+          <span className="text-[9px] font-mono text-[#8C777A] uppercase tracking-wider mt-0.5 font-semibold">
+            {subtitleText}
           </span>
         )}
       </div>
