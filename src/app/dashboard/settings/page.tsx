@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect } from "react";
 import { MOCK_PROJECT, DEMO_USERS } from "@/lib/mockData";
-import { UserProfile, UserRole } from "@/lib/types";
+import { UserProfile, UserRole, hasPermission } from "@/lib/types";
 import {
   User,
   Shield,
@@ -34,6 +34,7 @@ import clsx from "clsx";
 export default function SettingsPage() {
   const [activeTab, setActiveTab] = useState<"profile" | "security" | "team" | "project" | "audit">("profile");
   const [currentRole, setCurrentRole] = useState<UserRole>("project_admin");
+  const [perspectiveRole, setPerspectiveRole] = useState<UserRole | "omni">("omni");
   const [currentUser, setCurrentUser] = useState<UserProfile>(DEMO_USERS.project_admin);
 
   // Profile Form State
@@ -60,17 +61,59 @@ export default function SettingsPage() {
   const [auditSearch, setAuditSearch] = useState("");
   const [forensicWatermark, setForensicWatermark] = useState(true);
 
-  useEffect(() => {
+  const syncState = () => {
     if (typeof window !== "undefined") {
       const storedRole = localStorage.getItem("deedflow_active_role") as UserRole | null;
-      if (storedRole && DEMO_USERS[storedRole]) {
-        setCurrentRole(storedRole);
-        setCurrentUser(DEMO_USERS[storedRole]);
-        setFullName(DEMO_USERS[storedRole].fullName);
-        setPhone(DEMO_USERS[storedRole].phone || "+91 98450 11223");
+      const storedPerspective = localStorage.getItem("deedflow_perspective_role") as (UserRole | "omni") | null;
+
+      const primaryRole = storedRole || "project_admin";
+      setCurrentRole(primaryRole);
+
+      const effective: UserRole =
+        (primaryRole === "project_admin" || primaryRole === "super_admin") && storedPerspective && storedPerspective !== "omni"
+          ? storedPerspective
+          : primaryRole;
+
+      setPerspectiveRole(storedPerspective || "omni");
+
+      if (DEMO_USERS[effective]) {
+        setCurrentUser(DEMO_USERS[effective]);
+        setFullName(DEMO_USERS[effective].fullName);
+        setPhone(DEMO_USERS[effective].phone || "+91 98450 11223");
       }
     }
+  };
+
+  useEffect(() => {
+    syncState();
+    const handleRoleChanged = () => syncState();
+    window.addEventListener("deedflow_role_changed", handleRoleChanged);
+    window.addEventListener("storage", handleRoleChanged);
+    return () => {
+      window.removeEventListener("deedflow_role_changed", handleRoleChanged);
+      window.removeEventListener("storage", handleRoleChanged);
+    };
   }, []);
+
+  const effectiveRole: UserRole =
+    (currentRole === "project_admin" || currentRole === "super_admin") && perspectiveRole !== "omni"
+      ? perspectiveRole
+      : currentRole;
+
+  const canManageTeam = hasPermission(effectiveRole, "invite_team_members");
+  const canViewStatutory =
+    hasPermission(effectiveRole, "configure_statutory_profile") ||
+    effectiveRole === "legal_counsel" ||
+    effectiveRole === "promoter_executive";
+  const canEditStatutory = hasPermission(effectiveRole, "configure_statutory_profile");
+  const canViewAudit = hasPermission(effectiveRole, "view_audit_stream");
+
+  // Auto-fallback if active tab is restricted for current role
+  useEffect(() => {
+    if (activeTab === "team" && !canManageTeam) setActiveTab("profile");
+    if (activeTab === "project" && !canViewStatutory) setActiveTab("profile");
+    if (activeTab === "audit" && !canViewAudit) setActiveTab("profile");
+  }, [activeTab, canManageTeam, canViewStatutory, canViewAudit]);
 
   // Password strength calculation
   const getPasswordStrength = (pass: string) => {
@@ -232,7 +275,7 @@ export default function SettingsPage() {
         </div>
       )}
 
-      {/* 5-Tab Navigation Bar */}
+      {/* Role-Gated Tab Navigation Bar */}
       <div className="flex items-center space-x-1.5 border-b border-[#DECFC0] pb-1 overflow-x-auto">
         <button
           onClick={() => setActiveTab("profile")}
@@ -260,47 +303,53 @@ export default function SettingsPage() {
           <span>Security &amp; Password</span>
         </button>
 
-        <button
-          onClick={() => setActiveTab("team")}
-          className={clsx(
-            "px-4 py-2.5 rounded-xl text-xs font-semibold flex items-center space-x-2 transition-all cursor-pointer shrink-0",
-            activeTab === "team"
-              ? "bg-[#821A2A] text-white shadow-xs"
-              : "text-[#5C4A4D] hover:text-[#24060B] hover:bg-[#FAF7F2]"
-          )}
-        >
-          <Users className="w-3.5 h-3.5" />
-          <span>Team &amp; Roles</span>
-          <span className="ml-1 text-[10px] font-mono px-1.5 py-0.2 rounded-full bg-white/20 text-current">
-            {teamMembers.length}
-          </span>
-        </button>
+        {canManageTeam && (
+          <button
+            onClick={() => setActiveTab("team")}
+            className={clsx(
+              "px-4 py-2.5 rounded-xl text-xs font-semibold flex items-center space-x-2 transition-all cursor-pointer shrink-0",
+              activeTab === "team"
+                ? "bg-[#821A2A] text-white shadow-xs"
+                : "text-[#5C4A4D] hover:text-[#24060B] hover:bg-[#FAF7F2]"
+            )}
+          >
+            <Users className="w-3.5 h-3.5" />
+            <span>Team &amp; Roles</span>
+            <span className="ml-1 text-[10px] font-mono px-1.5 py-0.2 rounded-full bg-white/20 text-current">
+              {teamMembers.length}
+            </span>
+          </button>
+        )}
 
-        <button
-          onClick={() => setActiveTab("project")}
-          className={clsx(
-            "px-4 py-2.5 rounded-xl text-xs font-semibold flex items-center space-x-2 transition-all cursor-pointer shrink-0",
-            activeTab === "project"
-              ? "bg-[#821A2A] text-white shadow-xs"
-              : "text-[#5C4A4D] hover:text-[#24060B] hover:bg-[#FAF7F2]"
-          )}
-        >
-          <Building2 className="w-3.5 h-3.5" />
-          <span>Project &amp; Statutory</span>
-        </button>
+        {canViewStatutory && (
+          <button
+            onClick={() => setActiveTab("project")}
+            className={clsx(
+              "px-4 py-2.5 rounded-xl text-xs font-semibold flex items-center space-x-2 transition-all cursor-pointer shrink-0",
+              activeTab === "project"
+                ? "bg-[#821A2A] text-white shadow-xs"
+                : "text-[#5C4A4D] hover:text-[#24060B] hover:bg-[#FAF7F2]"
+            )}
+          >
+            <Building2 className="w-3.5 h-3.5" />
+            <span>Project &amp; Statutory</span>
+          </button>
+        )}
 
-        <button
-          onClick={() => setActiveTab("audit")}
-          className={clsx(
-            "px-4 py-2.5 rounded-xl text-xs font-semibold flex items-center space-x-2 transition-all cursor-pointer shrink-0",
-            activeTab === "audit"
-              ? "bg-[#821A2A] text-white shadow-xs"
-              : "text-[#5C4A4D] hover:text-[#24060B] hover:bg-[#FAF7F2]"
-          )}
-        >
-          <FileCheck2 className="w-3.5 h-3.5" />
-          <span>Audit Stream &amp; Forensic</span>
-        </button>
+        {canViewAudit && (
+          <button
+            onClick={() => setActiveTab("audit")}
+            className={clsx(
+              "px-4 py-2.5 rounded-xl text-xs font-semibold flex items-center space-x-2 transition-all cursor-pointer shrink-0",
+              activeTab === "audit"
+                ? "bg-[#821A2A] text-white shadow-xs"
+                : "text-[#5C4A4D] hover:text-[#24060B] hover:bg-[#FAF7F2]"
+            )}
+          >
+            <FileCheck2 className="w-3.5 h-3.5" />
+            <span>Audit Stream &amp; Forensic</span>
+          </button>
+        )}
       </div>
 
       {/* Tab 1: My Profile */}
@@ -606,8 +655,8 @@ export default function SettingsPage() {
         </div>
       )}
 
-      {/* Tab 3: Team Management & Roles */}
-      {activeTab === "team" && (
+      {/* Tab 3: Team Management & Roles - Restricted to Project Admin */}
+      {canManageTeam && activeTab === "team" && (
         <div className="space-y-6 animate-fade-in">
           <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
             <div>
@@ -705,13 +754,21 @@ export default function SettingsPage() {
       )}
 
       {/* Tab 4: Project & Statutory Profile */}
-      {activeTab === "project" && (
+      {canViewStatutory && activeTab === "project" && (
         <div className="glossy-card bg-[#FFFDFB] border border-[#DECFC0] rounded-2xl p-6 shadow-xs space-y-6 animate-fade-in">
-          <div className="border-b border-[#F0E8DD] pb-4">
-            <h3 className="font-bold font-serif text-lg text-[#24060B]">Project Statutory Credentials</h3>
-            <p className="text-xs text-[#5C4A4D]">
-              These statutory values are permanently locked and auto-injected into RERA Agreements for Sale and Kaveri 2.0 Sale Deeds.
-            </p>
+          <div className="border-b border-[#F0E8DD] pb-4 flex items-center justify-between">
+            <div>
+              <h3 className="font-bold font-serif text-lg text-[#24060B]">Project Statutory Credentials</h3>
+              <p className="text-xs text-[#5C4A4D]">
+                These statutory values are permanently locked and auto-injected into RERA Agreements for Sale and Kaveri 2.0 Sale Deeds.
+              </p>
+            </div>
+            {!canEditStatutory && (
+              <span className="px-2.5 py-1 rounded-full bg-[#FAF0F2] text-[#821A2A] border border-[#E8C4C8] text-[10px] font-mono font-bold flex items-center space-x-1 shrink-0">
+                <Lock className="w-3 h-3 text-[#821A2A]" />
+                <span>Statutory Read-Only Mode</span>
+              </span>
+            )}
           </div>
 
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 text-xs">
@@ -719,8 +776,12 @@ export default function SettingsPage() {
               <label className="block font-semibold text-[#8C777A] mb-1">Commercial Project Name</label>
               <input
                 type="text"
+                disabled={!canEditStatutory}
                 defaultValue={MOCK_PROJECT.name}
-                className="w-full px-3 py-2 rounded-xl border border-[#DECFC0] bg-[#FAF7F2] text-[#24060B] font-semibold"
+                className={clsx(
+                  "w-full px-3 py-2 rounded-xl border border-[#DECFC0] text-[#24060B] font-semibold",
+                  !canEditStatutory ? "bg-[#F5EFE8] cursor-not-allowed text-[#5C4A4D]" : "bg-[#FAF7F2]"
+                )}
               />
             </div>
 
@@ -728,8 +789,12 @@ export default function SettingsPage() {
               <label className="block font-semibold text-[#8C777A] mb-1">Registered Legal Entity</label>
               <input
                 type="text"
+                disabled={!canEditStatutory}
                 defaultValue={MOCK_PROJECT.legalName}
-                className="w-full px-3 py-2 rounded-xl border border-[#DECFC0] bg-[#FAF7F2] text-[#24060B] font-semibold"
+                className={clsx(
+                  "w-full px-3 py-2 rounded-xl border border-[#DECFC0] text-[#24060B] font-semibold",
+                  !canEditStatutory ? "bg-[#F5EFE8] cursor-not-allowed text-[#5C4A4D]" : "bg-[#FAF7F2]"
+                )}
               />
             </div>
 
@@ -737,8 +802,12 @@ export default function SettingsPage() {
               <label className="block font-semibold text-[#8C777A] mb-1">Project RERA Registration #</label>
               <input
                 type="text"
+                disabled={!canEditStatutory}
                 defaultValue={MOCK_PROJECT.reraNumber}
-                className="w-full px-3 py-2 rounded-xl border border-[#DECFC0] bg-[#FAF7F2] text-[#24060B] font-mono font-bold"
+                className={clsx(
+                  "w-full px-3 py-2 rounded-xl border border-[#DECFC0] text-[#24060B] font-mono font-bold",
+                  !canEditStatutory ? "bg-[#F5EFE8] cursor-not-allowed text-[#5C4A4D]" : "bg-[#FAF7F2]"
+                )}
               />
             </div>
 
@@ -746,8 +815,12 @@ export default function SettingsPage() {
               <label className="block font-semibold text-[#8C777A] mb-1">Sanction Plan Approval #</label>
               <input
                 type="text"
+                disabled={!canEditStatutory}
                 defaultValue={MOCK_PROJECT.sanctionPlanNo}
-                className="w-full px-3 py-2 rounded-xl border border-[#DECFC0] bg-[#FAF7F2] text-[#24060B] font-mono"
+                className={clsx(
+                  "w-full px-3 py-2 rounded-xl border border-[#DECFC0] text-[#24060B] font-mono",
+                  !canEditStatutory ? "bg-[#F5EFE8] cursor-not-allowed text-[#5C4A4D]" : "bg-[#FAF7F2]"
+                )}
               />
             </div>
 
@@ -755,8 +828,12 @@ export default function SettingsPage() {
               <label className="block font-semibold text-[#8C777A] mb-1">RERA Master Escrow Bank Account</label>
               <input
                 type="text"
+                disabled={!canEditStatutory}
                 defaultValue="State Bank of India • A/C No: 918020034827101 (IFSC: SBIN0004120)"
-                className="w-full px-3 py-2 rounded-xl border border-[#DECFC0] bg-[#FAF7F2] text-[#24060B] font-mono font-bold"
+                className={clsx(
+                  "w-full px-3 py-2 rounded-xl border border-[#DECFC0] text-[#24060B] font-mono font-bold",
+                  !canEditStatutory ? "bg-[#F5EFE8] cursor-not-allowed text-[#5C4A4D]" : "bg-[#FAF7F2]"
+                )}
               />
             </div>
 
@@ -764,8 +841,12 @@ export default function SettingsPage() {
               <label className="block font-semibold text-[#8C777A] mb-1">Site Office Physical Address</label>
               <input
                 type="text"
+                disabled={!canEditStatutory}
                 defaultValue={MOCK_PROJECT.location}
-                className="w-full px-3 py-2 rounded-xl border border-[#DECFC0] bg-[#FAF7F2] text-[#24060B]"
+                className={clsx(
+                  "w-full px-3 py-2 rounded-xl border border-[#DECFC0] text-[#24060B]",
+                  !canEditStatutory ? "bg-[#F5EFE8] cursor-not-allowed text-[#5C4A4D]" : "bg-[#FAF7F2]"
+                )}
               />
             </div>
           </div>
@@ -773,7 +854,7 @@ export default function SettingsPage() {
       )}
 
       {/* Tab 5: Audit Trail & Forensic Compliance */}
-      {activeTab === "audit" && (
+      {canViewAudit && activeTab === "audit" && (
         <div className="space-y-6 animate-fade-in">
           {/* Forensic Watermark Controls */}
           <div className="glossy-card bg-[#FFFDFB] border border-[#DECFC0] rounded-2xl p-6 shadow-xs flex flex-col sm:flex-row sm:items-center justify-between gap-4">
