@@ -222,13 +222,15 @@ export function Sidebar({ isOpen, onClose }: SidebarProps) {
               </div>
             </Link>
 
-            <Link
-              href="/login"
-              className="text-[10px] text-[#821A2A] hover:underline font-mono font-semibold shrink-0 ml-1"
-              title="Switch role / Logout"
-            >
-              Switch
-            </Link>
+            <div className="flex items-center space-x-1 shrink-0 ml-1">
+              <Link
+                href="/login"
+                className="text-[10px] text-[#821A2A] hover:bg-[#F8F2EC] px-1.5 py-0.5 rounded font-mono font-semibold transition-colors"
+                title="Switch role"
+              >
+                Switch
+              </Link>
+            </div>
           </div>
         </div>
       </aside>

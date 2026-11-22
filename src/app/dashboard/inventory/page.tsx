@@ -2,9 +2,14 @@
 
 import React, { useState, useEffect } from "react";
 import Link from "next/link";
-import { MOCK_UNITS } from "@/lib/mockData";
+import { MOCK_UNITS, MOCK_PARKING_SLOTS } from "@/lib/mockData";
 import { UnitInventory, UserRole, hasPermission } from "@/lib/types";
 import { formatIndianCurrency } from "@/lib/indianCurrencyToWords";
+import {
+  downloadExcelTemplate,
+  exportInventoryToExcel,
+  parseExcelApartmentFile,
+} from "@/lib/excelMatrixEngine";
 import {
   Building2,
   Upload,
@@ -82,10 +87,32 @@ export default function InventoryPage() {
   });
 
   // Real in-browser CSV / Excel parser
-  const handleFileUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleFileUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) return;
 
+    // If Excel spreadsheet (.xlsx / .xls)
+    if (file.name.endsWith(".xlsx") || file.name.endsWith(".xls")) {
+      try {
+        const result = await parseExcelApartmentFile(file, "proj_sobha");
+        if (result.success && result.units.length > 0) {
+          setUnits(result.units);
+          setImportNotification(
+            `Successfully parsed & loaded ${result.units.length} units from ${file.name} (Valuation: ${formatIndianCurrency(result.summary.totalInventoryValuation)})!`
+          );
+          setTimeout(() => setImportNotification(null), 5000);
+          return;
+        } else if (result.errors.length > 0) {
+          alert(`Excel Ingestion Warnings/Errors:\n${result.errors.join("\n")}`);
+          return;
+        }
+      } catch (err: any) {
+        alert(`Failed to parse Excel file: ${err.message || String(err)}`);
+        return;
+      }
+    }
+
+    // Fallback to CSV parser
     const reader = new FileReader();
     reader.onload = (event) => {
       try {
@@ -180,6 +207,14 @@ export default function InventoryPage() {
     document.body.removeChild(link);
   };
 
+  const handleExportExcel = () => {
+    exportInventoryToExcel(units, MOCK_PARKING_SLOTS, "Sobha_Royal_Pavilion");
+  };
+
+  const handleDownloadSampleExcel = () => {
+    downloadExcelTemplate("DeedFlow_Master_Apartment_Schedule_Template.xlsx");
+  };
+
   const handleDownloadSampleCsv = () => {
     const sample = `FlatNumber,Tower,Floor,Type,CarpetSqFt,SBASqFt,UDSSqFt,Price,Status
 B-101,Tower B,1,3 BHK Luxury,1280,1650,412,8800000,booked
@@ -264,31 +299,32 @@ B-301,Tower B,3,4 BHK Presidential,2100,2850,712,18500000,booked`;
         <div className="flex flex-wrap items-center gap-2">
           {!isBankAuditor && (
             <button
-              onClick={handleDownloadSampleCsv}
+              onClick={handleDownloadSampleExcel}
               className="px-3 py-2.5 rounded-xl bg-white border border-[#DECFC0] hover:border-[#821A2A]/40 text-[#24060B] text-xs font-semibold flex items-center space-x-1.5 shadow-2xs transition-colors cursor-pointer"
-              title="Download example CSV spreadsheet"
+              title="Download real-world multi-tower Excel spreadsheet template"
             >
               <FileSpreadsheet className="w-3.5 h-3.5 text-emerald-700" />
-              <span>Sample CSV</span>
+              <span>Sample .xlsx</span>
             </button>
           )}
 
           <button
-            onClick={handleExportCsv}
+            onClick={handleExportExcel}
             className="px-3 py-2.5 glossy-btn-ivory text-[#24060B] border-[#DECFC0] hover:border-[#821A2A]/40 text-xs font-semibold rounded-xl flex items-center space-x-1.5 shadow-2xs cursor-pointer transition-colors"
+            title="Export master schedule as formatted Excel spreadsheet"
           >
-            <Download className="w-3.5 h-3.5 text-[#5C4A4D]" />
-            <span>Export CSV</span>
+            <Download className="w-3.5 h-3.5 text-emerald-700" />
+            <span>Export Excel</span>
           </button>
 
           {/* Import Sheet is restricted to Project Admin */}
           {canManageInventory && (
             <label className="cursor-pointer px-3.5 py-2.5 glossy-btn-ivory border-[#DECFC0] hover:border-[#821A2A]/40 text-[#24060B] text-xs font-semibold rounded-xl flex items-center space-x-1.5 shadow-2xs transition-all">
               <Upload className="w-3.5 h-3.5 text-[#821A2A]" />
-              <span>Import Sheet</span>
+              <span>Import Sheet (.xlsx/.csv)</span>
               <input
                 type="file"
-                accept=".csv,.txt"
+                accept=".xlsx,.xls,.csv,.txt"
                 className="hidden"
                 onChange={handleFileUpload}
               />

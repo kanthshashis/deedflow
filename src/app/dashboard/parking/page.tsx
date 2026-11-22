@@ -320,6 +320,16 @@ export default function ParkingDashboardPage() {
                   ? "This slot is in builder open inventory. Ready for immediate allotment."
                   : `Currently allotted to Flat ${selectedSlot.allottedUnitFlat}. Swapping requires Maker-Checker sign-off.`}
               </p>
+              {selectedSlot.slotType === "Covered EV-Ready" && (
+                <div className="inline-flex items-center space-x-2 text-[10px] font-mono text-emerald-800 bg-emerald-50 px-2 py-0.5 rounded border border-emerald-200">
+                  <Zap className="w-3 h-3 text-emerald-600" />
+                  <span>Feeder: {selectedSlot.evPointId || `BESCOM-EV-${selectedSlot.slotNumber}`}</span>
+                  <span>•</span>
+                  <span>Meter: {selectedSlot.evMeterNumber || `MTR-EV-${selectedSlot.slotNumber}`}</span>
+                  <span>•</span>
+                  <span>{selectedSlot.evPowerKw || 7.4} kW Fast</span>
+                </div>
+              )}
             </div>
 
             <div className="flex items-center space-x-2">

@@ -651,6 +651,24 @@ export default function SettingsPage() {
                 <span className="text-[11px] text-[#8C777A]">2 hours ago</span>
               </div>
             </div>
+
+            <div className="pt-3 border-t border-[#F0E8DD] flex items-center justify-between">
+              <span className="text-[11px] text-[#5C4A4D]">Need to log out from this browser?</span>
+              <button
+                type="button"
+                onClick={() => {
+                  if (typeof window !== "undefined") {
+                    localStorage.removeItem("deedflow_auth_session");
+                    localStorage.removeItem("deedflow_active_role");
+                    window.location.href = "/login";
+                  }
+                }}
+                className="px-4 py-2 text-xs font-bold rounded-xl bg-red-50 text-red-700 hover:bg-red-100 border border-red-200 transition-colors cursor-pointer flex items-center space-x-1.5"
+              >
+                <LogOut className="w-3.5 h-3.5 text-red-600" />
+                <span>Sign Out Current Session</span>
+              </button>
+            </div>
           </div>
         </div>
       )}
