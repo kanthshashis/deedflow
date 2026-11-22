@@ -32,33 +32,58 @@ interface SidebarProps {
 export function Sidebar({ isOpen, onClose }: SidebarProps) {
   const pathname = usePathname();
   const [currentRole, setCurrentRole] = useState<UserRole>("project_admin");
+  const [perspectiveRole, setPerspectiveRole] = useState<UserRole | "omni">("omni");
 
-  useEffect(() => {
+  const syncRoles = () => {
     if (typeof window !== "undefined") {
       const storedRole = localStorage.getItem("deedflow_active_role") as UserRole | null;
       if (storedRole) {
         setCurrentRole(storedRole);
       }
+      const storedPerspective = localStorage.getItem("deedflow_perspective_role") as (UserRole | "omni") | null;
+      if (storedPerspective) {
+        setPerspectiveRole(storedPerspective);
+      } else {
+        setPerspectiveRole("omni");
+      }
     }
+  };
+
+  useEffect(() => {
+    syncRoles();
+    const handleRoleChanged = () => syncRoles();
+    window.addEventListener("deedflow_role_changed", handleRoleChanged);
+    window.addEventListener("storage", handleRoleChanged);
+    return () => {
+      window.removeEventListener("deedflow_role_changed", handleRoleChanged);
+      window.removeEventListener("storage", handleRoleChanged);
+    };
   }, []);
 
+  // Determine effective role for navigation filtering
+  const effectiveRole: UserRole =
+    (currentRole === "project_admin" || currentRole === "super_admin") && perspectiveRole !== "omni"
+      ? perspectiveRole
+      : currentRole;
+
+  // Hyper-narrowed navigation matrix: Project Admin has omni-access (all 11 items); others get minimal specialized views
   const allNavItems = [
-    { href: "/dashboard", label: "Overview", icon: LayoutGrid, roles: ["super_admin", "promoter_executive", "project_admin", "legal_counsel", "project_operator", "bank_auditor"] },
-    { href: "/dashboard/inventory", label: "Unit Dossiers", icon: Building2, isHighlighted: true, roles: ["super_admin", "promoter_executive", "project_admin", "legal_counsel", "project_operator", "bank_auditor"] },
-    { href: "/dashboard/parking", label: "Basement Grid", icon: Car, roles: ["super_admin", "promoter_executive", "project_admin", "project_operator"] },
+    { href: "/dashboard", label: "Overview", icon: LayoutGrid, roles: ["super_admin", "project_admin", "promoter_executive"] },
+    { href: "/dashboard/inventory", label: effectiveRole === "bank_auditor" ? "Unit Dossiers (Audit)" : "Unit Dossiers", icon: Building2, isHighlighted: true, roles: ["super_admin", "project_admin", "project_operator", "bank_auditor"] },
+    { href: "/dashboard/parking", label: "Basement Grid", icon: Car, roles: ["super_admin", "project_admin", "project_operator"] },
     { href: "/dashboard/draft/new", label: "Document Studio", icon: FileText, roles: ["super_admin", "project_admin", "project_operator"] },
-    { href: "/dashboard/approvals", label: "Approvals Queue", icon: RotateCcw, badge: "3", roles: ["super_admin", "project_admin"] },
-    { href: "/dashboard/templates", label: "Template Studio", icon: FileCode2, roles: ["super_admin", "legal_counsel"] },
+    { href: "/dashboard/approvals", label: "Approvals Queue", icon: RotateCcw, badge: "3", roles: ["super_admin", "project_admin", "legal_counsel", "promoter_executive"] },
+    { href: "/dashboard/templates", label: "Template Studio", icon: FileCode2, roles: ["super_admin", "project_admin", "legal_counsel"] },
     { href: "/dashboard/batch", label: "Batch & Sale Deeds", icon: FileArchive, roles: ["super_admin", "project_admin", "legal_counsel"] },
-    { href: "/dashboard/governance", label: "Data Governance", icon: Layers, roles: ["super_admin", "promoter_executive", "project_admin", "legal_counsel"] },
+    { href: "/dashboard/governance", label: "Data Governance", icon: Layers, roles: ["super_admin", "project_admin", "legal_counsel", "promoter_executive"] },
     { href: "/dashboard/drafts", label: "Saved Drafts", icon: FileEdit, badge: "1", roles: ["super_admin", "project_admin", "project_operator"] },
-    { href: "/dashboard/issued", label: "Issued Dossiers", icon: Send, roles: ["super_admin", "promoter_executive", "project_admin", "legal_counsel", "project_operator", "bank_auditor"] },
-    { href: "/dashboard/settings", label: "Settings & Profile", icon: Settings, roles: ["super_admin", "promoter_executive", "project_admin", "legal_counsel", "project_operator", "bank_auditor"] },
+    { href: "/dashboard/issued", label: effectiveRole === "bank_auditor" ? "Issued Dispatches" : "Issued Dossiers", icon: Send, roles: ["super_admin", "project_admin", "project_operator", "bank_auditor"] },
+    { href: "/dashboard/settings", label: "Settings & Profile", icon: Settings, roles: ["super_admin", "project_admin", "promoter_executive", "legal_counsel", "project_operator", "bank_auditor"] },
   ];
 
-  const navItems = allNavItems.filter((item) => item.roles.includes(currentRole));
+  const navItems = allNavItems.filter((item) => item.roles.includes(effectiveRole));
 
-  const currentUser = DEMO_USERS[currentRole] || DEMO_USERS.project_admin;
+  const currentUser = DEMO_USERS[effectiveRole] || DEMO_USERS.project_admin;
   const userInitials = currentUser.fullName
     .split(" ")
     .map((n) => n[0])

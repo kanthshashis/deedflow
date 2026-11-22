@@ -1,9 +1,10 @@
 "use client";
 
-import React, { useState } from "react";
-import { CheckCircle2, XCircle, RotateCcw, Clock, AlertTriangle, ShieldCheck, ArrowRight, Filter, Search, FileText } from "lucide-react";
-import { MOCK_CHANGE_REQUESTS, MOCK_AUDIT_LOGS } from "@/lib/mockData";
-import { ChangeRequest, AuditLog } from "@/lib/types";
+import React, { useState, useEffect } from "react";
+import Link from "next/link";
+import { CheckCircle2, XCircle, RotateCcw, Clock, AlertTriangle, ShieldCheck, ArrowRight, Filter, Search, FileText, Lock } from "lucide-react";
+import { MOCK_CHANGE_REQUESTS, MOCK_AUDIT_LOGS, DEMO_USERS } from "@/lib/mockData";
+import { ChangeRequest, AuditLog, UserRole, hasPermission } from "@/lib/types";
 
 export default function ApprovalsPage() {
   const [activeTab, setActiveTab] = useState<"pending" | "audit">("pending");
@@ -12,6 +13,38 @@ export default function ApprovalsPage() {
   const [search, setSearch] = useState("");
   const [filterSource, setFilterSource] = useState<string>("all");
   const [actionNotice, setActionNotice] = useState<string | null>(null);
+  const [currentRole, setCurrentRole] = useState<UserRole>("project_admin");
+  const [perspectiveRole, setPerspectiveRole] = useState<UserRole | "omni">("omni");
+
+  const syncRole = () => {
+    if (typeof window !== "undefined") {
+      const stored = localStorage.getItem("deedflow_active_role") as UserRole | null;
+      if (stored) setCurrentRole(stored);
+      const storedPerspective = localStorage.getItem("deedflow_perspective_role") as (UserRole | "omni") | null;
+      if (storedPerspective) setPerspectiveRole(storedPerspective);
+      else setPerspectiveRole("omni");
+    }
+  };
+
+  useEffect(() => {
+    syncRole();
+    const handleRoleChanged = () => syncRole();
+    window.addEventListener("deedflow_role_changed", handleRoleChanged);
+    window.addEventListener("storage", handleRoleChanged);
+    return () => {
+      window.removeEventListener("deedflow_role_changed", handleRoleChanged);
+      window.removeEventListener("storage", handleRoleChanged);
+    };
+  }, []);
+
+  const effectiveRole: UserRole =
+    (currentRole === "project_admin" || currentRole === "super_admin") && perspectiveRole !== "omni"
+      ? perspectiveRole
+      : currentRole;
+
+  const canApprove = hasPermission(effectiveRole, "approve_diff_queue");
+  const activeUser = DEMO_USERS[effectiveRole] || DEMO_USERS.project_admin;
+  const reviewerLabel = `${activeUser.fullName} (${activeUser.designation || effectiveRole})`;
 
   const pendingRequests = requests.filter((r) => r.status === "pending");
 
@@ -23,11 +56,11 @@ export default function ApprovalsPage() {
   });
 
   const handleApprove = (req: ChangeRequest) => {
-    // 1. Mark request as approved
+    // 1. Mark request as approved with dynamic reviewer attribution
     setRequests((prev) =>
       prev.map((r) =>
         r.id === req.id
-          ? { ...r, status: "approved", reviewedBy: "Aidan Morgan (Project Admin)", reviewedAt: new Date().toISOString() }
+          ? { ...r, status: "approved", reviewedBy: reviewerLabel, reviewedAt: new Date().toISOString() }
           : r
       )
     );
@@ -43,7 +76,7 @@ export default function ApprovalsPage() {
       action: req.action,
       snapshotBefore: req.oldData,
       snapshotAfter: req.newData,
-      appliedBy: "Aidan Morgan (Project Admin)",
+      appliedBy: reviewerLabel,
       appliedAt: new Date().toISOString(),
       canRollback: true,
     };
@@ -60,7 +93,7 @@ export default function ApprovalsPage() {
     setRequests((prev) =>
       prev.map((r) =>
         r.id === req.id
-          ? { ...r, status: "rejected", reviewNotes: reason, reviewedBy: "Aidan Morgan (Project Admin)", reviewedAt: new Date().toISOString() }
+          ? { ...r, status: "rejected", reviewNotes: reason, reviewedBy: reviewerLabel, reviewedAt: new Date().toISOString() }
           : r
       )
     );
@@ -85,6 +118,30 @@ export default function ApprovalsPage() {
     setActionNotice(`Time-Machine Rollback completed for Flat ${log.flatNumber}. Snapshot restored.`);
     setTimeout(() => setActionNotice(null), 4000);
   };
+
+  if (!canApprove) {
+    return (
+      <div className="max-w-xl mx-auto py-16 text-center space-y-4">
+        <div className="w-12 h-12 rounded-2xl bg-amber-50 border border-amber-200 text-amber-800 flex items-center justify-center mx-auto shadow-xs">
+          <Lock className="w-6 h-6" />
+        </div>
+        <h2 className="text-xl font-bold font-serif text-[#24060B]">
+          Restricted Governance Area
+        </h2>
+        <p className="text-xs text-[#5C4A4D] leading-relaxed">
+          The Diff Review &amp; Approval Queue is restricted to Legal Counsel and Project Administrators under the Maker-Checker compliance policy. Your current role (<span className="font-mono font-semibold text-[#821A2A]">{effectiveRole}</span>) does not have sign-off authority.
+        </p>
+        <div className="pt-2">
+          <Link
+            href="/dashboard"
+            className="inline-flex items-center space-x-1.5 px-4 py-2.5 glossy-btn-burgundy hover:brightness-105 text-white text-xs font-semibold rounded-xl shadow-xs transition-all cursor-pointer"
+          >
+            <span>Return to Workspace Overview</span>
+          </Link>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="space-y-6">

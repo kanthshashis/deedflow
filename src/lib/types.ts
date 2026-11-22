@@ -22,29 +22,34 @@ export type PermissionAction =
   | "configure_statutory_profile";
 
 export function hasPermission(role: UserRole, action: PermissionAction): boolean {
+  // Project Admin & Super Admin possess unconditional omni-role authority across the project
+  if (role === "super_admin" || role === "project_admin") {
+    return true;
+  }
+
   switch (action) {
     case "view_revenue_kpis":
-      return ["super_admin", "promoter_executive", "project_admin"].includes(role);
+      return ["promoter_executive"].includes(role);
     case "manage_inventory":
-      return ["super_admin", "project_admin"].includes(role);
+      return false; // strictly admin
     case "allot_parking":
-      return ["super_admin", "project_admin", "project_operator"].includes(role);
+      return ["project_operator"].includes(role);
     case "stage_swap_diff":
-      return ["super_admin", "project_admin", "project_operator"].includes(role);
+      return ["project_operator"].includes(role);
     case "approve_diff_queue":
-      return ["super_admin", "project_admin"].includes(role);
+      return ["legal_counsel", "promoter_executive"].includes(role);
     case "generate_documents":
-      return ["super_admin", "project_admin", "legal_counsel", "project_operator"].includes(role);
+      return ["legal_counsel", "project_operator"].includes(role);
     case "manage_templates":
-      return ["super_admin", "legal_counsel"].includes(role);
+      return ["legal_counsel"].includes(role);
     case "rollback_templates":
-      return ["super_admin", "legal_counsel"].includes(role);
+      return ["legal_counsel"].includes(role);
     case "invite_team_members":
-      return ["super_admin", "project_admin"].includes(role);
+      return false; // strictly admin
     case "view_audit_stream":
-      return ["super_admin", "promoter_executive", "project_admin", "legal_counsel"].includes(role);
+      return ["promoter_executive", "legal_counsel"].includes(role);
     case "configure_statutory_profile":
-      return ["super_admin", "project_admin"].includes(role);
+      return false; // strictly admin
     default:
       return false;
   }

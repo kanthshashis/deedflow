@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, use } from "react";
+import React, { useState, useEffect, use } from "react";
 import Link from "next/link";
 import {
   MOCK_UNITS,
@@ -13,6 +13,8 @@ import {
   ParkingSlot,
   BuyerProfile,
   EntityType,
+  UserRole,
+  hasPermission,
 } from "@/lib/types";
 import { formatIndianCurrency } from "@/lib/indianCurrencyToWords";
 import {
@@ -97,6 +99,36 @@ export default function UnitDossierPage({
     content: string[];
   } | null>(null);
   const [notification, setNotification] = useState<string | null>(null);
+  const [currentRole, setCurrentRole] = useState<UserRole>("project_admin");
+  const [perspectiveRole, setPerspectiveRole] = useState<UserRole | "omni">("omni");
+
+  const syncRole = () => {
+    if (typeof window !== "undefined") {
+      const stored = localStorage.getItem("deedflow_active_role") as UserRole | null;
+      if (stored) setCurrentRole(stored);
+      const storedPerspective = localStorage.getItem("deedflow_perspective_role") as (UserRole | "omni") | null;
+      if (storedPerspective) setPerspectiveRole(storedPerspective);
+      else setPerspectiveRole("omni");
+    }
+  };
+
+  useEffect(() => {
+    syncRole();
+    const handleRoleChanged = () => syncRole();
+    window.addEventListener("deedflow_role_changed", handleRoleChanged);
+    window.addEventListener("storage", handleRoleChanged);
+    return () => {
+      window.removeEventListener("deedflow_role_changed", handleRoleChanged);
+      window.removeEventListener("storage", handleRoleChanged);
+    };
+  }, []);
+
+  const effectiveRole: UserRole =
+    (currentRole === "project_admin" || currentRole === "super_admin") && perspectiveRole !== "omni"
+      ? perspectiveRole
+      : currentRole;
+
+  const isBankAuditor = effectiveRole === "bank_auditor";
 
   // Calculations
   const totalConsideration = unit.basePrice + parkingFee;
@@ -340,6 +372,12 @@ export default function UnitDossierPage({
               <span className="px-2 py-0.5 rounded-full text-[10px] font-bold bg-emerald-50 text-emerald-700 border border-emerald-200">
                 ACTIVE DOSSIER
               </span>
+              {isBankAuditor && (
+                <span className="px-2 py-0.5 rounded-full text-[10px] font-mono font-bold bg-amber-50 text-amber-800 border border-amber-200 flex items-center space-x-1">
+                  <ShieldCheck className="w-3 h-3 text-amber-700" />
+                  <span>BANK AUDIT INSPECTION</span>
+                </span>
+              )}
             </div>
             <h1 className="text-2xl sm:text-3xl font-bold font-serif text-[#24060B] tracking-tight mt-1.5">
               {unit.unitType} — {unit.superBuiltUpAreaSqFt} sq.ft
@@ -364,17 +402,19 @@ export default function UnitDossierPage({
               ) : (
                 <>
                   <Download className="w-4 h-4 text-[#D4B989]" />
-                  <span>Download Complete Dossier (.ZIP)</span>
+                  <span>{isBankAuditor ? "Download Bank Disbursal Pack (.ZIP)" : "Download Complete Dossier (.ZIP)"}</span>
                 </>
               )}
             </button>
-            <button
-              onClick={() => handleWhatsAppShare("all")}
-              className="px-4 py-3 glossy-btn-ivory border-[#DECFC0] hover:border-[#821A2A]/40 text-[#24060B] font-semibold text-xs rounded-xl flex items-center justify-center space-x-2 shadow-xs transition-colors cursor-pointer"
-            >
-              <Share2 className="w-3.5 h-3.5 text-emerald-600" />
-              <span>Share on WhatsApp</span>
-            </button>
+            {!isBankAuditor && (
+              <button
+                onClick={() => handleWhatsAppShare("all")}
+                className="px-4 py-3 glossy-btn-ivory border-[#DECFC0] hover:border-[#821A2A]/40 text-[#24060B] font-semibold text-xs rounded-xl flex items-center justify-center space-x-2 shadow-xs transition-colors cursor-pointer"
+              >
+                <Share2 className="w-3.5 h-3.5 text-emerald-600" />
+                <span>Share on WhatsApp</span>
+              </button>
+            )}
           </div>
         </div>
 
@@ -425,23 +465,32 @@ export default function UnitDossierPage({
             </div>
           </div>
 
-          {/* Snap-and-Drop KYC OCR Zone */}
-          <label className="cursor-pointer border-2 border-dashed border-[#DECFC0] hover:border-[#821A2A] rounded-xl p-3 text-center bg-[#FAF7F2] hover:bg-[#FAF0F2] flex items-center justify-center space-x-2.5 transition-all group">
-            {isOcrProcessing ? (
-              <Loader2 className="w-4 h-4 animate-spin text-[#821A2A]" />
-            ) : (
-              <Camera className="w-4 h-4 text-[#821A2A] group-hover:scale-110 transition-transform" />
-            )}
-            <span className="text-xs font-semibold text-[#24060B]">
-              {isOcrProcessing ? "Gemini 2.5 Flash scanning ID in-memory..." : "Snap & Drop PAN / Aadhaar Card Photo (Instant Auto-Fill)"}
-            </span>
-            <input
-              type="file"
-              accept="image/*,.pdf"
-              className="hidden"
-              onChange={handleKycDrop}
-            />
-          </label>
+          {/* Snap-and-Drop KYC OCR Zone - Hidden/Locked for Bank Auditor */}
+          {isBankAuditor ? (
+            <div className="border border-amber-200 bg-amber-50/70 rounded-xl p-3 text-center flex items-center justify-center space-x-2 text-amber-900 shadow-2xs">
+              <ShieldCheck className="w-4 h-4 text-amber-700 shrink-0" />
+              <span className="text-xs font-semibold">
+                Bank Audit Mode: Customer KYC Documents Verified &amp; Immutable (Read-Only)
+              </span>
+            </div>
+          ) : (
+            <label className="cursor-pointer border-2 border-dashed border-[#DECFC0] hover:border-[#821A2A] rounded-xl p-3 text-center bg-[#FAF7F2] hover:bg-[#FAF0F2] flex items-center justify-center space-x-2.5 transition-all group">
+              {isOcrProcessing ? (
+                <Loader2 className="w-4 h-4 animate-spin text-[#821A2A]" />
+              ) : (
+                <Camera className="w-4 h-4 text-[#821A2A] group-hover:scale-110 transition-transform" />
+              )}
+              <span className="text-xs font-semibold text-[#24060B]">
+                {isOcrProcessing ? "Gemini 2.5 Flash scanning ID in-memory..." : "Snap & Drop PAN / Aadhaar Card Photo (Instant Auto-Fill)"}
+              </span>
+              <input
+                type="file"
+                accept="image/*,.pdf"
+                className="hidden"
+                onChange={handleKycDrop}
+              />
+            </label>
+          )}
 
           {ocrSuccessMsg && (
             <div className="p-2.5 bg-emerald-50 text-emerald-800 border border-emerald-200 rounded-lg text-[11px] font-medium flex items-center space-x-1.5 animate-fade-in">
@@ -456,8 +505,12 @@ export default function UnitDossierPage({
               <input
                 type="text"
                 value={buyer.fullName}
+                disabled={isBankAuditor}
                 onChange={(e) => setBuyer({ ...buyer, fullName: e.target.value })}
-                className="w-full px-3 py-2 rounded-lg border border-[#DECFC0] bg-[#FAF7F2] text-[#24060B] font-medium focus:outline-none focus:border-[#821A2A]"
+                className={clsx(
+                  "w-full px-3 py-2 rounded-lg border border-[#DECFC0] text-[#24060B] font-medium focus:outline-none focus:border-[#821A2A]",
+                  isBankAuditor ? "bg-[#F5EFE8] cursor-not-allowed text-[#5C4A4D]" : "bg-[#FAF7F2]"
+                )}
               />
             </div>
 
@@ -467,8 +520,12 @@ export default function UnitDossierPage({
                 <input
                   type="text"
                   value={buyer.panNumber}
+                  disabled={isBankAuditor}
                   onChange={(e) => setBuyer({ ...buyer, panNumber: e.target.value.toUpperCase() })}
-                  className="w-full px-3 py-2 rounded-lg border border-[#DECFC0] bg-[#FAF7F2] text-[#24060B] font-mono font-medium focus:outline-none focus:border-[#821A2A]"
+                  className={clsx(
+                    "w-full px-3 py-2 rounded-lg border border-[#DECFC0] text-[#24060B] font-mono font-medium focus:outline-none focus:border-[#821A2A]",
+                    isBankAuditor ? "bg-[#F5EFE8] cursor-not-allowed text-[#5C4A4D]" : "bg-[#FAF7F2]"
+                  )}
                 />
               </div>
 
@@ -489,8 +546,12 @@ export default function UnitDossierPage({
                 <input
                   type="text"
                   value={buyer.phone}
+                  disabled={isBankAuditor}
                   onChange={(e) => setBuyer({ ...buyer, phone: e.target.value })}
-                  className="w-full px-3 py-2 rounded-lg border border-[#DECFC0] bg-[#FAF7F2] text-[#24060B] focus:outline-none focus:border-[#821A2A]"
+                  className={clsx(
+                    "w-full px-3 py-2 rounded-lg border border-[#DECFC0] text-[#24060B] focus:outline-none focus:border-[#821A2A]",
+                    isBankAuditor ? "bg-[#F5EFE8] cursor-not-allowed text-[#5C4A4D]" : "bg-[#FAF7F2]"
+                  )}
                 />
               </div>
 
@@ -498,8 +559,12 @@ export default function UnitDossierPage({
                 <label className="text-[11px] font-medium text-[#8C777A] block mb-1">Entity Type</label>
                 <select
                   value={buyer.entityType}
+                  disabled={isBankAuditor}
                   onChange={(e) => setBuyer({ ...buyer, entityType: e.target.value as EntityType })}
-                  className="w-full px-3 py-2 rounded-lg border border-[#DECFC0] bg-[#FAF7F2] text-[#24060B] font-medium focus:outline-none focus:border-[#821A2A]"
+                  className={clsx(
+                    "w-full px-3 py-2 rounded-lg border border-[#DECFC0] text-[#24060B] font-medium focus:outline-none focus:border-[#821A2A]",
+                    isBankAuditor ? "bg-[#F5EFE8] cursor-not-allowed text-[#5C4A4D]" : "bg-[#FAF7F2]"
+                  )}
                 >
                   <option value="sole">Individual (Sole Allottee)</option>
                   <option value="joint">Joint Allottees (Husband &amp; Wife)</option>

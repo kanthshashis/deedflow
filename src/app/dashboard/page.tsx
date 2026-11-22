@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import Link from "next/link";
 import {
   FileText,
@@ -14,8 +14,15 @@ import {
   Car,
   Download,
   Filter,
+  FileCode2,
+  ShieldCheck,
+  RotateCcw,
+  Layers,
+  FileArchive,
 } from "lucide-react";
 import clsx from "clsx";
+import { UserRole, hasPermission } from "@/lib/types";
+import { DEMO_USERS } from "@/lib/mockData";
 
 interface DocumentItem {
   id: string;
@@ -84,6 +91,37 @@ const INITIAL_DOCS: DocumentItem[] = [
 export default function DashboardOverview() {
   const [searchQuery, setSearchQuery] = useState("");
   const [activeFilter, setActiveFilter] = useState<"All" | "Draft" | "Ready" | "Sent" | "Signed">("All");
+  const [currentRole, setCurrentRole] = useState<UserRole>("project_admin");
+  const [perspectiveRole, setPerspectiveRole] = useState<UserRole | "omni">("omni");
+
+  const syncRole = () => {
+    if (typeof window !== "undefined") {
+      const stored = localStorage.getItem("deedflow_active_role") as UserRole | null;
+      if (stored) setCurrentRole(stored);
+      const storedPerspective = localStorage.getItem("deedflow_perspective_role") as (UserRole | "omni") | null;
+      if (storedPerspective) setPerspectiveRole(storedPerspective);
+      else setPerspectiveRole("omni");
+    }
+  };
+
+  useEffect(() => {
+    syncRole();
+    const handleRoleChanged = () => syncRole();
+    window.addEventListener("deedflow_role_changed", handleRoleChanged);
+    window.addEventListener("storage", handleRoleChanged);
+    return () => {
+      window.removeEventListener("deedflow_role_changed", handleRoleChanged);
+      window.removeEventListener("storage", handleRoleChanged);
+    };
+  }, []);
+
+  const effectiveRole: UserRole =
+    (currentRole === "project_admin" || currentRole === "super_admin") && perspectiveRole !== "omni"
+      ? perspectiveRole
+      : currentRole;
+
+  const activeUser = DEMO_USERS[effectiveRole] || DEMO_USERS.project_admin;
+  const firstName = activeUser.fullName.split(" ")[0];
 
   const filteredDocs = INITIAL_DOCS.filter((doc) => {
     if (activeFilter !== "All" && doc.status !== activeFilter) return false;
@@ -105,67 +143,122 @@ export default function DashboardOverview() {
         <div className="space-y-1">
           <div className="flex items-center space-x-2 text-[11px] font-mono font-bold tracking-wider text-[#821A2A] uppercase">
             <span className="w-3 h-[2px] bg-[#821A2A] rounded-full" />
-            <span>Document Operations</span>
+            <span>
+              {effectiveRole === "bank_auditor"
+                ? "Empaneled Bank Disbursal Portal"
+                : effectiveRole === "legal_counsel"
+                ? "Legal Sanitization & Template Center"
+                : effectiveRole === "project_operator"
+                ? "Site Desk Fast Intake"
+                : "Post-Sales Master Control"}
+            </span>
           </div>
           <h1 className="text-2xl sm:text-3xl md:text-4xl font-bold font-serif text-[#24060B] tracking-tight">
-            Good morning, Aidan<span className="text-[#B88E3E]">.</span>
+            Good morning, {firstName}<span className="text-[#B88E3E]">.</span>
           </h1>
           <p className="text-xs sm:text-sm text-[#5C4A4D]">
-            Your apartment documents, ready for the next step.
+            {effectiveRole === "bank_auditor"
+              ? "Inspect title clearance, verified customer KYC, and download 1-Click Bank Disbursal ZIPs."
+              : effectiveRole === "legal_counsel"
+              ? "Author state RERA contract templates and review staged buyer clause diffs."
+              : effectiveRole === "project_operator"
+              ? "Search flats, snap-and-drop KYC, and generate customer documents with 1-click."
+              : "Your apartment documents, live cadastral basement grid, and approval queue."}
           </p>
         </div>
 
+        {/* Role-Tailored Hero Quick Action CTAs */}
         <div className="flex flex-wrap sm:flex-nowrap items-center gap-2.5 w-full sm:w-auto">
-          <Link
-            href="/dashboard/inventory"
-            className="flex-1 sm:flex-none justify-center px-4 py-2.5 glossy-btn-burgundy text-white rounded-xl text-xs font-semibold flex items-center space-x-1.5 shadow-sm transition-colors cursor-pointer hover:brightness-105"
-          >
-            <Building className="w-4 h-4 text-[#D4B989]" />
-            <span>Unit Dossiers</span>
-          </Link>
+          {effectiveRole === "legal_counsel" ? (
+            <>
+              <Link
+                href="/dashboard/templates"
+                className="flex-1 sm:flex-none justify-center px-4 py-2.5 glossy-btn-burgundy text-white rounded-xl text-xs font-semibold flex items-center space-x-1.5 shadow-sm transition-colors cursor-pointer hover:brightness-105"
+              >
+                <FileCode2 className="w-4 h-4 text-[#D4B989]" />
+                <span>Template Studio</span>
+              </Link>
+              <Link
+                href="/dashboard/approvals"
+                className="flex-1 sm:flex-none justify-center px-4 py-2.5 glossy-btn-ivory text-[#24060B] rounded-xl text-xs font-semibold flex items-center space-x-1.5 shadow-xs transition-colors cursor-pointer"
+              >
+                <RotateCcw className="w-4 h-4 text-[#821A2A]" />
+                <span>Review Diffs (3)</span>
+              </Link>
+            </>
+          ) : effectiveRole === "bank_auditor" ? (
+            <>
+              <Link
+                href="/dashboard/inventory"
+                className="flex-1 sm:flex-none justify-center px-4 py-2.5 glossy-btn-burgundy text-white rounded-xl text-xs font-semibold flex items-center space-x-1.5 shadow-sm transition-colors cursor-pointer hover:brightness-105"
+              >
+                <Building className="w-4 h-4 text-[#D4B989]" />
+                <span>Audit Unit Dossiers</span>
+              </Link>
+              <Link
+                href="/dashboard/issued"
+                className="flex-1 sm:flex-none justify-center px-4 py-2.5 glossy-btn-ivory text-[#24060B] rounded-xl text-xs font-semibold flex items-center space-x-1.5 shadow-xs transition-colors cursor-pointer"
+              >
+                <FileArchive className="w-4 h-4 text-[#821A2A]" />
+                <span>Issued Dispatches</span>
+              </Link>
+            </>
+          ) : (
+            <>
+              <Link
+                href="/dashboard/inventory"
+                className="flex-1 sm:flex-none justify-center px-4 py-2.5 glossy-btn-burgundy text-white rounded-xl text-xs font-semibold flex items-center space-x-1.5 shadow-sm transition-colors cursor-pointer hover:brightness-105"
+              >
+                <Building className="w-4 h-4 text-[#D4B989]" />
+                <span>Unit Dossiers</span>
+              </Link>
 
-          <Link
-            href="/dashboard/parking"
-            className="flex-1 sm:flex-none justify-center px-4 py-2.5 glossy-btn-ivory text-[#24060B] rounded-xl text-xs font-semibold flex items-center space-x-1.5 shadow-xs transition-colors cursor-pointer"
-          >
-            <Car className="w-4 h-4 text-[#821A2A]" />
-            <span>Basement Grid</span>
-          </Link>
+              <Link
+                href="/dashboard/parking"
+                className="flex-1 sm:flex-none justify-center px-4 py-2.5 glossy-btn-ivory text-[#24060B] rounded-xl text-xs font-semibold flex items-center space-x-1.5 shadow-xs transition-colors cursor-pointer"
+              >
+                <Car className="w-4 h-4 text-[#821A2A]" />
+                <span>Basement Grid</span>
+              </Link>
 
-          <Link
-            href="/dashboard/draft/new"
-            className="flex-1 sm:flex-none justify-center px-4 py-2.5 glossy-btn-ivory border-[#DECFC0] text-[#24060B] rounded-xl text-xs font-semibold flex items-center space-x-1.5 shadow-xs transition-colors cursor-pointer"
-          >
-            <Plus className="w-4 h-4 text-[#821A2A]" />
-            <span>Document Studio</span>
-          </Link>
+              <Link
+                href="/dashboard/draft/new"
+                className="flex-1 sm:flex-none justify-center px-4 py-2.5 glossy-btn-ivory border-[#DECFC0] text-[#24060B] rounded-xl text-xs font-semibold flex items-center space-x-1.5 shadow-xs transition-colors cursor-pointer"
+              >
+                <Plus className="w-4 h-4 text-[#821A2A]" />
+                <span>Document Studio</span>
+              </Link>
+            </>
+          )}
         </div>
       </div>
 
-      {/* Pending Diff Approvals Alert Banner */}
-      <div className="p-4 glossy-card bg-[#FFFDFB] border border-[#DECFC0] rounded-2xl flex flex-col sm:flex-row sm:items-center justify-between gap-3 shadow-xs">
-        <div className="flex items-center space-x-3">
-          <div className="w-8 h-8 rounded-lg bg-[#821A2A] text-white border border-[#821A2A]/40 flex items-center justify-center font-bold text-xs shadow-xs shrink-0">
-            3
+      {/* Pending Diff Approvals Alert Banner - Only shown to roles with approval authority */}
+      {hasPermission(effectiveRole, "approve_diff_queue") && (
+        <div className="p-4 glossy-card bg-[#FFFDFB] border border-[#DECFC0] rounded-2xl flex flex-col sm:flex-row sm:items-center justify-between gap-3 shadow-xs">
+          <div className="flex items-center space-x-3">
+            <div className="w-8 h-8 rounded-lg bg-[#821A2A] text-white border border-[#821A2A]/40 flex items-center justify-center font-bold text-xs shadow-xs shrink-0">
+              3
+            </div>
+            <div>
+              <h3 className="text-xs font-bold text-[#24060B] font-serif">
+                3 Pending Diff Requests Awaiting Review Sign-Off
+              </h3>
+              <p className="text-[11px] text-[#5C4A4D]">
+                Updates to parking bays and owner profiles from OCR and Grid are held in the Diff Queue for your review.
+              </p>
+            </div>
           </div>
-          <div>
-            <h3 className="text-xs font-bold text-[#24060B] font-serif">
-              3 Pending Diff Requests Awaiting Project Admin Sign-Off
-            </h3>
-            <p className="text-[11px] text-[#5C4A4D]">
-              Updates to parking bays and owner profiles from OCR and Grid are held in the Diff Queue.
-            </p>
-          </div>
-        </div>
 
-        <Link
-          href="/dashboard/approvals"
-          className="px-4 py-2 glossy-btn-burgundy hover:brightness-105 text-white text-xs font-bold rounded-xl flex items-center justify-center space-x-1.5 shadow-xs w-full sm:w-fit cursor-pointer shrink-0"
-        >
-          <span>Open Diff Queue</span>
-          <ArrowUpRight className="w-3.5 h-3.5 text-[#D4B989]" />
-        </Link>
-      </div>
+          <Link
+            href="/dashboard/approvals"
+            className="px-4 py-2 glossy-btn-burgundy hover:brightness-105 text-white text-xs font-bold rounded-xl flex items-center justify-center space-x-1.5 shadow-xs w-full sm:w-fit cursor-pointer shrink-0"
+          >
+            <span>Open Diff Queue</span>
+            <ArrowUpRight className="w-3.5 h-3.5 text-[#D4B989]" />
+          </Link>
+        </div>
+      )}
 
       {/* 4 KPI Metrics Row */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">

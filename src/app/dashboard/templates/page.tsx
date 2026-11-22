@@ -1,6 +1,7 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
+import Link from "next/link";
 import { lintDocxTemplate } from "@/lib/docxEngine";
 import {
   FileText,
@@ -21,8 +22,11 @@ import {
   Tag,
   Copy,
   Check,
+  Lock,
 } from "lucide-react";
 import clsx from "clsx";
+import { UserRole, hasPermission } from "@/lib/types";
+import { DEMO_USERS } from "@/lib/mockData";
 
 interface TemplateVersion {
   id: string;
@@ -204,6 +208,37 @@ export default function TemplatesPage() {
   const [selectedCategoryId, setSelectedCategoryId] = useState<string>("ats");
   const [copiedTag, setCopiedTag] = useState<string | null>(null);
   const [notification, setNotification] = useState<string | null>(null);
+  const [currentRole, setCurrentRole] = useState<UserRole>("project_admin");
+  const [perspectiveRole, setPerspectiveRole] = useState<UserRole | "omni">("omni");
+
+  const syncRole = () => {
+    if (typeof window !== "undefined") {
+      const stored = localStorage.getItem("deedflow_active_role") as UserRole | null;
+      if (stored) setCurrentRole(stored);
+      const storedPerspective = localStorage.getItem("deedflow_perspective_role") as (UserRole | "omni") | null;
+      if (storedPerspective) setPerspectiveRole(storedPerspective);
+      else setPerspectiveRole("omni");
+    }
+  };
+
+  useEffect(() => {
+    syncRole();
+    const handleRoleChanged = () => syncRole();
+    window.addEventListener("deedflow_role_changed", handleRoleChanged);
+    window.addEventListener("storage", handleRoleChanged);
+    return () => {
+      window.removeEventListener("deedflow_role_changed", handleRoleChanged);
+      window.removeEventListener("storage", handleRoleChanged);
+    };
+  }, []);
+
+  const effectiveRole: UserRole =
+    (currentRole === "project_admin" || currentRole === "super_admin") && perspectiveRole !== "omni"
+      ? perspectiveRole
+      : currentRole;
+
+  const canManageTemplates = hasPermission(effectiveRole, "manage_templates");
+  const activeUser = DEMO_USERS[effectiveRole] || DEMO_USERS.project_admin;
 
   // New Version Upload State
   const [uploadedFile, setUploadedFile] = useState<File | null>(null);
@@ -261,7 +296,7 @@ export default function TemplatesPage() {
       id: nextVersionNum,
       version: nextVersionNum,
       label: newVersionLabel || "Advocate Custom Update",
-      updatedBy: "Project Admin",
+      updatedBy: `${activeUser.fullName} (${activeUser.designation || effectiveRole})`,
       updatedAt: "Just now",
       status: "active",
       downloadUrl: URL.createObjectURL(uploadedFile),
@@ -311,6 +346,30 @@ export default function TemplatesPage() {
     setNotification(`Template ${versionId} is now set as ACTIVE for ${activeCategory.title}.`);
     setTimeout(() => setNotification(null), 4000);
   };
+
+  if (!canManageTemplates) {
+    return (
+      <div className="max-w-xl mx-auto py-16 text-center space-y-4">
+        <div className="w-12 h-12 rounded-2xl bg-amber-50 border border-amber-200 text-amber-800 flex items-center justify-center mx-auto shadow-xs">
+          <Lock className="w-6 h-6" />
+        </div>
+        <h2 className="text-xl font-bold font-serif text-[#24060B]">
+          Restricted Legal Template Vault
+        </h2>
+        <p className="text-xs text-[#5C4A4D] leading-relaxed">
+          Authoring, tag mapping, and version control of official contract templates is strictly reserved for Legal Counsel and Project Administrators. Your current role (<span className="font-mono font-semibold text-[#821A2A]">{effectiveRole}</span>) does not have template modification privileges.
+        </p>
+        <div className="pt-2">
+          <Link
+            href="/dashboard"
+            className="inline-flex items-center space-x-1.5 px-4 py-2.5 glossy-btn-burgundy hover:brightness-105 text-white text-xs font-semibold rounded-xl shadow-xs transition-all cursor-pointer"
+          >
+            <span>Return to Workspace Overview</span>
+          </Link>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="space-y-6 pb-12">
