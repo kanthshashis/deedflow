@@ -73,6 +73,7 @@ export interface UserProfile {
   status?: "active" | "suspended";
   lastLogin?: string;
   twoFactorEnabled?: boolean;
+  accessibleRoles?: UserRole[];
 }
 
 export interface PaymentUtrRecord {

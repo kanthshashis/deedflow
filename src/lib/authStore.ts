@@ -123,24 +123,28 @@ export function logoutUser(): void {
 }
 
 /**
- * Fast-switches the active workspace role (for demo & testing purposes).
+ * Fast-switches the active workspace role for an authenticated user with RBAC clearance.
  */
 export function switchActiveRole(role: UserRole): UserProfile {
-  const user = DEMO_USERS[role] || DEMO_USERS.project_admin;
-  if (typeof window !== "undefined") {
-    localStorage.setItem(STORAGE_KEY_ROLE, role);
-    localStorage.setItem(STORAGE_KEY_EMAIL, user.email);
+  let user: UserProfile = DEMO_USERS[role] || DEMO_USERS.project_admin;
 
+  if (typeof window !== "undefined") {
     const rawSession = localStorage.getItem(STORAGE_KEY_SESSION);
     if (rawSession) {
       try {
         const session: AuthSession = JSON.parse(rawSession);
-        session.user = user;
-        localStorage.setItem(STORAGE_KEY_SESSION, JSON.stringify(session));
+        if (session.user) {
+          session.user.role = role;
+          user = session.user;
+          localStorage.setItem(STORAGE_KEY_SESSION, JSON.stringify(session));
+        }
       } catch {
         // Fall through
       }
     }
+
+    localStorage.setItem(STORAGE_KEY_ROLE, role);
+    localStorage.setItem(STORAGE_KEY_EMAIL, user.email);
 
     window.dispatchEvent(new Event("deedflow_auth_changed"));
     window.dispatchEvent(new Event("deedflow_role_changed"));

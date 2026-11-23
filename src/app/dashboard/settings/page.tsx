@@ -3,6 +3,8 @@
 import React, { useState, useEffect } from "react";
 import { MOCK_PROJECT, DEMO_USERS } from "@/lib/mockData";
 import { UserProfile, UserRole, hasPermission } from "@/lib/types";
+import { getCurrentAuthUser, switchActiveRole } from "@/lib/authStore";
+import { getAllAuditRecords, exportAuditRecordsCsv, AuditRecord } from "@/lib/auditStore";
 import {
   User,
   Shield,
@@ -28,6 +30,9 @@ import {
   X,
   RefreshCw,
   Share2,
+  Download,
+  ShieldCheck,
+  FileText,
 } from "lucide-react";
 import clsx from "clsx";
 
@@ -76,7 +81,12 @@ export default function SettingsPage() {
 
       setPerspectiveRole(storedPerspective || "omni");
 
-      if (DEMO_USERS[effective]) {
+      const authUser = getCurrentAuthUser();
+      if (authUser) {
+        setCurrentUser(authUser);
+        setFullName(authUser.fullName);
+        setPhone(authUser.phone || "+91 98450 11223");
+      } else if (DEMO_USERS[effective]) {
         setCurrentUser(DEMO_USERS[effective]);
         setFullName(DEMO_USERS[effective].fullName);
         setPhone(DEMO_USERS[effective].phone || "+91 98450 11223");
@@ -188,59 +198,34 @@ export default function SettingsPage() {
     );
   };
 
-  const AUDIT_EVENTS = [
-    {
-      id: "ev_01",
-      user: "Pooja Hegde",
-      role: "CRM Operator",
-      action: "Generated Official Agreement for Sale (ATS Form N)",
-      target: "Unit B-101 (Kantharaju M.)",
-      timestamp: "Today, 18:35 IST",
-      ip: "103.21.144.18 (Bengaluru Office)",
-    },
-    {
-      id: "ev_02",
-      user: "Advocate Krishnamurthy",
-      role: "Legal Counsel",
-      action: "Published Active Legal Template v2.1 (Form N Mandate)",
-      target: "karnataka-rera-sale-agreement.docx",
-      timestamp: "Today, 16:45 IST",
-      ip: "49.207.210.92 (Legal Chambers)",
-    },
-    {
-      id: "ev_03",
-      user: "Aidan Morgan",
-      role: "Project Admin",
-      action: "Approved Cadastral Parking Allocation Change Request",
-      target: "Bay B1-042 -> Unit B-402",
-      timestamp: "Today, 14:10 IST",
-      ip: "103.21.144.18 (Bengaluru Office)",
-    },
-    {
-      id: "ev_04",
-      user: "Ramesh Kumar",
-      role: "Bank Auditor",
-      action: "Verified QR Authenticity Hash & Bank Loan NOC",
-      target: "Unit B-302 (Sobha Royal Pavilion)",
-      timestamp: "21 Nov 2026, 11:20 IST",
-      ip: "122.176.45.12 (SBI RACPC)",
-    },
-    {
-      id: "ev_05",
-      user: "Pooja Hegde",
-      role: "CRM Operator",
-      action: "In-Memory KYC OCR Extraction (PAN & Masked Aadhaar)",
-      target: "Unit B-101 (Kantharaju M.)",
-      timestamp: "21 Nov 2026, 09:40 IST",
-      ip: "103.21.144.18 (Bengaluru Office)",
-    },
-  ];
+  const [liveAuditRecords, setLiveAuditRecords] = useState<AuditRecord[]>([]);
 
-  const filteredAuditEvents = AUDIT_EVENTS.filter(
+  useEffect(() => {
+    const records = getAllAuditRecords();
+    setLiveAuditRecords(records);
+    const handleAuditUpdate = () => setLiveAuditRecords(getAllAuditRecords());
+    window.addEventListener("deedflow_audit_logged", handleAuditUpdate);
+    return () => window.removeEventListener("deedflow_audit_logged", handleAuditUpdate);
+  }, []);
+
+  const handleExportProjectAuditCsv = () => {
+    const csvData = exportAuditRecordsCsv(filteredAuditRecords);
+    const blob = new Blob([csvData], { type: "text/csv;charset=utf-8;" });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement("a");
+    link.setAttribute("href", url);
+    link.setAttribute("download", `DeedFlow_Project_Audit_Trail_${new Date().toISOString().slice(0, 10)}.csv`);
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+  };
+
+  const filteredAuditRecords = liveAuditRecords.filter(
     (ev) =>
-      ev.user.toLowerCase().includes(auditSearch.toLowerCase()) ||
+      ev.userName.toLowerCase().includes(auditSearch.toLowerCase()) ||
       ev.action.toLowerCase().includes(auditSearch.toLowerCase()) ||
-      ev.target.toLowerCase().includes(auditSearch.toLowerCase())
+      ev.target.toLowerCase().includes(auditSearch.toLowerCase()) ||
+      (ev.builderName && ev.builderName.toLowerCase().includes(auditSearch.toLowerCase()))
   );
 
   return (
@@ -446,6 +431,162 @@ export default function SettingsPage() {
               </button>
             </div>
           </form>
+
+          {/* RBAC Security Clearance Card */}
+          <div className="lg:col-span-3 glossy-card bg-[#FFFDFB] border border-[#DECFC0] rounded-2xl p-6 shadow-xs space-y-4">
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-[#F0E8DD] pb-3">
+              <div>
+                <div className="flex items-center space-x-2">
+                  <ShieldCheck className="w-5 h-5 text-[#821A2A]" />
+                  <h3 className="font-bold font-serif text-base text-[#24060B]">
+                    Active Security Clearance &amp; RBAC Roles
+                  </h3>
+                </div>
+                <p className="text-xs text-[#5C4A4D] mt-0.5">
+                  Your identity has been granted clearance across the following operational personas. Select any authorized role to dynamically switch your active workspace permissions.
+                </p>
+              </div>
+              <div className="flex items-center space-x-2 shrink-0">
+                <span className="text-[11px] font-mono text-[#8C777A]">Active Clearance:</span>
+                <span className="px-2.5 py-1 rounded-full bg-[#821A2A] text-white text-xs font-mono font-bold uppercase">
+                  {currentRole.replace("_", " ")}
+                </span>
+              </div>
+            </div>
+
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
+              {[
+                {
+                  roleKey: "project_admin" as UserRole,
+                  title: "Project Admin",
+                  desc: "Omni-module operations, cadastral parking allocation, and team oversight.",
+                  badge: "Omni Admin",
+                },
+                {
+                  roleKey: "promoter_executive" as UserRole,
+                  title: "Promoter Executive",
+                  desc: "Executive financial KPIs, collection dashboards, and milestone tracking.",
+                  badge: "C-Suite",
+                },
+                {
+                  roleKey: "legal_counsel" as UserRole,
+                  title: "Legal Counsel",
+                  desc: "ATS Form N legal templates, diff audit trail, and statutory sign-offs.",
+                  badge: "Legal",
+                },
+                {
+                  roleKey: "project_operator" as UserRole,
+                  title: "CRM Operator",
+                  desc: "Buyer KYC OCR, Aadhaar masking, agreement drafting, and customer dispatch.",
+                  badge: "Operations",
+                },
+                {
+                  roleKey: "bank_auditor" as UserRole,
+                  title: "Bank Auditor",
+                  desc: "Read-only mortgage disbursement, QR cryptographic verification, and compliance.",
+                  badge: "Empanelled",
+                },
+                {
+                  roleKey: "super_admin" as UserRole,
+                  title: "Super Admin",
+                  desc: "Multi-builder tenant provisioning, architectural matrix, and global audit stream.",
+                  badge: "Platform Admin",
+                },
+              ].map((item) => {
+                const isCleared =
+                  currentUser.accessibleRoles?.includes(item.roleKey) ||
+                  currentRole === item.roleKey ||
+                  currentUser.role === item.roleKey ||
+                  currentUser.role === "super_admin" ||
+                  currentUser.role === "project_admin";
+                const isCurrent = currentRole === item.roleKey;
+
+                return (
+                  <div
+                    key={item.roleKey}
+                    className={clsx(
+                      "p-4 rounded-xl border transition-all text-xs flex flex-col justify-between space-y-3",
+                      isCurrent
+                        ? "bg-[#FAF0F2] border-[#821A2A] ring-1 ring-[#821A2A]/40"
+                        : isCleared
+                        ? "bg-white border-[#E8DFD3] hover:border-[#DECFC0]"
+                        : "bg-[#FBF8F5] border-[#EAE3DA] opacity-60"
+                    )}
+                  >
+                    <div>
+                      <div className="flex items-center justify-between mb-1.5">
+                        <span className="font-bold text-sm text-[#24060B]">{item.title}</span>
+                        <span
+                          className={clsx(
+                            "text-[10px] font-mono px-2 py-0.5 rounded-full font-semibold",
+                            isCurrent
+                              ? "bg-[#821A2A] text-white"
+                              : isCleared
+                              ? "bg-[#F3EAE0] text-[#821A2A]"
+                              : "bg-gray-100 text-gray-500"
+                          )}
+                        >
+                          {item.badge}
+                        </span>
+                      </div>
+                      <p className="text-[#5C4A4D] leading-relaxed text-[11px]">{item.desc}</p>
+                    </div>
+
+                    <div className="pt-2 border-t border-[#F0E8DD] flex items-center justify-between">
+                      <span className="text-[10px] font-mono text-[#8C777A]">
+                        {isCurrent ? "Currently Active" : isCleared ? "Clearance Granted" : "Restricted"}
+                      </span>
+                      {isCleared && !isCurrent ? (
+                        <button
+                          type="button"
+                          onClick={() => {
+                            switchActiveRole(item.roleKey);
+                            setCurrentRole(item.roleKey);
+                            setNotification(`Switched active operational clearance to ${item.title}`);
+                            setTimeout(() => setNotification(null), 4000);
+                          }}
+                          className="px-3 py-1 bg-white border border-[#DECFC0] hover:border-[#821A2A] text-[#821A2A] font-semibold rounded-lg text-[11px] shadow-2xs hover:bg-[#FAF0F2] transition-colors cursor-pointer"
+                        >
+                          Switch Role
+                        </button>
+                      ) : isCurrent ? (
+                        <span className="flex items-center space-x-1 text-emerald-700 font-bold text-[11px]">
+                          <Check className="w-3.5 h-3.5" />
+                          <span>Active</span>
+                        </span>
+                      ) : (
+                        <span className="text-gray-400 text-[11px] font-medium">Requires Clearance</span>
+                      )}
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+          </div>
+
+          {/* Documentation & User Manual Card */}
+          <div className="lg:col-span-3 glossy-card bg-gradient-to-r from-[#FAF0F2] to-[#FFFDFB] border border-[#DECFC0] rounded-2xl p-6 shadow-xs flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+            <div className="space-y-1">
+              <div className="flex items-center space-x-2">
+                <FileText className="w-5 h-5 text-[#821A2A]" />
+                <h4 className="font-bold font-serif text-base text-[#24060B]">
+                  DeedFlow Enterprise System Documentation &amp; User Manual
+                </h4>
+              </div>
+              <p className="text-xs text-[#5C4A4D] max-w-2xl">
+                Comprehensive reference covering Maker-Checker workflows, biometric KYC OCR masking, basement parking allocation, and Indian legal ATS generation.
+              </p>
+            </div>
+            <a
+              href="/docs/DeedFlow_Enterprise_User_Guide.pdf"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="px-4 py-2.5 glossy-btn-burgundy text-white font-semibold text-xs rounded-xl flex items-center space-x-2 shadow-sm shrink-0"
+            >
+              <Download className="w-3.5 h-3.5" />
+              <span>Download PDF Guide</span>
+            </a>
+          </div>
         </div>
       )}
 
@@ -897,8 +1038,8 @@ export default function SettingsPage() {
             </label>
           </div>
 
-          {/* Search Audit Stream */}
-          <div className="flex items-center justify-between gap-3">
+          {/* Search Audit Stream & Export */}
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
             <div className="relative flex-1">
               <Search className="w-4 h-4 text-[#8C777A] absolute left-3.5 top-1/2 -translate-y-1/2" />
               <input
@@ -909,6 +1050,14 @@ export default function SettingsPage() {
                 className="w-full pl-10 pr-4 py-2.5 rounded-xl border border-[#DECFC0] bg-[#FFFDFB] text-[#24060B] placeholder-[#8C777A] text-xs focus:outline-none focus:border-[#821A2A] shadow-2xs"
               />
             </div>
+            <button
+              type="button"
+              onClick={handleExportProjectAuditCsv}
+              className="px-4 py-2.5 glossy-btn-ivory border border-[#DECFC0] hover:border-[#821A2A] text-[#24060B] rounded-xl text-xs font-semibold flex items-center space-x-1.5 cursor-pointer shadow-2xs shrink-0"
+            >
+              <Download className="w-3.5 h-3.5 text-[#821A2A]" />
+              <span>Export CSV ({filteredAuditRecords.length})</span>
+            </button>
           </div>
 
           {/* Audit Stream Table */}
@@ -925,11 +1074,11 @@ export default function SettingsPage() {
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-[#F0E8DD]">
-                  {filteredAuditEvents.map((ev) => (
+                  {filteredAuditRecords.map((ev) => (
                     <tr key={ev.id} className="hover:bg-[#FAF7F2] transition-colors">
                       <td className="px-5 py-3.5">
-                        <div className="font-bold text-[#24060B]">{ev.user}</div>
-                        <div className="text-[10px] text-[#8C777A] font-mono">{ev.role}</div>
+                        <div className="font-bold text-[#24060B]">{ev.userName}</div>
+                        <div className="text-[10px] text-[#8C777A] font-mono uppercase">{ev.userRole.replace("_", " ")}</div>
                       </td>
 
                       <td className="px-4 py-3.5 text-[#24060B] font-medium">{ev.action}</td>
@@ -941,8 +1090,16 @@ export default function SettingsPage() {
                       </td>
 
                       <td className="px-4 py-3.5 text-[#5C4A4D] font-mono text-[11px]">
-                        <div>{ev.timestamp}</div>
-                        <div className="text-[10px] text-[#8C777A]">{ev.ip}</div>
+                        <div>
+                          {new Date(ev.timestamp).toLocaleString("en-IN", {
+                            day: "2-digit",
+                            month: "short",
+                            year: "numeric",
+                            hour: "2-digit",
+                            minute: "2-digit",
+                          })}
+                        </div>
+                        <div className="text-[10px] text-[#8C777A]">{ev.ipAddress}</div>
                       </td>
 
                       <td className="px-5 py-3.5 text-right">

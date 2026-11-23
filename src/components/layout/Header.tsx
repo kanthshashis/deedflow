@@ -3,6 +3,7 @@
 import React, { useEffect, useState, useRef } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
+import clsx from "clsx";
 import {
   Menu,
   X,
@@ -15,10 +16,12 @@ import {
   User,
   ExternalLink,
   Sparkles,
+  FileText,
+  Check,
 } from "lucide-react";
 import { UserRole, ProjectMetadata, UserProfile } from "@/lib/types";
 import { getActiveProject } from "@/lib/projectStore";
-import { getCurrentAuthUser, logoutUser } from "@/lib/authStore";
+import { getCurrentAuthUser, logoutUser, switchActiveRole } from "@/lib/authStore";
 import { DEMO_USERS } from "@/lib/mockData";
 
 interface HeaderProps {
@@ -224,27 +227,87 @@ export function Header({ onToggleMobileMenu, isMobileMenuOpen }: HeaderProps) {
                     className="flex items-center space-x-2 px-3 py-2 rounded-lg hover:bg-[#F8F2EC] text-[#5C4A4D] hover:text-[#24060B] font-medium transition-colors"
                   >
                     <User className="w-4 h-4 text-[#8C777A]" />
-                    <span>My Profile &amp; Security</span>
+                    <span>My Profile &amp; Settings</span>
                   </Link>
 
-                  <Link
-                    href="/super-admin"
-                    onClick={() => setIsUserMenuOpen(false)}
-                    className="flex items-center space-x-2 px-3 py-2 rounded-lg hover:bg-[#F8F2EC] text-[#5C4A4D] hover:text-[#24060B] font-medium transition-colors"
-                  >
-                    <Sparkles className="w-4 h-4 text-[#B88E3E]" />
-                    <span>Super-Admin Center</span>
-                  </Link>
+                  {(role === "super_admin" || currentUser.accessibleRoles?.includes("super_admin")) && (
+                    <Link
+                      href="/super-admin"
+                      onClick={() => setIsUserMenuOpen(false)}
+                      className="flex items-center space-x-2 px-3 py-2 rounded-lg hover:bg-[#F8F2EC] text-[#5C4A4D] hover:text-[#24060B] font-medium transition-colors"
+                    >
+                      <Sparkles className="w-4 h-4 text-[#B88E3E]" />
+                      <span>Super-Admin Center</span>
+                    </Link>
+                  )}
 
-                  <Link
-                    href="/login"
-                    onClick={() => setIsUserMenuOpen(false)}
-                    className="flex items-center space-x-2 px-3 py-2 rounded-lg hover:bg-[#F8F2EC] text-[#5C4A4D] hover:text-[#24060B] font-medium transition-colors"
+                  <a
+                    href="/docs/DeedFlow_Enterprise_User_Guide.pdf"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="flex items-center justify-between px-3 py-2 rounded-lg hover:bg-[#F8F2EC] text-[#5C4A4D] hover:text-[#24060B] font-medium transition-colors"
                   >
-                    <RotateCcw className="w-4 h-4 text-[#8C777A]" />
-                    <span>Switch Role Persona</span>
-                  </Link>
+                    <div className="flex items-center space-x-2">
+                      <FileText className="w-4 h-4 text-[#821A2A]" />
+                      <span>User Guide (PDF)</span>
+                    </div>
+                    <span className="text-[10px] font-mono font-bold text-[#821A2A] bg-[#821A2A]/10 px-1.5 py-0.5 rounded">
+                      Manual
+                    </span>
+                  </a>
                 </div>
+
+                {/* In-App RBAC Role Switcher */}
+                {currentUser.accessibleRoles && currentUser.accessibleRoles.length > 1 && (
+                  <div className="border-t border-[#F0E8DD] mt-2 pt-2">
+                    <div className="px-3 pb-1.5 flex items-center justify-between text-[10px] font-mono font-bold text-[#8C777A] uppercase tracking-wider">
+                      <span>Switch Active Clearance</span>
+                      <ShieldCheck className="w-3.5 h-3.5 text-[#B88E3E]" />
+                    </div>
+                    <div className="space-y-1 max-h-48 overflow-y-auto">
+                      {currentUser.accessibleRoles.map((r) => {
+                        const isCurrent = r === role;
+                        return (
+                          <button
+                            key={r}
+                            type="button"
+                            onClick={() => {
+                              switchActiveRole(r);
+                              setRole(r);
+                              setIsUserMenuOpen(false);
+                              if (r === "super_admin") {
+                                router.push("/super-admin");
+                              } else if (typeof window !== "undefined" && window.location.pathname.startsWith("/super-admin")) {
+                                router.push("/dashboard");
+                              }
+                            }}
+                            className={clsx(
+                              "w-full flex items-center justify-between px-2.5 py-1.5 rounded-lg text-left text-xs transition-colors cursor-pointer",
+                              isCurrent
+                                ? "bg-[#821A2A] text-white font-bold shadow-2xs"
+                                : "hover:bg-[#F8F2EC] text-[#5C4A4D] hover:text-[#24060B]"
+                            )}
+                          >
+                            <div className="flex items-center space-x-2 min-w-0">
+                              <span
+                                className={clsx(
+                                  "w-5 h-5 rounded text-[10px] font-mono font-bold flex items-center justify-center shrink-0",
+                                  isCurrent ? "bg-white/20 text-white" : "bg-[#F0E8DD] text-[#821A2A]"
+                                )}
+                              >
+                                {ROLE_INITIALS[r] || "DF"}
+                              </span>
+                              <span className="truncate">{ROLE_LABELS[r] || r}</span>
+                            </div>
+                            {isCurrent ? (
+                              <Check className="w-3.5 h-3.5 text-white shrink-0" />
+                            ) : null}
+                          </button>
+                        );
+                      })}
+                    </div>
+                  </div>
+                )}
 
                 {/* Sign Out Divider */}
                 <div className="border-t border-[#F0E8DD] mt-2 pt-1.5">

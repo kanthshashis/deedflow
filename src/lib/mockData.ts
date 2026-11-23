@@ -21,6 +21,7 @@ export const DEMO_USERS: Record<string, UserProfile> = {
     status: "active",
     lastLogin: "Active Now",
     twoFactorEnabled: true,
+    accessibleRoles: ["super_admin", "project_admin", "promoter_executive", "legal_counsel", "project_operator", "bank_auditor"],
   },
   promoter_executive: {
     id: "usr_promoter_01",
@@ -37,6 +38,7 @@ export const DEMO_USERS: Record<string, UserProfile> = {
     status: "active",
     lastLogin: "Today, 9:15 AM",
     twoFactorEnabled: true,
+    accessibleRoles: ["promoter_executive", "project_admin"],
   },
   project_admin: {
     id: "usr_admin_01",
@@ -53,6 +55,7 @@ export const DEMO_USERS: Record<string, UserProfile> = {
     status: "active",
     lastLogin: "Today, 10:30 AM",
     twoFactorEnabled: true,
+    accessibleRoles: ["project_admin", "legal_counsel", "project_operator", "bank_auditor", "promoter_executive"],
   },
   legal_counsel: {
     id: "usr_legal_01",
@@ -69,6 +72,7 @@ export const DEMO_USERS: Record<string, UserProfile> = {
     status: "active",
     lastLogin: "Yesterday, 4:45 PM",
     twoFactorEnabled: true,
+    accessibleRoles: ["legal_counsel"],
   },
   project_operator: {
     id: "usr_op_01",
@@ -85,6 +89,7 @@ export const DEMO_USERS: Record<string, UserProfile> = {
     status: "active",
     lastLogin: "Active Now",
     twoFactorEnabled: false,
+    accessibleRoles: ["project_operator"],
   },
   bank_auditor: {
     id: "usr_bank_01",
@@ -101,6 +106,7 @@ export const DEMO_USERS: Record<string, UserProfile> = {
     status: "active",
     lastLogin: "21 Nov 2026",
     twoFactorEnabled: true,
+    accessibleRoles: ["bank_auditor"],
   },
 };
 
