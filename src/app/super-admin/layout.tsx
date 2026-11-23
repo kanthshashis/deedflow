@@ -1,8 +1,8 @@
 "use client";
 
-import React from "react";
+import React, { useState, useEffect } from "react";
 import Link from "next/link";
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import { Logo } from "@/components/ui/Logo";
 import { PlusCircle, ArrowLeft } from "lucide-react";
 
@@ -11,7 +11,35 @@ export default function SuperAdminLayout({
 }: {
   children: React.ReactNode;
 }) {
+  const router = useRouter();
   const pathname = usePathname();
+  const [isAuthenticated, setIsAuthenticated] = useState<boolean | null>(null);
+
+  useEffect(() => {
+    if (typeof window !== "undefined") {
+      const activeRole = localStorage.getItem("deedflow_active_role");
+      const session = localStorage.getItem("deedflow_auth_session");
+
+      if (!activeRole && !session) {
+        router.replace(`/login?redirect=${encodeURIComponent(pathname)}`);
+        return;
+      }
+      setIsAuthenticated(true);
+    }
+  }, [router, pathname]);
+
+  if (isAuthenticated === null) {
+    return (
+      <div className="min-h-screen bg-[#FAF7F2] flex items-center justify-center font-sans text-[#24060B]">
+        <div className="text-center space-y-3">
+          <div className="w-8 h-8 border-3 border-[#821A2A] border-t-transparent rounded-full animate-spin mx-auto" />
+          <p className="text-xs font-mono text-[#5C4A4D] uppercase tracking-wider">
+            Authenticating Super-Admin Center...
+          </p>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-[#FAF7F2] text-[#24060B] flex flex-col font-sans relative selection:bg-[#821A2A] selection:text-white">

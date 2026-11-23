@@ -1,7 +1,7 @@
 "use client";
 
-import React, { useState } from "react";
-import { useRouter } from "next/navigation";
+import React, { useState, Suspense } from "react";
+import { useRouter, useSearchParams } from "next/navigation";
 import Link from "next/link";
 import { Logo } from "@/components/ui/Logo";
 import {
@@ -27,8 +27,9 @@ import { DEMO_USERS } from "@/lib/mockData";
 import { UserRole } from "@/lib/types";
 import { loginUser } from "@/lib/authStore";
 
-export default function LoginPage() {
+function LoginContent() {
   const router = useRouter();
+  const searchParams = useSearchParams();
 
   // Mode: Instant Demo Persona vs Direct Corporate Email Login
   const [authMode, setAuthMode] = useState<"persona" | "direct">("persona");
@@ -126,7 +127,10 @@ export default function LoginPage() {
       loginUser(emailToLogin, password, roleToLogin);
       setIsLoading(false);
 
-      if (roleToLogin === "super_admin") {
+      const redirectTarget = searchParams.get("redirect");
+      if (redirectTarget && redirectTarget.startsWith("/")) {
+        router.push(redirectTarget);
+      } else if (roleToLogin === "super_admin") {
         router.push("/super-admin");
       } else {
         router.push("/dashboard");
@@ -516,5 +520,24 @@ export default function LoginPage() {
         </div>
       )}
     </div>
+  );
+}
+
+export default function LoginPage() {
+  return (
+    <Suspense
+      fallback={
+        <div className="min-h-screen bg-[#FAF7F2] flex items-center justify-center font-sans text-[#24060B]">
+          <div className="text-center space-y-3">
+            <div className="w-8 h-8 border-3 border-[#821A2A] border-t-transparent rounded-full animate-spin mx-auto" />
+            <p className="text-xs font-mono text-[#5C4A4D] uppercase tracking-wider">
+              Loading Workspace Sign In...
+            </p>
+          </div>
+        </div>
+      }
+    >
+      <LoginContent />
+    </Suspense>
   );
 }
