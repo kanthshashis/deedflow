@@ -344,7 +344,7 @@ export default function DashboardOverview() {
           </div>
 
           <Link
-            href="/dashboard/generate"
+            href="/dashboard/issued"
             className="text-xs font-semibold text-[#5C4A4D] hover:text-[#821A2A] flex items-center space-x-1"
           >
             <span>View all</span>

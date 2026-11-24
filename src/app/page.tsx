@@ -95,20 +95,13 @@ export default function LandingPage() {
             </a>
           </div>
 
-          {/* Action CTAs */}
+          {/* Action CTA */}
           <div className="flex items-center space-x-3">
             <Link
               href="/login"
-              className="px-3.5 py-2 rounded-xl text-xs font-semibold border border-[#DECFC0] bg-white hover:border-[#821A2A]/40 text-[#24060B] transition-colors shadow-2xs"
+              className="px-4 py-2 rounded-xl text-xs font-semibold flex items-center space-x-1.5 spring-snap cursor-pointer glossy-btn-burgundy text-[#FAF7F2] shadow-sm hover:brightness-105 transition-all"
             >
-              Sign In
-            </Link>
-
-            <Link
-              href="/login?redirect=/dashboard"
-              className="px-4 py-2 rounded-xl text-xs font-semibold flex items-center space-x-1.5 spring-snap cursor-pointer glossy-btn-burgundy text-[#FAF7F2]"
-            >
-              <span>Launch Studio</span>
+              <span>Sign In</span>
               <ArrowRight className="w-3.5 h-3.5 text-[#E5C178]" />
             </Link>
           </div>
@@ -146,24 +139,24 @@ export default function LandingPage() {
               className="w-full sm:w-auto px-6 py-3.5 font-semibold text-sm rounded-xl flex items-center justify-center space-x-2 spring-snap cursor-pointer glossy-btn-burgundy text-[#FAF7F2] shadow-sm hover:brightness-105 transition-all"
             >
               <Zap className="w-4 h-4 text-[#E5C178]" />
-              <span>Launch Live Workstation</span>
+              <span>Start Free 14-Day Pilot</span>
             </Link>
+
+            <a
+              href="#showcase"
+              className="w-full sm:w-auto px-6 py-3.5 border font-semibold text-sm rounded-xl flex items-center justify-center space-x-2 spring-snap cursor-pointer glossy-btn-ivory text-[#821A2A] hover:border-[#821A2A]/40 transition-colors bg-white shadow-2xs"
+            >
+              <Compass className="w-4 h-4 text-[#821A2A]" />
+              <span>Explore Interactive Demo ↓</span>
+            </a>
 
             <a
               href="/templates/car-parking-allotment.docx"
               download
-              className="w-full sm:w-auto px-6 py-3.5 border font-semibold text-sm rounded-xl flex items-center justify-center space-x-2 spring-snap cursor-pointer glossy-btn-ivory text-[#821A2A] hover:border-[#821A2A]/40 transition-colors bg-white shadow-2xs"
-            >
-              <Download className="w-4 h-4 text-[#821A2A]" />
-              <span>Download Sample Bank Kit (.docx)</span>
-            </a>
-
-            <a
-              href="#consultation"
               className="w-full sm:w-auto px-5 py-3.5 border font-semibold text-sm rounded-xl flex items-center justify-center space-x-1.5 text-[#5C4A4D] hover:text-[#24060B] hover:bg-[#F8F2EC] transition-colors border-[#DECFC0]"
             >
-              <PhoneCall className="w-3.5 h-3.5 text-[#B88E3E]" />
-              <span>Book VIP Briefing</span>
+              <Download className="w-3.5 h-3.5 text-[#8C777A]" />
+              <span>Sample Bank Kit (.docx)</span>
             </a>
           </div>
 
