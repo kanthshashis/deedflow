@@ -87,6 +87,9 @@ export default function LandingPage() {
             <a href="#roi" className="hover:text-[#821A2A] transition-colors">
               ROI Simulator
             </a>
+            <a href="#pricing" className="hover:text-[#821A2A] transition-colors">
+              Pricing
+            </a>
             <a href="#faq" className="hover:text-[#821A2A] transition-colors">
               FAQ
             </a>
@@ -486,6 +489,160 @@ export default function LandingPage() {
       {/* ROI Simulator Section */}
       <section id="roi" className="py-14 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto border-t border-[#E8DFD3] relative z-10">
         <RoiCalculator />
+      </section>
+
+      {/* Institutional Pricing & Commercial Deployment Plans */}
+      <section id="pricing" className="py-14 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto border-t border-[#E8DFD3] relative z-10">
+        <div className="space-y-8">
+          <div className="text-center space-y-2">
+            <span className="text-xs font-mono uppercase tracking-wider font-semibold text-[#821A2A] flex items-center justify-center space-x-1.5">
+              <DollarSign className="w-3.5 h-3.5 text-[#B88E3E]" />
+              <span>Transparent Project Licensing & Commercial Models</span>
+            </span>
+            <h2 className="text-2xl sm:text-3xl font-extrabold tracking-tight text-[#24060B]">
+              Institutional Indian PropTech Pricing
+            </h2>
+            <p className="text-xs sm:text-sm max-w-xl mx-auto text-[#5C4A4D]">
+              No per-seat penalties. Transparent project licenses with 100% GST input tax credit, NEFT/RTGS billing, and zero lock-in.
+            </p>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6 items-stretch">
+            {/* Tier 1: Launch Partner Free Beta */}
+            <div className="glossy-card bg-white border border-[#DECFC0] rounded-2xl p-6 shadow-2xs space-y-5 flex flex-col justify-between">
+              <div className="space-y-3">
+                <div className="inline-block px-2.5 py-0.5 rounded-full text-[10px] font-mono font-bold bg-[#FAF2F3] text-[#821A2A] border border-[#F0D5D9]">
+                  14-DAY TRIAL
+                </div>
+                <h3 className="text-lg font-bold text-[#24060B]">Launch Partner Beta</h3>
+                <p className="text-xs text-[#5C4A4D] leading-relaxed">
+                  Test-drive DeedFlow on your next 10 bookings. Zero credit card or advance contract required.
+                </p>
+                <div className="pt-2">
+                  <span className="text-3xl font-extrabold text-[#24060B]">₹0</span>
+                  <span className="text-xs text-[#8C777A]"> / 14 days</span>
+                </div>
+                <ul className="space-y-2 text-xs text-[#5C4A4D] pt-2 border-t border-[#F0E8DD]">
+                  <li className="flex items-center space-x-2">
+                    <CheckCircle2 className="w-4 h-4 text-emerald-600 shrink-0" />
+                    <span>Up to 10 verified Bank Kits &amp; deeds</span>
+                  </li>
+                  <li className="flex items-center space-x-2">
+                    <CheckCircle2 className="w-4 h-4 text-emerald-600 shrink-0" />
+                    <span>In-Memory Gemini 2.5 Flash KYC OCR</span>
+                  </li>
+                  <li className="flex items-center space-x-2">
+                    <CheckCircle2 className="w-4 h-4 text-emerald-600 shrink-0" />
+                    <span>Basement parking visual grid</span>
+                  </li>
+                  <li className="flex items-center space-x-2">
+                    <CheckCircle2 className="w-4 h-4 text-emerald-600 shrink-0" />
+                    <span>WhatsApp draft sharing links</span>
+                  </li>
+                </ul>
+              </div>
+              <Link
+                href="/login?redirect=/dashboard"
+                className="w-full py-2.5 rounded-xl text-xs font-bold text-center block border border-[#DECFC0] bg-[#FAF7F2] hover:bg-[#F3EAE0] text-[#24060B] transition-colors"
+              >
+                Start Free 14-Day Pilot
+              </Link>
+            </div>
+
+            {/* Tier 2: Single Tower Annual License (Most Popular) */}
+            <div className="glossy-card bg-[#FFFDFB] border-2 border-[#821A2A] rounded-2xl p-6 shadow-md space-y-5 flex flex-col justify-between relative overflow-hidden">
+              <div className="absolute top-0 right-0 bg-[#821A2A] text-white text-[9px] font-mono uppercase font-bold px-3 py-0.5 rounded-bl-lg tracking-wider">
+                MOST POPULAR
+              </div>
+              <div className="space-y-3">
+                <div className="inline-block px-2.5 py-0.5 rounded-full text-[10px] font-mono font-bold bg-[#821A2A]/10 text-[#821A2A] border border-[#821A2A]/20">
+                  SINGLE TOWER PASS
+                </div>
+                <h3 className="text-lg font-bold text-[#24060B]">Project Annual License</h3>
+                <p className="text-xs text-[#5C4A4D] leading-relaxed">
+                  Full production pass for single projects or standalone towers up to 80 residential flats.
+                </p>
+                <div className="pt-2">
+                  <span className="text-3xl font-extrabold text-[#24060B]">₹29,999</span>
+                  <span className="text-xs text-[#8C777A]"> / year + 18% GST</span>
+                </div>
+                <ul className="space-y-2 text-xs text-[#5C4A4D] pt-2 border-t border-[#F0E8DD]">
+                  <li className="flex items-center space-x-2">
+                    <CheckCircle2 className="w-4 h-4 text-emerald-600 shrink-0" />
+                    <span><strong>Unlimited</strong> document &amp; bank kit generation</span>
+                  </li>
+                  <li className="flex items-center space-x-2">
+                    <CheckCircle2 className="w-4 h-4 text-emerald-600 shrink-0" />
+                    <span>Unlimited team seats &amp; RBAC roles</span>
+                  </li>
+                  <li className="flex items-center space-x-2">
+                    <CheckCircle2 className="w-4 h-4 text-emerald-600 shrink-0" />
+                    <span>Custom builder `.docx` letterhead calibration</span>
+                  </li>
+                  <li className="flex items-center space-x-2">
+                    <CheckCircle2 className="w-4 h-4 text-emerald-600 shrink-0" />
+                    <span>Atomic PostgreSQL double-allotment lock</span>
+                  </li>
+                  <li className="flex items-center space-x-2">
+                    <CheckCircle2 className="w-4 h-4 text-emerald-600 shrink-0" />
+                    <span>Dedicated WhatsApp &amp; phone onboarding</span>
+                  </li>
+                </ul>
+              </div>
+              <Link
+                href="/login?redirect=/dashboard"
+                className="w-full py-2.5 rounded-xl text-xs font-bold text-center block glossy-btn-burgundy text-white hover:brightness-105 shadow-sm transition-all"
+              >
+                Deploy Single Tower License
+              </Link>
+            </div>
+
+            {/* Tier 3: Multi-Tower Enterprise */}
+            <div className="glossy-card bg-white border border-[#DECFC0] rounded-2xl p-6 shadow-2xs space-y-5 flex flex-col justify-between">
+              <div className="space-y-3">
+                <div className="inline-block px-2.5 py-0.5 rounded-full text-[10px] font-mono font-bold bg-[#FAF7F2] text-[#B88E3E] border border-[#DFD1B8]">
+                  MULTI-TOWER TOWNSHIP
+                </div>
+                <h3 className="text-lg font-bold text-[#24060B]">Enterprise Society Suite</h3>
+                <p className="text-xs text-[#5C4A4D] leading-relaxed">
+                  For master-planned communities, high-rise townships, and multi-tower societies up to 300 units.
+                </p>
+                <div className="pt-2">
+                  <span className="text-3xl font-extrabold text-[#24060B]">₹69,999</span>
+                  <span className="text-xs text-[#8C777A]"> / year + 18% GST</span>
+                </div>
+                <ul className="space-y-2 text-xs text-[#5C4A4D] pt-2 border-t border-[#F0E8DD]">
+                  <li className="flex items-center space-x-2">
+                    <CheckCircle2 className="w-4 h-4 text-emerald-600 shrink-0" />
+                    <span>Everything in Project License</span>
+                  </li>
+                  <li className="flex items-center space-x-2">
+                    <CheckCircle2 className="w-4 h-4 text-emerald-600 shrink-0" />
+                    <span>Multi-tower heterogeneous floor series</span>
+                  </li>
+                  <li className="flex items-center space-x-2">
+                    <CheckCircle2 className="w-4 h-4 text-emerald-600 shrink-0" />
+                    <span>Custom bank tripartite clause customization</span>
+                  </li>
+                  <li className="flex items-center space-x-2">
+                    <CheckCircle2 className="w-4 h-4 text-emerald-600 shrink-0" />
+                    <span>Kaveri 2.0 SRO format export</span>
+                  </li>
+                  <li className="flex items-center space-x-2">
+                    <CheckCircle2 className="w-4 h-4 text-emerald-600 shrink-0" />
+                    <span>Priority SLA (2-hour response guarantee)</span>
+                  </li>
+                </ul>
+              </div>
+              <a
+                href="#consultation"
+                className="w-full py-2.5 rounded-xl text-xs font-bold text-center block border border-[#DECFC0] bg-white hover:bg-[#FAF7F2] text-[#821A2A] hover:border-[#821A2A]/40 transition-colors"
+              >
+                Request Enterprise Quote
+              </a>
+            </div>
+          </div>
+        </div>
       </section>
 
       {/* Developer Testimonials & Executive Proof */}
