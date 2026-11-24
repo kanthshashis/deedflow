@@ -21,32 +21,48 @@ export function getAllDemoUsers(): UserProfile[] {
 }
 
 /**
- * Retrieves the currently authenticated user profile from localStorage,
- * falling back to Project Admin (Aidan Morgan) if no active session is found.
+ * Validates and retrieves the active authentication session.
+ * Enforces token presence, user object validity, and expiration checks.
+ * Cleans up invalid/expired sessions automatically.
  */
-export function getCurrentAuthUser(): UserProfile {
-  if (typeof window === "undefined") {
-    return DEMO_USERS.project_admin;
-  }
+export function getValidSession(): AuthSession | null {
+  if (typeof window === "undefined") return null;
 
   try {
     const rawSession = localStorage.getItem(STORAGE_KEY_SESSION);
-    if (rawSession) {
-      const session: AuthSession = JSON.parse(rawSession);
-      if (session.user && session.user.id) {
-        return session.user;
-      }
-    }
+    if (!rawSession) return null;
 
-    const storedRole = localStorage.getItem(STORAGE_KEY_ROLE) as UserRole | null;
-    if (storedRole && DEMO_USERS[storedRole]) {
-      return DEMO_USERS[storedRole];
+    const session: AuthSession = JSON.parse(rawSession);
+    if (session && session.token && session.user && session.user.id) {
+      if (session.expiresAt && new Date(session.expiresAt).getTime() <= Date.now()) {
+        // Session expired -> purge
+        logoutUser();
+        return null;
+      }
+      return session;
     }
   } catch {
-    // Graceful fallback
+    logoutUser();
+    return null;
   }
 
-  return DEMO_USERS.project_admin;
+  return null;
+}
+
+/**
+ * Returns true if a valid, unexpired authentication session is currently active.
+ */
+export function isAuthenticated(): boolean {
+  return getValidSession() !== null;
+}
+
+/**
+ * Retrieves the currently authenticated user profile from active session.
+ * Returns null if no valid session is found (strictly no silent mock fallback).
+ */
+export function getCurrentAuthUser(): UserProfile | null {
+  const session = getValidSession();
+  return session ? session.user : null;
 }
 
 /**

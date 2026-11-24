@@ -102,7 +102,7 @@ export default function LandingPage() {
             </Link>
 
             <Link
-              href="/dashboard"
+              href="/login?redirect=/dashboard"
               className="px-4 py-2 rounded-xl text-xs font-semibold flex items-center space-x-1.5 spring-snap cursor-pointer glossy-btn-burgundy text-[#FAF7F2]"
             >
               <span>Launch Studio</span>
@@ -139,7 +139,7 @@ export default function LandingPage() {
           {/* Action Button Row */}
           <div className="flex flex-col sm:flex-row items-center justify-center gap-3 pt-2">
             <Link
-              href="/dashboard"
+              href="/login?redirect=/dashboard"
               className="w-full sm:w-auto px-6 py-3.5 font-semibold text-sm rounded-xl flex items-center justify-center space-x-2 spring-snap cursor-pointer glossy-btn-burgundy text-[#FAF7F2] shadow-sm hover:brightness-105 transition-all"
             >
               <Zap className="w-4 h-4 text-[#E5C178]" />
@@ -473,7 +473,7 @@ export default function LandingPage() {
               </p>
             </div>
             <Link
-              href="/dashboard/draft/new"
+              href="/login?redirect=/dashboard/draft/new"
               className="px-4 py-2.5 rounded-xl text-xs font-bold glossy-btn-burgundy text-white hover:brightness-105 shrink-0 flex items-center space-x-1.5 shadow-xs"
             >
               <span>Test Bank Kit Studio</span>
@@ -620,16 +620,16 @@ export default function LandingPage() {
           </div>
 
           <div className="flex items-center space-x-6 text-xs text-[#5C4A4D]">
-            <Link href="/dashboard" className="hover:text-[#821A2A] transition-colors">
+            <Link href="/login?redirect=/dashboard" className="hover:text-[#821A2A] transition-colors">
               Dashboard
             </Link>
-            <Link href="/dashboard/inventory" className="hover:text-[#821A2A] transition-colors">
+            <Link href="/login?redirect=/dashboard/inventory" className="hover:text-[#821A2A] transition-colors">
               Inventory
             </Link>
-            <Link href="/dashboard/parking" className="hover:text-[#821A2A] transition-colors">
+            <Link href="/login?redirect=/dashboard/parking" className="hover:text-[#821A2A] transition-colors">
               Basement Grid
             </Link>
-            <Link href="/super-admin" className="hover:text-[#821A2A] transition-colors">
+            <Link href="/login?redirect=/super-admin" className="hover:text-[#821A2A] transition-colors">
               Super-Admin
             </Link>
             <Link href="/login" className="hover:text-[#821A2A] transition-colors">

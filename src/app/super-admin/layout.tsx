@@ -4,7 +4,8 @@ import React, { useState, useEffect } from "react";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { Logo } from "@/components/ui/Logo";
-import { PlusCircle, ArrowLeft } from "lucide-react";
+import { PlusCircle, ArrowLeft, ShieldAlert } from "lucide-react";
+import { getValidSession } from "@/lib/authStore";
 
 export default function SuperAdminLayout({
   children,
@@ -17,13 +18,27 @@ export default function SuperAdminLayout({
 
   useEffect(() => {
     if (typeof window !== "undefined") {
-      const activeRole = localStorage.getItem("deedflow_active_role");
-      const session = localStorage.getItem("deedflow_auth_session");
+      const session = getValidSession();
 
-      if (!activeRole && !session) {
+      if (!session) {
+        // Unauthenticated -> redirect to login with return URL
+        setIsAuthenticated(false);
         router.replace(`/login?redirect=${encodeURIComponent(pathname)}`);
         return;
       }
+
+      // Strict Super Admin Clearance Check
+      const user = session.user;
+      const isSuperAdmin =
+        user?.role === "super_admin" || user?.accessibleRoles?.includes("super_admin");
+
+      if (!isSuperAdmin) {
+        // Role Access Denied -> bounce unauthorized role to workspace dashboard
+        setIsAuthenticated(false);
+        router.replace("/dashboard");
+        return;
+      }
+
       setIsAuthenticated(true);
     }
   }, [router, pathname]);

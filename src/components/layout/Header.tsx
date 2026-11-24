@@ -52,7 +52,7 @@ export function Header({ onToggleMobileMenu, isMobileMenuOpen }: HeaderProps) {
   const [role, setRole] = useState<UserRole>("project_admin");
   const [perspective, setPerspective] = useState<UserRole | "omni">("omni");
   const [activeProject, setActiveProject] = useState<ProjectMetadata | null>(null);
-  const [currentUser, setCurrentUser] = useState<UserProfile>(DEMO_USERS.project_admin);
+  const [currentUser, setCurrentUser] = useState<UserProfile | null>(null);
   const [isUserMenuOpen, setIsUserMenuOpen] = useState(false);
   const userMenuRef = useRef<HTMLDivElement>(null);
 
@@ -69,7 +69,10 @@ export function Header({ onToggleMobileMenu, isMobileMenuOpen }: HeaderProps) {
         setPerspective("omni");
       }
       setActiveProject(getActiveProject());
-      setCurrentUser(getCurrentAuthUser());
+      const authUser = getCurrentAuthUser();
+      if (authUser) {
+        setCurrentUser(authUser);
+      }
     }
   };
 
@@ -208,14 +211,14 @@ export function Header({ onToggleMobileMenu, isMobileMenuOpen }: HeaderProps) {
                 {/* User Info Header */}
                 <div className="p-3 bg-[#FAF7F2] rounded-xl border border-[#E8DFD3] space-y-1 mb-2">
                   <div className="font-bold text-[#24060B] leading-tight flex items-center justify-between">
-                    <span>{currentUser.fullName}</span>
+                    <span>{currentUser?.fullName || "Authenticated Operator"}</span>
                     <span className="text-[9px] font-mono font-bold bg-[#821A2A] text-white px-1.5 py-0.2 rounded uppercase">
                       {ROLE_LABELS[role] || role}
                     </span>
                   </div>
-                  <div className="text-[11px] text-[#5C4A4D] truncate">{currentUser.email}</div>
+                  <div className="text-[11px] text-[#5C4A4D] truncate">{currentUser?.email || ""}</div>
                   <div className="text-[10px] font-mono text-[#8C777A] truncate">
-                    {currentUser.organizationName || "Sobha Limited"}
+                    {currentUser?.organizationName || "Sobha Limited"}
                   </div>
                 </div>
 
@@ -230,7 +233,7 @@ export function Header({ onToggleMobileMenu, isMobileMenuOpen }: HeaderProps) {
                     <span>My Profile &amp; Settings</span>
                   </Link>
 
-                  {(role === "super_admin" || currentUser.accessibleRoles?.includes("super_admin")) && (
+                  {(role === "super_admin" || currentUser?.accessibleRoles?.includes("super_admin")) && (
                     <Link
                       href="/super-admin"
                       onClick={() => setIsUserMenuOpen(false)}
@@ -258,7 +261,7 @@ export function Header({ onToggleMobileMenu, isMobileMenuOpen }: HeaderProps) {
                 </div>
 
                 {/* In-App RBAC Role Switcher */}
-                {currentUser.accessibleRoles && currentUser.accessibleRoles.length > 1 && (
+                {currentUser?.accessibleRoles && currentUser.accessibleRoles.length > 1 && (
                   <div className="border-t border-[#F0E8DD] mt-2 pt-2">
                     <div className="px-3 pb-1.5 flex items-center justify-between text-[10px] font-mono font-bold text-[#8C777A] uppercase tracking-wider">
                       <span>Switch Active Clearance</span>

@@ -23,6 +23,7 @@ import {
 import clsx from "clsx";
 import { UserRole } from "@/lib/types";
 import { DEMO_USERS } from "@/lib/mockData";
+import { getCurrentAuthUser } from "@/lib/authStore";
 
 interface SidebarProps {
   isOpen?: boolean;
@@ -83,7 +84,8 @@ export function Sidebar({ isOpen, onClose }: SidebarProps) {
 
   const navItems = allNavItems.filter((item) => item.roles.includes(effectiveRole));
 
-  const currentUser = DEMO_USERS[effectiveRole] || DEMO_USERS.project_admin;
+  const authUser = getCurrentAuthUser();
+  const currentUser = authUser || DEMO_USERS[effectiveRole] || DEMO_USERS.project_admin;
   const userInitials = currentUser.fullName
     .split(" ")
     .map((n) => n[0])

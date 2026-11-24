@@ -4,6 +4,7 @@ import React, { useState, useEffect } from "react";
 import { useRouter, usePathname } from "next/navigation";
 import { Header } from "@/components/layout/Header";
 import { Sidebar } from "@/components/layout/Sidebar";
+import { getValidSession } from "@/lib/authStore";
 
 export default function DashboardLayout({
   children,
@@ -17,11 +18,11 @@ export default function DashboardLayout({
 
   useEffect(() => {
     if (typeof window !== "undefined") {
-      const activeRole = localStorage.getItem("deedflow_active_role");
-      const session = localStorage.getItem("deedflow_auth_session");
+      const session = getValidSession();
 
-      if (!activeRole && !session) {
-        // Not logged in -> redirect to login with return URL
+      if (!session) {
+        // Strictly unauthenticated or expired -> redirect to login with return URL
+        setIsAuthenticated(false);
         router.replace(`/login?redirect=${encodeURIComponent(pathname)}`);
         return;
       }

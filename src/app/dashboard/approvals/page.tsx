@@ -5,6 +5,7 @@ import Link from "next/link";
 import { CheckCircle2, XCircle, RotateCcw, Clock, AlertTriangle, ShieldCheck, ArrowRight, Filter, Search, FileText, Lock } from "lucide-react";
 import { MOCK_CHANGE_REQUESTS, MOCK_AUDIT_LOGS, DEMO_USERS } from "@/lib/mockData";
 import { ChangeRequest, AuditLog, UserRole, hasPermission } from "@/lib/types";
+import { getCurrentAuthUser } from "@/lib/authStore";
 
 export default function ApprovalsPage() {
   const [activeTab, setActiveTab] = useState<"pending" | "audit">("pending");
@@ -43,7 +44,8 @@ export default function ApprovalsPage() {
       : currentRole;
 
   const canApprove = hasPermission(effectiveRole, "approve_diff_queue");
-  const activeUser = DEMO_USERS[effectiveRole] || DEMO_USERS.project_admin;
+  const authUser = getCurrentAuthUser();
+  const activeUser = authUser || DEMO_USERS[effectiveRole] || DEMO_USERS.project_admin;
   const reviewerLabel = `${activeUser.fullName} (${activeUser.designation || effectiveRole})`;
 
   const pendingRequests = requests.filter((r) => r.status === "pending");

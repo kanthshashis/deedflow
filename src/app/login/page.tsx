@@ -23,10 +23,10 @@ function LoginContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
 
-  const [email, setEmail] = useState("aidan@sobha.com");
-  const [password, setPassword] = useState("Prestige@2026!Deed");
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
-  const [rememberMe, setRememberMe] = useState(true);
+  const [rememberMe, setRememberMe] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
 
@@ -122,7 +122,7 @@ function LoginContent() {
                   required
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
-                  placeholder="e.g. aidan@sobha.com"
+                  placeholder="e.g. aidan.morgan@sobha.com"
                   className="w-full pl-3.5 pr-10 py-2.5 rounded-xl border border-[#DECFC0] text-xs text-[#24060B] focus:outline-none focus:ring-2 focus:ring-[#821A2A]/30 focus:border-[#821A2A] bg-white shadow-xs font-sans transition-all"
                 />
                 <Mail className="w-4 h-4 text-[#8C777A] absolute right-3.5 top-3 pointer-events-none" />
@@ -271,7 +271,7 @@ function LoginContent() {
                     required
                     value={forgotEmail}
                     onChange={(e) => setForgotEmail(e.target.value)}
-                    placeholder="e.g. aidan@sobha.com"
+                    placeholder="e.g. aidan.morgan@sobha.com"
                     className="w-full px-3.5 py-2.5 rounded-xl border border-[#DECFC0] text-xs text-[#24060B] focus:outline-none focus:ring-2 focus:ring-[#821A2A]/30 focus:border-[#821A2A]"
                   />
                 </div>

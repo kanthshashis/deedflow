@@ -27,6 +27,7 @@ import {
 import clsx from "clsx";
 import { UserRole, hasPermission } from "@/lib/types";
 import { DEMO_USERS } from "@/lib/mockData";
+import { getCurrentAuthUser } from "@/lib/authStore";
 
 interface TemplateVersion {
   id: string;
@@ -238,7 +239,8 @@ export default function TemplatesPage() {
       : currentRole;
 
   const canManageTemplates = hasPermission(effectiveRole, "manage_templates");
-  const activeUser = DEMO_USERS[effectiveRole] || DEMO_USERS.project_admin;
+  const authUser = getCurrentAuthUser();
+  const activeUser = authUser || DEMO_USERS[effectiveRole] || DEMO_USERS.project_admin;
 
   // New Version Upload State
   const [uploadedFile, setUploadedFile] = useState<File | null>(null);
